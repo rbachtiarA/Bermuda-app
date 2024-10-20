@@ -12,7 +12,7 @@ export const cartSlice = createSlice({
     name: "ItemCart",
     initialState,
     reducers:{
-        addItemCart: (state, action: PayloadAction<ICartItem>) => {
+        addedToCart: (state, action: PayloadAction<ICartItem>) => {
             const { productId, quantity, totalPrice } = action.payload
             const isItemExist = state.findIndex((item) => item.productId === productId)
             if(isItemExist !== -1) {
@@ -30,5 +30,5 @@ export const cartSlice = createSlice({
 
 })
 
-export const {addItemCart, resetCart} = cartSlice.actions
+export const {addedToCart, resetCart} = cartSlice.actions
 export default cartSlice.reducer
