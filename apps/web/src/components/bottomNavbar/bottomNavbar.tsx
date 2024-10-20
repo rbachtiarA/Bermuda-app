@@ -1,7 +1,8 @@
-import OrderBottomNavbar from "./orderBottomNavbar";
-import CartBottomNavbar from "./cartBottomNavbar";
-import UserBottomNavbar from "./userBottomNavbar";
+'use client'
 import { Roboto } from "next/font/google";
+import LinkButtonBottomNavbar from "./LinkButton.BottomNavbar";
+import NotificationBottomNavbar from "./notificationCart.BottomNavbar";
+import { useAppSelector } from "@/redux/hook";
 
 
 const roboto = Roboto({
@@ -9,18 +10,19 @@ const roboto = Roboto({
     subsets: ['latin']
 })
 
-export default function BottomNavbar () {    
+export default function BottomNavbar () {
+    const cart = useAppSelector(state => state.cart)
     return (
         <div className="w-full fixed bottom-0" style={roboto.style}>
             <ul className="grid grid-cols-3 divide-x divide-white text-center py-1 bg-slate-200 justify-center items-center">
                 <li>
-                    <UserBottomNavbar />
+                    <LinkButtonBottomNavbar label='Profile' href="/user" imgsrc="/icon-user-profile.svg" imgalt="user" />
                 </li>
                 <li>
-                    <OrderBottomNavbar />
+                    <LinkButtonBottomNavbar label='Order' href="/order" imgsrc="/icon-order.svg" imgalt="order" />
                 </li>
                 <li>
-                    <CartBottomNavbar />
+                    <LinkButtonBottomNavbar label='Cart' href="/cart" imgsrc="/icon-shopping-cart.svg" imgalt="cart" component={<NotificationBottomNavbar data={cart}/>}/>
                 </li>
             </ul>
         </div>
