@@ -14,12 +14,12 @@ export default function page() {
 
     }
     return (
-        <div>
+        <section>
             <ul className="flex flex-col gap-2">
                 {productList.map((product) => (
                     <ProductCard key={product.id} product={product} />
                 ))}
             </ul>
-        </div>
+        </section>
     )
 }
