@@ -5,6 +5,7 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import StoreProvider from '@/components/reduxStore/storeProvider';
 import BottomNavbar from '@/components/bottomNavbar/bottomNavbar';
+import { NextUIProvider } from '@nextui-org/react';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -21,12 +22,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} relative`} >
-        <StoreProvider>
-          <Header />
-          {children}
-          <Footer />
-          <BottomNavbar />
-        </StoreProvider>
+        <NextUIProvider>
+          <StoreProvider>
+            <Header />
+            {children}
+            <Footer />
+            <BottomNavbar />
+          </StoreProvider>
+        </NextUIProvider>
       </body>
     </html>
   );
