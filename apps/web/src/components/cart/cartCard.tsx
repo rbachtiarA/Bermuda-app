@@ -1,8 +1,13 @@
-export default function CartCard({cart}: {cart: ICart}) {
+import { ICartItem } from "@/type/cart";
+import { Checkbox } from "@nextui-org/react"
+export default function CartCard({cart}: {cart: ICartItem}) {
 
     return (
-        <li className="grid grid-cols-3 bg-slate-100">
-            <div className="col-span-2">
+        <li className="grid grid-cols-6 bg-slate-100">
+            <div>
+                <Checkbox>Hello</Checkbox>
+            </div>
+            <div className="col-span-4">
                 <p>Cart id: {cart.id}</p>
                 <p>product id: {cart.productId}</p>
                 <p>product quantity: {cart.quantity}</p>

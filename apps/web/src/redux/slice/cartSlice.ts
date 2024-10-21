@@ -1,10 +1,5 @@
+import { ICartItem } from "@/type/cart";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-interface ICartItem {
-    id: number
-    productId: number
-    quantity: number
-    totalPrice: number
-}
 
 const initialState: ICartItem[] = []
 
@@ -22,7 +17,10 @@ export const cartSlice = createSlice({
                 return [...state, {id: 1, productId, quantity, totalPrice}]
             }
         },
-        
+        removedFromCart: (state, action: PayloadAction<ICartItem>) => {
+            const { productId } = action.payload
+            return [...state.filter((cartItem) => cartItem.productId !== productId)]
+        },
         resetCart: () => {
             return []
         }, 
