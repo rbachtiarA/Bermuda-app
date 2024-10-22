@@ -14,7 +14,7 @@ export const cartSlice = createSlice({
                 state[isItemExist].quantity += quantity
                 return state
             } else {
-                return [...state, {id: 1, productId, quantity, totalPrice}]
+                return [...state, {id: state.length+1, productId, quantity, totalPrice}]
             }
         },
         removedFromCart: (state, action: PayloadAction<ICartItem>) => {
@@ -28,5 +28,5 @@ export const cartSlice = createSlice({
 
 })
 
-export const {addedToCart, resetCart} = cartSlice.actions
+export const {addedToCart, removedFromCart, resetCart} = cartSlice.actions
 export default cartSlice.reducer
