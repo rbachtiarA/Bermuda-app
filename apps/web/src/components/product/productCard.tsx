@@ -1,6 +1,7 @@
 'use client'
 import { useAppDispatch } from "@/redux/hook"
 import { addedToCart } from "@/redux/slice/cartSlice"
+import { IProduct } from "@/type/product"
 
 export default function ProductCard({product}: {product: IProduct}) {
     const dispatch = useAppDispatch()

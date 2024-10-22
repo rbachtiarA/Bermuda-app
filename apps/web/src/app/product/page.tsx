@@ -1,4 +1,5 @@
 import ProductCard from "@/components/product/productCard"
+import { IProduct } from "@/type/product"
 
 export default function page() {
         
