@@ -10,6 +10,9 @@
     "test": "npx cypress verify & cypress run --component"
   },
   "dependencies": {
+    "@nextui-org/theme": "^2.2.11",
+    "@nextui-org/system": "^2.2.6",
+    "@nextui-org/navbar": "^2.0.37",
     "@nextui-org/react": "^2.4.8",
     "@reduxjs/toolkit": "^2.3.0",
     "cross-env": "^7.0.3",
