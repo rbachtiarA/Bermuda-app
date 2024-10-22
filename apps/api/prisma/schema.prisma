@@ -42,8 +42,8 @@ model Store {
   id           Int           @id @default(autoincrement())
   name         String
   location     String
-  latitude     Float
-  longitude    Float
+  latitude     Int
+  longitude    Int
   products     Product[]
   discounts    Discount[]
   salesReports SalesReport[]
@@ -57,7 +57,7 @@ model Product {
   slug        String
   name        String
   description String
-  price       Float
+  price       Int
   imageUrl    String?
   categories  ProductCategory[]
   stores      Store[]
@@ -79,8 +79,8 @@ model ProductCategory {
 model Discount {
   id           Int          @id @default(autoincrement())
   discountType DiscountType
-  value        Float
-  minPurchase  Float?
+  value        Int
+  minPurchase  Int?
   products     Product?     @relation(fields: [productId], references: [id])
   productId    Int?
   stores       Store        @relation(fields: [storeId], references: [id])
@@ -97,8 +97,8 @@ model Address {
   city        String
   state       String
   postalCode  String
-  latitude    Float?
-  longitude   Float?
+  latitude    Int?
+  longitude   Int?
   isPrimary   Boolean @default(false)
   Order       Order[]
 }
@@ -106,9 +106,9 @@ model Address {
 model ShippingOption {
   id             Int     @id @default(autoincrement())
   name           String
-  baseCost       Float
-  additionalCost Float
-  maxDistance    Float
+  baseCost       Int
+  additionalCost Int
+  maxDistance    Int
   Order          Order[]
 }
 
@@ -135,7 +135,7 @@ model SalesReport {
   id         Int   @id @default(autoincrement())
   store      Store @relation(fields: [storeId], references: [id])
   storeId    Int
-  totalSales Float
+  totalSales Int
   month      Int
   year       Int
 }
@@ -183,7 +183,7 @@ model Order {
   shippingOption   ShippingOption @relation(fields: [shippingOptionId], references: [id])
   shippingOptionId Int
   status           OrderStatus
-  totalAmount      Float
+  totalAmount      Int
   paymentProofUrl  String?
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
@@ -198,15 +198,15 @@ model OrderItem {
   product       Product @relation(fields: [productId], references: [id])
   productId     Int
   quantity      Int
-  price         Float
-  discountValue Float
+  price         Int
+  discountValue Int
 }
 
 model Payment {
   id            Int           @id @default(autoincrement())
   order         Order         @relation(fields: [orderId], references: [id])
   orderId       Int
-  amountPaid    Float
+  amountPaid    Int
   paymentMethod PaymentMethod
   isConfirmed   Boolean       @default(false)
   confirmedAt   DateTime?
