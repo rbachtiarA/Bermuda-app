@@ -1,8 +1,9 @@
+'use client'
 import {Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Input, DropdownItem, DropdownTrigger, Dropdown, DropdownMenu, Avatar} from "@nextui-org/react";
 import {SearchIcon} from "./SearchIcon";
 import SiteLogo from "./logo";
 
-export default function App() {
+export default function SiteNavbar() {
   return (
     <Navbar isBordered>
       <NavbarContent justify="start">
@@ -59,7 +60,7 @@ export default function App() {
               <p className="font-semibold">Signed in as</p>
               <p className="font-semibold">zoey@example.com</p>
             </DropdownItem>
-            <DropdownItem key="settings">My Settings</DropdownItem>
+            <DropdownItem key="settings" className="text-red-600">My Settings</DropdownItem>
             <DropdownItem key="team_settings">Team Settings</DropdownItem>
             <DropdownItem key="analytics">Analytics</DropdownItem>
             <DropdownItem key="system">System</DropdownItem>
