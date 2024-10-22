@@ -9,7 +9,17 @@ export const content = [
   './src/**/*.{js,ts,jsx,tsx,mdx}',
 ];
 export const theme = {
-  extend: {},
+  extend: {
+    container: {
+        center: true,
+        screens: {
+          sm: '100%',
+          md: '470px',
+          lg: '930px',
+          xl: '1110px'
+        }
+      }
+  },
 };
 export const darkMode = 'class';
 export const plugins = [nextui()];
