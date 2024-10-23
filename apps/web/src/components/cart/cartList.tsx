@@ -1,9 +1,15 @@
 'use client'
 import { useAppSelector } from "@/redux/hook"
 import CartCard from "./cartCard"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { getAllCartItems } from "@/lib/cart"
+import { ICartItem } from "@/type/cart"
 export default function CartList() {
-    const cart = useAppSelector(state => state.cart)
+    const user = useAppSelector(state => state.user)
+    console.log(user);
+    
+    // const cart = useAppSelector(state => state.cart)
+    const [cart, setCart] = useState<ICartItem[]>([])
     const [checkout, setCheckout] = useState<number[]>([])
     const onCheckout = (checked:boolean, productId: number) => {
         if(checked) {
@@ -12,6 +18,14 @@ export default function CartList() {
             setCheckout([...checkout.filter((val) => val !== productId )])
         }
     }
+
+    const getData = async () => {
+        const data = await getAllCartItems(user.id)
+        setCart(data)
+    }
+    useEffect(() => {
+        getData()
+    }, [])
 
     return (
         <section>
