@@ -1,12 +1,16 @@
 'use client'
-import { useAppDispatch } from "@/redux/hook"
+import { postCartItems } from "@/lib/cart"
+import { useAppDispatch, useAppSelector } from "@/redux/hook"
 import { addedToCart } from "@/redux/slice/cartSlice"
 import { IProduct } from "@/type/product"
 
 export default function ProductCard({product}: {product: IProduct}) {
     const dispatch = useAppDispatch()
-    const onClickedAddToCart = () => {
-        dispatch(addedToCart({id: 1, productId: product.id, quantity: 1, totalPrice: product.price}))
+    const user = useAppSelector(state => state.user)
+    const onClickedAddToCart = async () => {
+        // dispatch(addedToCart({id: 1, productId: product.id, quantity: 1, totalPrice: product.price}))
+        const res = await postCartItems(user.id, product.id, 1)
+        console.log( res.data);
     }
 
     return (

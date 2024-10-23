@@ -1,6 +1,7 @@
-import { getProductsData } from "@/lib/cart"
+
 import { IProduct } from "@/type/product"
 import ProductCard from "./productCard"
+import { getProductsData } from "@/lib/product"
 
 export default async function ProductList() {
     const productList:IProduct[] = await getProductsData()
