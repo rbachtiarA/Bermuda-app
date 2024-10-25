@@ -6,7 +6,12 @@ export interface ICartItem {
     productId: number
     totalPrice: number
     quantity: number
-    createdAt: string,
-    updatedAt: string,
-    product: IProduct | undefined
+    createdAt?: string,
+    updatedAt?: string,
+    product?: IProduct | undefined
+}
+
+export interface IUpdateQuantityCart {
+    productId: number
+    quantity: number
 }
