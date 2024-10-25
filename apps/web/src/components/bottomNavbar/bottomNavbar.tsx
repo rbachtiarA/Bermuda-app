@@ -13,8 +13,8 @@ const roboto = Roboto({
 export default function BottomNavbar () {
     const cart = useAppSelector(state => state.cart)
     return (
-        <div className="w-full fixed bottom-0" style={roboto.style}>
-            <ul className="grid grid-cols-3 divide-x divide-white text-center py-1 bg-slate-200 justify-center items-center">
+        <div className="w-full sticky bottom-0" style={roboto.style}>
+            <ul className="grid grid-cols-4 divide-x divide-white text-center py-1 bg-slate-200 justify-center items-center">
                 <li className="w-full">
                     <LinkButtonBottomNavbar label='Profile' href="/user" imgsrc="/icon-user-profile.svg" imgalt="user" />
                 </li>
@@ -23,6 +23,9 @@ export default function BottomNavbar () {
                 </li>
                 <li className="w-full">
                     <LinkButtonBottomNavbar label='Cart' href="/cart" imgsrc="/icon-shopping-cart.svg" imgalt="cart" component={<NotificationBottomNavbar data={cart}/>}/>
+                </li>
+                <li className="w-full">
+                    <LinkButtonBottomNavbar label='product' href="/product" imgsrc="/icon-shopping-cart.svg" imgalt="product"/>
                 </li>
             </ul>
         </div>

@@ -23,14 +23,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} relative`} >
-        <NextProviders>
-            <StoreProvider>
-              <Header />
-              {children}
-              <Footer />
-              <BottomNavbar />
-            </StoreProvider>
-        </NextProviders>
+            <NextProviders>
+                <StoreProvider>
+                  <Header />
+                  {children}
+                  <BottomNavbar />
+                </StoreProvider>
+            </NextProviders>
       </body>
     </html>
   );

@@ -10,7 +10,8 @@ export default function ProductCard({product}: {product: IProduct}) {
     const onClickedAddToCart = async () => {
         // dispatch(addedToCart({id: 1, productId: product.id, quantity: 1, totalPrice: product.price}))
         const res = await postCartItems(user.id, product.id, 1)
-        console.log( res.data);
+        res.data.data.quantity = 1
+        dispatch(addedToCart(res.data.data))
     }
 
     return (
