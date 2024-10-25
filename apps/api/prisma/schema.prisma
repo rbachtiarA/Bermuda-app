@@ -1,3 +1,12 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
 model User {
   id                Int       @id @default(autoincrement())
   name              String
@@ -11,7 +20,7 @@ model User {
   storeId           Int?
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
-  addresses         Address[] 
+  addresses         Address[]
   orders            Order[]
   cart              Cart?
 }
@@ -26,7 +35,7 @@ model Store {
   discounts    Discount[]
   salesReports SalesReport[]
   stockReports StockReport[]
-  users        User[] 
+  users        User[]
   stocks       Stock[]
 }
 
@@ -34,19 +43,19 @@ model Product {
   id            Int               @id @default(autoincrement())
   name          String
   description   String
-  price         Float
+  price         Int
   imageUrl      String?
   categories    ProductCategory[]
-  isRecommended Boolean
+  isRecommended Boolean           @default(false)
   slug          String
-  stores        Store[]           @relation("ProductStores") 
+  stores        Store[]           @relation("ProductStores")
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
-  cariItems     CartItem[]
+  cartItems     CartItem[]
   stock         Stock[]
   orderItems    OrderItem[]
   stockReports  StockReport[]
-  discounts     Discount[]        @relation("ProductDiscounts") 
+  discounts     Discount[]        @relation("ProductDiscounts")
 }
 
 model ProductCategory {
@@ -60,7 +69,7 @@ model Discount {
   discountType DiscountType
   value        Float
   minPurchase  Float?
-  products     Product[]    @relation("ProductDiscounts") 
+  products     Product[]    @relation("ProductDiscounts")
   store        Store        @relation(fields: [storeId], references: [id])
   storeId      Int
   createdAt    DateTime     @default(now())
@@ -77,8 +86,8 @@ model Address {
   postalCode  String
   latitude    Float?
   longitude   Float?
-  isPrimary   Boolean @default(false) 
-  orders      Order[] 
+  isPrimary   Boolean @default(false)
+  orders      Order[]
 
   @@unique(fields: [userId], name: "only_one_primary_address_per_user")
 }
@@ -89,7 +98,7 @@ model ShippingOption {
   baseCost       Float
   additionalCost Float
   maxDistance    Float
-  orders         Order[] 
+  orders         Order[]
 }
 
 model Stock {
@@ -143,12 +152,14 @@ model Cart {
 }
 
 model CartItem {
-  id        Int     @id @default(autoincrement())
-  cart      Cart    @relation(fields: [cartId], references: [id])
+  id        Int      @id @default(autoincrement())
+  cart      Cart     @relation(fields: [cartId], references: [id])
   cartId    Int
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
   productId Int
   quantity  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Order {
@@ -165,230 +176,7 @@ model Order {
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
   orderItems       OrderItem[]
-  payments         Payment[] 
-}
-
-model OrderItem {
-  id            Int     @id @default(autoincrement())
-  order         Order   @relation(fields: [orderId], references: [id])
-  orderId       Int
-  product       Product @relation(fields: [productId], references: [id])
-  productId     Int
-  quantity      Int
-  price         Float
-  discountValue Float
-}
-
-model Payment {
-  id            Int           @id @default(autoincrement())
-  order         Order         @relation(fields: [orderId], references: [id])
-  orderId       Int
-  amountPaid    Float
-  paymentMethod PaymentMethod
-  isConfirmed   Boolean       @default(false)
-  confirmedAt   DateTime?
-}
-
-enum UserRole {
-  SUPER_ADMIN
-  STORE_ADMIN
-  USER
-}
-
-enum DiscountType {
-  FLAT
-  PERCENTAGE
-  BUY_ONE_GET_ONE
-}
-
-enum ChangeType {
-  INCREASE
-  DECREASE
-}
-
-enum OrderStatus {
-  PendingPayment
-  Confirmed
-  Shipped
-  Completed
-  Cancelled
-}
-
-enum PaymentMethod {
-  Transfer
-  CreditCard
-  Gateway
-}
-
-model User {
-  id                Int       @id @default(autoincrement())
-  name              String
-  email             String    @unique
-  password          String
-  role              UserRole
-  avatarUrl         String?
-  isVerified        Boolean   @default(false)
-  verificationToken String?
-  store             Store?    @relation(fields: [storeId], references: [id])
-  storeId           Int?
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  address           Address[]
-  orders            Order[]
-  cart              Cart?
-}
-
-model Store {
-  id           Int           @id @default(autoincrement())
-  name         String
-  location     String
-  latitude     Float
-  longitude    Float
-  products     Product[]
-  discounts    Discount[]
-  salesReports SalesReport[]
-  stockReports StockReport[]
-  User         User[]
-  Stock        Stock[]
-}
-
-model Product {
-  id          Int               @id @default(autoincrement())
-  slug        String
-  name        String
-  description String
-  price       Float
-  imageUrl    String?
-  categories  ProductCategory[]
-  stores      Store[]
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
-  stock       Stock[]
-  orderItems  OrderItem[]
-  StockReport StockReport[]
-  Discount    Discount[]
-  CartItem    CartItem[]
-}
-
-model ProductCategory {
-  id       Int       @id @default(autoincrement())
-  name     String    @unique
-  products Product[]
-}
-
-model Discount {
-  id           Int          @id @default(autoincrement())
-  discountType DiscountType
-  value        Float
-  minPurchase  Float?
-  products     Product?     @relation(fields: [productId], references: [id])
-  productId    Int?
-  stores       Store        @relation(fields: [storeId], references: [id])
-  storeId      Int
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-}
-
-model Address {
-  id          Int     @id @default(autoincrement())
-  user        User    @relation(fields: [userId], references: [id])
-  userId      Int
-  addressLine String
-  city        String
-  state       String
-  postalCode  String
-  latitude    Float?
-  longitude   Float?
-  isPrimary   Boolean @default(false)
-  Order       Order[]
-}
-
-model ShippingOption {
-  id             Int     @id @default(autoincrement())
-  name           String
-  baseCost       Float
-  additionalCost Float
-  maxDistance    Float
-  Order          Order[]
-}
-
-model Stock {
-  id           Int            @id @default(autoincrement())
-  quantity     Int
-  store        Store          @relation(fields: [storeId], references: [id])
-  storeId      Int
-  product      Product        @relation(fields: [productId], references: [id])
-  productId    Int
-  StockHistory StockHistory[]
-}
-
-model StockHistory {
-  id         Int        @id @default(autoincrement())
-  changeType ChangeType
-  quantity   Int
-  createdAt  DateTime   @default(now())
-  stock      Stock      @relation(fields: [stockId], references: [id])
-  stockId    Int
-}
-
-model SalesReport {
-  id         Int   @id @default(autoincrement())
-  store      Store @relation(fields: [storeId], references: [id])
-  storeId    Int
-  totalSales Float
-  month      Int
-  year       Int
-}
-
-model StockReport {
-  id           Int     @id @default(autoincrement())
-  store        Store   @relation(fields: [storeId], references: [id])
-  storeId      Int
-  product      Product @relation(fields: [productId], references: [id])
-  productId    Int
-  totalAdded   Int
-  totalRemoved Int
-  finalStock   Int
-  month        Int
-  year         Int
-}
-
-model Cart {
-  id        Int        @id @default(autoincrement())
-  user      User       @relation(fields: [userId], references: [id])
-  userId    Int        @unique
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  CartItem  CartItem[]
-}
-
-model CartItem {
-  id         Int      @id @default(autoincrement())
-  cart       Cart     @relation(fields: [cartId], references: [id])
-  cartId     Int
-  product    Product  @relation(fields: [productId], references: [id])
-  productId  Int
-  totalPrice Int
-  quantity   Int
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-}
-
-model Order {
-  id               Int            @id @default(autoincrement())
-  user             User           @relation(fields: [userId], references: [id])
-  userId           Int
-  address          Address        @relation(fields: [addressId], references: [id])
-  addressId        Int
-  shippingOption   ShippingOption @relation(fields: [shippingOptionId], references: [id])
-  shippingOptionId Int
-  status           OrderStatus
-  totalAmount      Float
-  paymentProofUrl  String?
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-  orderItems       OrderItem[]
-  Payment          Payment[]
+  payments         Payment[]
 }
 
 model OrderItem {
