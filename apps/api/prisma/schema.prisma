@@ -1,3 +1,12 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
 model User {
   id                Int       @id @default(autoincrement())
   name              String
@@ -34,15 +43,15 @@ model Product {
   id            Int               @id @default(autoincrement())
   name          String
   description   String
-  price         Float
+  price         Int
   imageUrl      String?
   categories    ProductCategory[]
-  isRecommended Boolean
+  isRecommended Boolean           @default(false)
   slug          String
   stores        Store[]           @relation("ProductStores")
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
-  cariItems     CartItem[]
+  cartItems     CartItem[]
   stock         Stock[]
   orderItems    OrderItem[]
   stockReports  StockReport[]
@@ -143,12 +152,14 @@ model Cart {
 }
 
 model CartItem {
-  id        Int     @id @default(autoincrement())
-  cart      Cart    @relation(fields: [cartId], references: [id])
+  id        Int      @id @default(autoincrement())
+  cart      Cart     @relation(fields: [cartId], references: [id])
   cartId    Int
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
   productId Int
   quantity  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Order {

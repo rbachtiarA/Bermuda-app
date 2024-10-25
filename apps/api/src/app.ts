@@ -54,7 +54,7 @@ export default class App {
   }
 
   private routes(): void {
-    const sampleRouter = new SampleRouter();
+    // const sampleRouter = new SampleRouter();
     const userRouter = new UserRouter();
     const productRouter = new ProductRouter();
     const cartRouter = new CartRouter()
@@ -63,7 +63,7 @@ export default class App {
       res.send(`Hello, Purwadhika Student API!`);
     });
 
-    this.app.use('/api/samples', sampleRouter.getRouter());
+    // this.app.use('/api/samples', sampleRouter.getRouter());
     this.app.use('/api/users', userRouter.getRouter());
     this.app.use('/api/product', productRouter.getRouter());
     this.app.use('/api/cart', cartRouter.getRouter());
