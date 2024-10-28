@@ -32,7 +32,8 @@ export class CartController {
 
         const cartData = await prisma.cartItem.findMany({
           include: {
-            product:true
+            product:true,
+
           },
           where: {cartId: userCart.cart?.id}
           })
@@ -55,7 +56,7 @@ export class CartController {
           id: +userId
         }
       })
-      if (!user?.cart) throw 'User not found'
+      if (!user?.cart) throw 'User / Cart not found'
 
       //check is product Id, already exist
       const productInCart = await prisma.cartItem.findFirst({
@@ -146,6 +147,104 @@ export class CartController {
       })
 
       return res.status(200).send({status: 'ok', data: deletedItem})
+    } catch (error) {
+      return res.status(400).send({status: 'error', msg: error})
+    }
+  }
+
+  async getCheckoutByUserId(req:Request, res:Response) {
+
+    // this variable should change, when middleware auth is implemented req.user
+    const {userId} = req.params
+    const data = await prisma.checkout.findUnique({
+      select: { CartItem: {
+        include: { product: true }
+      } },
+      where: {
+        userId: +userId
+      }
+    })
+
+    return res.status(200).send({status: 'ok', data: data})
+  }
+  // update cartItem checkout and remove Checkout from cart Item
+  async updateCheckoutCartItem(req: Request, res: Response) {
+    try {
+      //change variable userId to auth system, selectIds collection of selected Item
+      const { userId, selectedIds } = req.body
+
+      //verify is userId valid,and then return checkoutId
+      const userCheckoutId = await prisma.user.findUnique({
+        where: { id: +userId},
+        select: {
+          Checkout: {
+            select: {
+              id: true
+            }
+          }
+        }
+      })
+      if(!userCheckoutId) throw 'Invalid user'
+
+      //update every cart item inside user cart checkout to null
+      const previousSelectedItem = await prisma.checkout.update({
+        where: {
+          id: userCheckoutId.Checkout?.id
+        },
+        data: {
+          CartItem: {
+            set: []
+          }
+        } 
+
+        }
+      )
+
+      //update cartItem which id inside selectedIds
+      const updatedData = await prisma.cartItem.updateMany({
+        where: {
+          id: {
+            in: selectedIds
+          }
+        },
+        data: {
+          checkoutId: userCheckoutId.Checkout?.id
+        }
+      })
+
+      return res.status(200).send({status: 'ok', msg: 'selectedIds updated'})
+    } catch (error) {
+      return res.status(400).send({status: 'error', msg: error})
+    }
+  }
+
+  async removeCheckoutCartItem(req: Request, res: Response) {
+    try {
+       //change variable userId to auth system, selectIds collection of selected Item
+       const { userId } = req.body
+
+       //verify is userId valid,and then return checkoutId
+       const userCheckoutId = await prisma.user.findUnique({
+         where: { id: +userId},
+         select: {
+           Checkout: {
+             select: {
+               id: true
+             }
+           }
+         }
+       })
+       if(!userCheckoutId) throw 'Invalid user'
+
+       //remove cart items from cart if checkout success
+       const removedItems = await prisma.cartItem.deleteMany({
+        where: {
+          checkoutId: userCheckoutId.Checkout?.id
+        }
+       })
+        
+       
+       return res.status(200).send({status: 'ok', msg: 'cart item removed, checkout success'})
     } catch (error) {
       return res.status(400).send({status: 'error', msg: error})
     }
