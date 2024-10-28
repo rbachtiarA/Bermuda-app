@@ -1,5 +1,4 @@
 import { CartController } from '@/controllers/cart.controller';
-import { SampleController } from '@/controllers/sample.controller';
 import { Router } from 'express';
 
 export class CartRouter {
@@ -18,6 +17,11 @@ export class CartRouter {
     this.router.put('/', this.cartController.updateQuantityCartItem);
     this.router.delete('/remove/:cartItemId', this.cartController.deleteCartItem);
     this.router.get('/:userId', this.cartController.getCartsItemByIdCart);
+    this.router.get('/checkout/:userId', this.cartController.getCheckoutByUserId);
+    // when selected cart ready to checkout
+    this.router.post('/checkout', this.cartController.updateCheckoutCartItem);
+    // when checkout success, should generate payment, order with list order item
+    this.router.post('/checkoutSuccess', this.cartController.removeCheckoutCartItem);
   }
 
   getRouter(): Router {

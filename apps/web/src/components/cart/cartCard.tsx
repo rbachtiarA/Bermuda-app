@@ -10,7 +10,7 @@ import { deleteCartItem } from "@/lib/cart";
 import CartQuantityInput from "./cartQuantityInput";
 import currencyRupiah from "@/lib/rupiahCurrency";
 
-export default function CartCard({cart, onCheckout}: {cart: ICartItem, onCheckout:any}) {
+export default function CartCard({cart, onSelectCartItem}: {cart: ICartItem, onSelectCartItem:any}) {
     const checkRef = useRef<HTMLInputElement>(null)
     const [isChecked, setIsChecked] = useState(false)
     const dispatch = useAppDispatch()
@@ -19,7 +19,7 @@ export default function CartCard({cart, onCheckout}: {cart: ICartItem, onCheckou
     const onPressedCard = () => {
         const checked = !isChecked
         setIsChecked(checked)
-        onCheckout(checked, cart.id)
+        onSelectCartItem(checked, cart.id)
     }
 
     const onRemovedItem = async (cartItemId: number) => {
@@ -27,7 +27,7 @@ export default function CartCard({cart, onCheckout}: {cart: ICartItem, onCheckou
         const { data } = await deleteCartItem(cartItemId)
         dispatch(removedFromCart(data.data))
         setIsChecked(checked)
-        onCheckout(checked, cart.productId)
+        onSelectCartItem(checked, cart.productId)
     }
 
 const nextUICardV2: React.ReactNode = 

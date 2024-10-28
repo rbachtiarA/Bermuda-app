@@ -13,6 +13,8 @@ export class UserRouter {
 
   private initializeRoutes(): void {
     this.router.get('/', this.userController.getUsers);
+    this.router.get('/generate-dummy', this.userController.createUsersDummy);
+    this.router.get('/userAddress/:userId', this.userController.getUserAddressess);
   }
 
   getRouter(): Router {
