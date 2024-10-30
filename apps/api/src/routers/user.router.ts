@@ -1,0 +1,26 @@
+import { UserController } from '@/controllers/user.controller';
+import { checkSuperAdmin, verifyToken } from '@/middleware/token';
+import { Router } from 'express';
+
+export class UserRouter {
+  private router: Router;
+  private userController: UserController;
+
+  constructor() {
+    this.userController = new UserController();
+    this.router = Router();
+    this.initializeRoutes();
+  }
+
+  private initializeRoutes(): void {
+    this.router.get('/', verifyToken, checkSuperAdmin, this.userController.getUsers);
+    this.router.get('/:id', this.userController.getUserById);
+    this.router.post('/register', this.userController.registerUser);
+    this.router.post('/data-register', this.userController.verifyUser)
+    this.router.post('/login', this.userController.loginUser);
+  }
+
+  getRouter(): Router {
+    return this.router;
+  }
+}
