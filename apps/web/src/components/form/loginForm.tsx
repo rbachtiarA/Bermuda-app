@@ -1,4 +1,5 @@
 'use client';
+import { createToken } from '@/lib/server';
 import { loginUser } from '@/lib/user.handler';
 import { ILoginData } from '@/type/user';
 import { Formik, Form, Field, FormikProps, FormikHelpers } from 'formik';
@@ -28,6 +29,7 @@ const LoginForm: React.FC = () => {
       if (!ok) throw result.msg;
 
       action.resetForm();
+      createToken(result.token)
       router.push('/');
     } catch (err) {
       setLoginError('Email atau password salah, silahkan coba lagi');
