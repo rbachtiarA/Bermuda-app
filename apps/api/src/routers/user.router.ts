@@ -1,4 +1,5 @@
 import { UserController } from '@/controllers/user.controller';
+import { checkSuperAdmin, verifyToken } from '@/middleware/token';
 import { Router } from 'express';
 
 export class UserRouter {
@@ -14,7 +15,10 @@ export class UserRouter {
   private initializeRoutes(): void {
     this.router.get('/', this.userController.getUsers);
     this.router.get('/generate-dummy', this.userController.createUsersDummy);
-    this.router.get('/userAddress/:userId', this.userController.getUserAddressess);
+    this.router.get(
+      '/userAddress/:userId',
+      this.userController.getUserAddressess,
+    );
   }
 
   getRouter(): Router {

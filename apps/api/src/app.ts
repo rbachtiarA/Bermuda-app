@@ -9,7 +9,6 @@ import express, {
 } from 'express';
 import cors from 'cors';
 import { PORT } from './config';
-import { SampleRouter } from './routers/sample.router';
 import { UserRouter } from './routers/user.router';
 import { ProductRouter } from './routers/product.router';
 import { CartRouter } from './routers/cart.router';
@@ -57,7 +56,7 @@ export default class App {
     // const sampleRouter = new SampleRouter();
     const userRouter = new UserRouter();
     const productRouter = new ProductRouter();
-    const cartRouter = new CartRouter()
+    const cartRouter = new CartRouter();
 
     this.app.get('/api', (req: Request, res: Response) => {
       res.send(`Hello, Purwadhika Student API!`);
@@ -67,7 +66,6 @@ export default class App {
     this.app.use('/api/users', userRouter.getRouter());
     this.app.use('/api/product', productRouter.getRouter());
     this.app.use('/api/cart', cartRouter.getRouter());
-    
   }
 
   public start(): void {

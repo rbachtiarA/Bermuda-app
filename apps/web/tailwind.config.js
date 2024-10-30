@@ -9,16 +9,23 @@ export const content = [
 ];
 export const theme = {
   extend: {
-    container: {
-        center: true,
-        screens: {
-          sm: '100%',
+    screen: {
+      sm: '100%',
           md: '470px',
           lg: '930px',
           xl: '1110px'
+    },
+    container: {
+        center: true,
+        screens: {
+          sm: '576px',
+          md: '768px',
+          lg: '992px',
+          xl: '1200px'
         }
       }
   },
 };
 export const darkMode = 'class';
 export const plugins = [nextui()];
+>>>>>>>>> Temporary merge branch 2
