@@ -9,11 +9,11 @@ import { useAppDispatch, useAppSelector } from "@/redux/hook";
 import { updatedCartQuantity } from "@/redux/slice/cartSlice";
 import { useDebounce } from "use-debounce";
 
-export default function CartQuantityInput({defaultQuantity, cart}: { cart: ICartItem,defaultQuantity: number }) {
+export default function CartQuantityInput({cart}: { cart: ICartItem}) {
     const user = useAppSelector(state => state.user)
     const dispatch = useAppDispatch()
-    
-    const [quantity, setQuantity] = useState(defaultQuantity)
+    const productStock = cart.product?.stock![0].quantity || 10
+    const [quantity, setQuantity] = useState(cart.quantity)
     const [debouncedQuantity] = useDebounce(quantity, 1000)
     // isDebouncing for css purpose, when isDebounce it will change input bg color till debouncing finish
     const [isDebouncing, setIsDebouncing] = useState(false)
@@ -21,7 +21,7 @@ export default function CartQuantityInput({defaultQuantity, cart}: { cart: ICart
     // minus / plus button is pressed add value to quantity
     const onPressQuantityButton = (val:number) => {
         const tempQuantity = quantity+val
-        if(tempQuantity > 0) {
+        if(tempQuantity > 0 && quantity <= productStock) {
             setQuantity(tempQuantity)
         }
     }
@@ -32,9 +32,9 @@ export default function CartQuantityInput({defaultQuantity, cart}: { cart: ICart
         setQuantity(updatedQuantity)            
     }
 
-    // if input change manually into 0, will reset to 1 when not focut
-    const onBlurQuantityZero = () => {
-        if(quantity === 0) {
+    // if input change manually into 0 or exceed stock, will reset to 1 when not focus
+    const onBlurQuantity = () => {
+        if(quantity === 0 || quantity > productStock ) {
             setQuantity(1)
         }
     }
@@ -54,7 +54,8 @@ export default function CartQuantityInput({defaultQuantity, cart}: { cart: ICart
                 dispatch(updatedCartQuantity({productId, quantity: debouncedQuantity}))
             }
         }
-        if(debouncedQuantity > 0) {
+
+        if(debouncedQuantity > 0 && debouncedQuantity <= productStock) {
             updatedQuantity()
         }
         setIsDebouncing(false)
@@ -62,12 +63,17 @@ export default function CartQuantityInput({defaultQuantity, cart}: { cart: ICart
     }, [debouncedQuantity])
 
     return (
-        <div className="flex gap-1 w-full justify-end">
-            <Button size="sm" color={!isDebouncing? 'default': 'success'} isDisabled={quantity <= 1} isIconOnly onPress={() => onPressQuantityButton(-1)}><MinusIcon /></Button>
-            <Input size="sm" type="number" color={!isDebouncing? 'default': 'success'}
-                onChange={(e) => onChangeQuantityInput(e)} onBlur={onBlurQuantityZero} 
-                value={`${quantity}`} min={1} className="w-[50px] no-arrow-input" />
-            <Button size="sm" color={!isDebouncing? 'default': 'success'} isIconOnly onPress={() => onPressQuantityButton(1)}><PlusIcon /></Button>
+        <div className="flex flex-col md:flex-row justify-center items-center">
+            <div className="flex w-full justify-end">
+                <p className="text-[10px]"><span>Sisa item: </span> {productStock}</p>
+            </div>
+            <div className="flex gap-1 w-full justify-end">
+                <Button size="sm" color={!isDebouncing? 'default': 'success'} isDisabled={quantity <= 1} isIconOnly onPress={() => onPressQuantityButton(-1)}><MinusIcon /></Button>
+                <Input size="sm" type="number" color={!isDebouncing? 'default': 'success'}
+                    onChange={(e) => onChangeQuantityInput(e)} onBlur={onBlurQuantity}
+                    value={`${quantity}`} min={1} className="w-[50px] no-arrow-input" />
+                <Button size="sm" color={!isDebouncing? 'default': 'success'} isDisabled={quantity >= productStock } isIconOnly onPress={() => onPressQuantityButton(1)}><PlusIcon /></Button>
+            </div>
         </div>
     )
 }

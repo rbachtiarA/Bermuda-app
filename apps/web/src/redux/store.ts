@@ -8,6 +8,7 @@ import {
     PERSIST,
     REGISTER,
 } from "redux-persist";
+import storeReducer from "./slice/storeSlice";
 
 const createNoopStorage = () => {
     return {
@@ -36,7 +37,8 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
     user: userReducer,
-    cart: cartReducer
+    cart: cartReducer,
+    store: storeReducer
 });
 
 const makeConfiguredStore = () =>

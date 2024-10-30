@@ -9,6 +9,7 @@ import { redirect, useRouter } from "next/navigation"
 export default function CartList() {
     const user = useAppSelector(state => state.user)
     const cart = useAppSelector(state => state.cart)
+    const store = useAppSelector(state => state.store)
     const dispatch = useAppDispatch()    
     const [checkout, setCheckout] = useState<number[]>([])
     const  router = useRouter()
@@ -34,21 +35,22 @@ export default function CartList() {
 
     useEffect(() => {
         const getData = async () => {
-            const data = await getAllCartItems(user.id)
-            console.log('fetching...');
+            const data = await getAllCartItems(user.id, store.id)
+            console.log(data);
             dispatch(updatedCartFromDatabase(data))
         }
 
         getData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return (
-        <section className="grid md:grid-cols-[4fr_2fr] lg:grid-cols-[1fr_4fr_2fr] w-full max-w-[1500px] md:px-2">
+        <section className="grid grid-cols-1 md:grid-cols-[4fr_2fr] lg:grid-cols-[1fr_4fr_2fr] w-full max-w-[1500px] md:px-2">
             <div className="lg:col-start-2">
                 {cart.length === 0 && <p>Cart is Empty</p>}
                 <ul className="grid grid-rows-[auto] gap-y-4 p-2 mt-2">
-                    {cart.map((item, idx) => (
-                        <CartCard key={idx} cart={item} onSelectCartItem={onSelectCartItem}/>
+                    {cart.map((cartItem, idx) => (
+                        <CartCard key={idx} cart={cartItem} onSelectCartItem={onSelectCartItem}/>
                         
                     ))}
                 </ul>

@@ -1,6 +1,6 @@
-export const getProductsData = async () => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}product`, {next: {revalidate: 1}})
-    const { status, data } = await res.json()
+export const getProductsData = async (storeId: number) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}store/stocks/${storeId}`, {next: {revalidate: 1}})
+    const { status, stock } = await res.json()
     
-    return data
+    return stock
 }

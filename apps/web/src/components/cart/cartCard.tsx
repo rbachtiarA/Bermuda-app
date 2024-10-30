@@ -29,8 +29,8 @@ export default function CartCard({cart, onSelectCartItem}: {cart: ICartItem, onS
         setIsChecked(checked)
         onSelectCartItem(checked, cart.productId)
     }
-
-const nextUICardV2: React.ReactNode = 
+    
+    const nextUICardV2: React.ReactNode = 
     <Card isHoverable className="w-full">
         <CardBody >
             <div className="flex gap-4">
@@ -42,12 +42,12 @@ const nextUICardV2: React.ReactNode =
                     </div>
                     <div className="flex flex-col w-full h-full justify-between">
                         <div>
-                            <p className="text-wrap">{product?.name || 'Product Name Null'}</p>
+                            <p className="text-balance max-w-[200px] md:max-w-none">{product?.name || 'Product Name Null'}</p>
                             <p className="font-extrabold">{currencyRupiah(product?.price!) || 'Product Price Null'}</p>
                         </div>
-                        <div className="w-full grid grid-cols-2">
+                        <div className="w-full grid grid-cols-2 items-end">
                             <Button color="danger" onPress={() => onRemovedItem(cart.id)} size="sm" isIconOnly><Image src={'/icon-trashcan.svg'} alt="delete" width={24} height={24} /></Button>
-                            <CartQuantityInput defaultQuantity={cart.quantity} cart={cart}/>
+                            <CartQuantityInput cart={cart}/>
                         </div>
                     </div>
                 </div>
