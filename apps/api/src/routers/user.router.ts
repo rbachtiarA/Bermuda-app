@@ -18,6 +18,8 @@ export class UserRouter {
     this.router.post('/register', this.userController.registerUser);
     this.router.post('/data-register', this.userController.verifyUser)
     this.router.post('/login', this.userController.loginUser);
+    // this.router.get('/generate-dummy', this.userController.createUsersDummy);
+    // this.router.get('/userAddress/:userId', this.userController.getUserAddressess);
   }
 
   getRouter(): Router {

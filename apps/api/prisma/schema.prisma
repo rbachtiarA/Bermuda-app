@@ -32,6 +32,7 @@ model User {
   givenReferrals    Discount[] @relation("ReferralGiver") //diskon untuk pemberi referal
   receivedReferrals Discount[] @relation("ReferralUser") //diskon untuk pengguna referal
   cart              Cart?
+  checkout Checkout?
 }
 
 model Store {
@@ -40,30 +41,31 @@ model Store {
   location     String
   latitude     Float
   longitude    Float
-  products     Product[]
+  products     Product[]     @relation("ProductStores")
   discounts    Discount[]
   salesReports SalesReport[]
   stockReports StockReport[]
-  User         User[]
-  Stock        Stock[]
+  users        User[]
+  stocks       Stock[]
 }
 
 model Product {
-  id          Int               @id @default(autoincrement())
-  slug        String
-  name        String
-  description String
-  price       Float
-  imageUrl    String?
-  categories  ProductCategory[]
-  stores      Store[]
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
-  stock       Stock[]
-  orderItems  OrderItem[]
-  StockReport StockReport[]
-  Discount    Discount[]
-  CartItem    CartItem[]
+  id            Int               @id @default(autoincrement())
+  name          String
+  description   String
+  price         Int
+  imageUrl      String?
+  categories    ProductCategory[]
+  isRecommended Boolean           @default(false)
+  slug          String
+  stores        Store[]           @relation("ProductStores")
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  cartItems     CartItem[]
+  stock         Stock[]
+  orderItems    OrderItem[]
+  stockReports  StockReport[]
+  discounts     Discount[]        @relation("ProductDiscounts")
 }
 
 model ProductCategory {
@@ -77,7 +79,7 @@ model Discount {
   discountType DiscountType
   value        Float
   minPurchase  Float?
-  products     Product?     @relation(fields: [productId], references: [id])
+  products     Product?     @relation("ProductDiscounts", fields: [productId], references: [id])
   productId    Int?
   stores       Store        @relation(fields: [storeId], references: [id])
   storeId      Int
@@ -87,6 +89,25 @@ model Discount {
   userId       Int?
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
+}
+
+model ShippingOption {
+  id             Int     @id @default(autoincrement())
+  name           String
+  baseCost       Float
+  additionalCost Float
+  maxDistance    Float
+  orders         Order[]
+}
+
+model Stock {
+  id           Int            @id @default(autoincrement())
+  quantity     Int
+  store        Store          @relation(fields: [storeId], references: [id])
+  storeId      Int
+  product      Product        @relation(fields: [productId], references: [id])
+  productId    Int
+  stockHistory StockHistory[]
 }
 
 model Address {
@@ -100,26 +121,7 @@ model Address {
   latitude    Float?
   longitude   Float?
   isPrimary   Boolean @default(false)
-  Order       Order[]
-}
-
-model ShippingOption {
-  id             Int     @id @default(autoincrement())
-  name           String
-  baseCost       Float
-  additionalCost Float
-  maxDistance    Float
-  Order          Order[]
-}
-
-model Stock {
-  id           Int            @id @default(autoincrement())
-  quantity     Int
-  store        Store          @relation(fields: [storeId], references: [id])
-  storeId      Int
-  product      Product        @relation(fields: [productId], references: [id])
-  productId    Int
-  StockHistory StockHistory[]
+  orders      Order[]
 }
 
 model StockHistory {
@@ -166,20 +168,26 @@ model CartItem {
   id         Int      @id @default(autoincrement())
   cart       Cart     @relation(fields: [cartId], references: [id])
   cartId     Int
-  product    Product  @relation(fields: [productId], references: [id])
+  product    Product   @relation(fields: [productId], references: [id])
   productId  Int
-  totalPrice Int
   quantity   Int
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  Checkout   Checkout? @relation(fields: [checkoutId], references: [id])
+  checkoutId Int?
+}
+
+model Checkout {
+  id       Int        @id @default(autoincrement())
+  user     User       @relation(fields: [userId], references: [id])
+  userId   Int        @unique
+  CartItem CartItem[]
 }
 
 model Order {
-  id               Int            @id @default(autoincrement())
-  user             User           @relation(fields: [userId], references: [id])
-  userId           Int
-  address          Address        @relation(fields: [addressId], references: [id])
-  addressId        Int
+  id     Int  @id @default(autoincrement())
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
   shippingOption   ShippingOption @relation(fields: [shippingOptionId], references: [id])
   shippingOptionId Int
   status           OrderStatus
@@ -188,7 +196,9 @@ model Order {
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
   orderItems       OrderItem[]
-  Payment          Payment[]
+  payments         Payment[]
+  Address          Address        @relation(fields: [addressId], references: [id])
+  addressId        Int
 }
 
 model OrderItem {
