@@ -177,7 +177,7 @@ export class CartController {
       const userCheckoutId = await prisma.user.findUnique({
         where: { id: +userId},
         select: {
-          Checkout: {
+          checkout: {
             select: {
               id: true
             }
@@ -189,7 +189,7 @@ export class CartController {
       //update every cart item inside user cart checkout to null
       const previousSelectedItem = await prisma.checkout.update({
         where: {
-          id: userCheckoutId.Checkout?.id
+          id: userCheckoutId.checkout?.id
         },
         data: {
           CartItem: {
@@ -208,7 +208,7 @@ export class CartController {
           }
         },
         data: {
-          checkoutId: userCheckoutId.Checkout?.id
+          checkoutId: userCheckoutId.checkout?.id
         }
       })
 
@@ -227,7 +227,7 @@ export class CartController {
        const userCheckoutId = await prisma.user.findUnique({
          where: { id: +userId},
          select: {
-           Checkout: {
+           checkout: {
              select: {
                id: true
              }
@@ -239,7 +239,7 @@ export class CartController {
        //remove cart items from cart if checkout success
        const removedItems = await prisma.cartItem.deleteMany({
         where: {
-          checkoutId: userCheckoutId.Checkout?.id
+          checkoutId: userCheckoutId.checkout?.id
         }
        })
         

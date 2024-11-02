@@ -8,5 +8,5 @@ export async function createToken(token: string) {
 }
 
 export async function getToken() {
-    return cookies().get('token')
+    return cookies().get('token')?.value
 }

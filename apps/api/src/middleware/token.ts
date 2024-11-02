@@ -12,7 +12,7 @@ export const verifyToken = async ( req: Request, res: Response, next: NextFuncti
         if (!token) throw "token empty"
 
         const verifiedToken = verify(token, process.env.SECRET_JWT!)
-        req.userAuth = verifiedToken as IUser 
+        req.user = verifiedToken as IUser 
         
         next()
     } catch (err) {
@@ -25,7 +25,7 @@ export const verifyToken = async ( req: Request, res: Response, next: NextFuncti
 
 export const checkSuperAdmin = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        if (req.userAuth?.role !== 'SUPER_ADMIN') throw "unauthorized!"
+        if (req.user?.role !== 'SUPER_ADMIN') throw "unauthorized!"
 
         next()
     } catch (err) {
@@ -38,7 +38,7 @@ export const checkSuperAdmin = async (req: Request, res: Response, next: NextFun
 
 export const checkStoreAdmin = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        if (req.userAuth?.role !== 'STORE_ADMIN') throw "unauthorized!"
+        if (req.user?.role !== 'STORE_ADMIN') throw "unauthorized!"
 
         next()
     } catch (err) {

@@ -1,7 +1,6 @@
 'use client';
 import {
   Navbar,
-  NavbarBrand,
   NavbarContent,
   NavbarItem,
   Link,
@@ -13,9 +12,8 @@ import {
   Avatar,
 } from '@nextui-org/react';
 import { SearchIcon } from './searchIcon';
-import SiteLogo from './logo';
 
-export default function SiteNavbar() {
+ export default function SiteNavbar() {
   return (
     <Navbar isBordered>
       <NavbarContent justify="start">
@@ -52,45 +50,9 @@ export default function SiteNavbar() {
           startContent={<SearchIcon size={18} />}
           type="search"
         />
-        <Dropdown placement="bottom-end">
-          <DropdownTrigger>
-            <Avatar
-              isBordered
-              as="button"
-              className="transition-transform"
-              color="secondary"
-              name="Jason Hughes"
-              size="sm"
-              src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
-            />
-          </DropdownTrigger>
-          <DropdownMenu aria-label="Profile Actions" variant="flat">
-            <DropdownItem key="profile" className="h-14 gap-2">
-              <p className="font-semibold">Signed in as</p>
-              <p className="font-semibold">zoey@example.com</p>
-            </DropdownItem>
-            <DropdownItem key="settings" className="text-red-600">
-              My Settings
-            </DropdownItem>
-            <DropdownItem key="team_settings">Team Settings</DropdownItem>
-            <DropdownItem key="analytics">Analytics</DropdownItem>
-            <DropdownItem key="system">System</DropdownItem>
-            <DropdownItem key="configurations">Configurations</DropdownItem>
-            <DropdownItem key="help_and_feedback">Help & Feedback</DropdownItem>
-            <DropdownItem key="logout" color="danger">
-              Log Out
-            </DropdownItem>
-          </DropdownMenu>
-        </Dropdown>
+        
       </NavbarContent>
-      <div className='gap-2'>
-        <button className="text-gray-700 hover:bg-red-500 hover:text-white p-1 rounded-md hover:shadow-md">
-          <Link href="/register">Daftar</Link>
-        </button>
-        <button className="text-gray-700 hover:bg-red-500 hover:text-white p-1 rounded-md hover:shadow-md">
-          <Link href="/login">Masuk</Link>
-        </button>
-      </div>
+      
     </Navbar>
   );
 }

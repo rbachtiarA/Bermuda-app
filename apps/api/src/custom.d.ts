@@ -1,10 +1,10 @@
-type IUserAuth = {
+type IUser = {
     id: number,
     role: string
 }
 
 declare namespace Express {
     export interface Request {
-        userAuth?: IUserAuth
+        user?: IUser
     }
 }

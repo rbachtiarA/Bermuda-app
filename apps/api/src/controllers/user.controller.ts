@@ -4,6 +4,9 @@ import { sign, verify} from 'jsonwebtoken'
 import { transporter } from '@/helpers/nodemailer';
 import { compare, genSalt, hash} from 'bcrypt'
 import { generateReferralCode } from '@/helpers/referral';
+import path from 'path';
+import fs from 'fs'
+import handlebars from 'handlebars';
 
 export class UserController {
   async getUsers(req: Request, res: Response) {
@@ -50,10 +53,17 @@ export class UserController {
         }
       });
 
+      const templatePath = path.join(__dirname, "../templates", "verification.hbs")
+      const templateSource = fs.readFileSync(templatePath, 'utf-8')
+      const compiledTemplate = handlebars.compile(templateSource);
+      const html = compiledTemplate({
+        link: `${process.env.BASE_URL}/verify?token=${verificationToken}`
+      })
+
       await transporter.sendMail({
         to: email,
-        subject: 'Email Verifikasi',
-        text: `Klik link ini untuk verifikasi akun: ${process.env.BASE_URL}/verify?token=${verificationToken}`,
+        subject: 'Sealamat Datang di BertigaMart',
+        html: html
       })
 
       res.status(201).send({ 
@@ -134,46 +144,67 @@ export class UserController {
 
 
   //for testing
-  // async createUsersDummy(req: Request, res: Response) {
-  //   const user = await prisma.user.create({
-  //     data: {
-  //       name: 'Dummy',
-  //       email: 'Dummy',
-  //       password: 'asdasdasd',
-  //       role: 'USER',
+  async createUsersDummy(req: Request, res: Response) {
+    const user = await prisma.user.create({
+      data: {
+        name: 'Dummy',
+        email: 'Dummy',
+        password: 'asdasdasd',
+        role: 'USER',
 
-  //       //create empty checkout
-  //       Checkout: {
-  //         create: {}
-  //       },
+        //create empty checkout
+        checkout: {
+          create: {}
+        },
 
-  //       //create empty cart
-  //       cart: { 
-  //         create: {}
-  //       }
-  //     }
-  //   })
+        //create empty cart
+        cart: { 
+          create: {}
+        }
+      }
+    })
 
-  //   return res.status(201).send({status: 'ok', msg: user})
-  // }
+    return res.status(201).send({status: 'ok', msg: user})
+  }
 
-  // async getUserAddressess(req: Request, res: Response) {
-  //   try {
+  async getUserAddressess(req: Request, res: Response) {
+    try {
       
-  //     //remove this after cookies implemented
-  //     const {userId} = req.params
+      //remove this after cookies implemented
+      const {userId} = req.params
       
-  //     //isUserExist
-  //     const userAddressess = await prisma.user.findUnique({
-  //       select: {
-  //           Address: true
-  //       },
-  //       where: { id: +userId }
-  //     })
+      //isUserExist
+      const userAddressess = await prisma.user.findUnique({
+        select: {
+            address: true
+        },
+        where: { id: +userId }
+      })
       
-  //     return res.status(200).send({status: 'ok', data: userAddressess?.Address})
-  //   } catch (error) {
-  //     return res.status(400).send({status: 'error', msg: error})
-  //   }
-  // }
+      return res.status(200).send({status: 'ok', data: userAddressess?.address})
+    } catch (error) {
+      return res.status(400).send({status: 'error', msg: error})
+    }
+  }
+  
+  async editAvatar (req: Request, res: Response) {
+    try {
+      if (!req.file) throw "no file uploaded"
+      const link = `http://localhost:8000/api/public/avatar/${req.file?.filename}`
+      console.log(link)
+      await prisma.user.update({
+        data: { avatarUrl: link },
+        where: { id: req.user?.id}
+      })
+      console.log(req.file)
+      res.status(200).send({
+        status: 'ok',
+        msg: "edit avatar success!"
+      })
+    } catch (err) {
+      return res.status(400).send({status: 'error', msg: err})
+    }
+  }
+
+
 }
