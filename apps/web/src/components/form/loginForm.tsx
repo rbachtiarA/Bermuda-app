@@ -23,17 +23,23 @@ const LoginForm: React.FC = () => {
     data: ILoginData,
     action: FormikHelpers<ILoginData>,
   ) => {
-    console.log('Data form yang dikirim:', data)
+    console.log('Data form yang dikirim:', data);
     try {
       const { result, ok } = await loginUser(data);
       if (!ok) throw result.msg;
 
       action.resetForm();
-      createToken(result.token)
+      createToken(result.token);
       router.push('/');
     } catch (err) {
       setLoginError('Email atau password salah, silahkan coba lagi');
     }
+  };
+
+  const handleGoogleLogin = () => {
+    const googleAuthUrl =
+      'https://accounts.google.com/o/oauth2/auth?client_id=865829291737-mlsil03gppq4le1b74l5bu1f218kopp0.apps.googleusercontent.com&redirect_uri=http://localhost:3000/auth/google/callback&response_type=code&scope=email profile';
+    window.location.href = googleAuthUrl;
   };
 
   return (
@@ -94,7 +100,9 @@ const LoginForm: React.FC = () => {
                     placeholder="Masukkan password"
                   />
                   {touched.password && errors.password ? (
-                    <div className="text-red-500 text-xs">{errors.password}</div>
+                    <div className="text-red-500 text-xs">
+                      {errors.password}
+                    </div>
                   ) : null}
                 </div>
 
@@ -105,6 +113,12 @@ const LoginForm: React.FC = () => {
                   Masuk
                 </button>
 
+                <button
+                  onClick={handleGoogleLogin}
+                  className=" mt-1 w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600 mb-4"
+                >
+                  Masuk dengan Google
+                </button>
                 {loginError && (
                   <div className="text-center text-red-500 text-xs mt-4">
                     {loginError}

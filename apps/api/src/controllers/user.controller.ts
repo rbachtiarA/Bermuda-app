@@ -41,23 +41,25 @@ export class UserController {
       });
       if (!existingUser) throw 'Email sudah digunakan';
 
-      const verificationToken = sign({ email }, process.env.SECRET_JWT!, { expiresIn: '1h'});
+      
       await prisma.user.create({
         data: {
           email,
           name: "",
           password: "",
-          verificationToken,
           isVerified: false,
           referralCode: ""
         }
       });
 
+      const payload = { email }
+      const token = sign(payload, process.env.SECRET_JWT!, { expiresIn: '1h'});
+
       const templatePath = path.join(__dirname, "../templates", "verification.hbs")
       const templateSource = fs.readFileSync(templatePath, 'utf-8')
       const compiledTemplate = handlebars.compile(templateSource);
       const html = compiledTemplate({
-        link: `${process.env.BASE_URL}/verify?token=${verificationToken}`
+        link: `${process.env.BASE_URL}/verify/${token}`
       })
 
       await transporter.sendMail({
@@ -80,20 +82,25 @@ export class UserController {
 
   async verifyUser(req: Request, res: Response) {
     try {
-      const { token, password, name} = req.body;
+      const { password, name} = req.body;
+      const { token } = req.params;
       const referralCode = generateReferralCode(name)
       const decoded = verify(token, process.env.SECRET_JWT!) as { email: string};
       const salt = await genSalt(10)
       const hashPassword = await hash(password, salt)
-      
-      const user = await prisma.user.update({
+
+      const user = await prisma.user.findUnique({
+        where: {email: decoded.email}
+      })
+      if (user?.isVerified) throw 'Invalid Link: User already verified'
+
+      await prisma.user.update({
         where: { email: decoded.email},
         data: {
          isVerified: true,
          password: hashPassword,
          name: name,
          referralCode: referralCode,
-         verificationToken: null
         }
       })
 
@@ -119,6 +126,8 @@ export class UserController {
       })
       if (!existingUser) throw 'Akun tidak ditemukan';
       if (!existingUser.isVerified) throw "author not verify !"
+
+      if (!existingUser.password) throw 'Akun ini menggunakan login Google. Silakan login dengan Google.';
 
       const isValidPass = await compare(password, existingUser.password);
 

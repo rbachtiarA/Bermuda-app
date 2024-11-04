@@ -1,8 +1,8 @@
 'use client';
 import { verifyUser } from '@/lib/user.handler';
 import { Formik, Form, Field, FormikHelpers, FormikProps } from 'formik';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { useState } from 'react';
 import * as Yup from 'yup';
 
 const VerifyScchema = Yup.object().shape({
@@ -16,31 +16,21 @@ const VerifyUserRegister: React.FC<object> = () => {
   const [verificationError, setVerificationError] = useState<string | null>(
     null,
   );
-  const [token, setToken] = useState<string | null>(null)
-
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const tokenParams = urlParams.get('token');
-    setToken(tokenParams)
-
-    console.log('Token from URL:', tokenParams)
-  }, []);
+  const params = useParams<{ token: string }>();
+  console.log('Token from URL:', params)
 
   const initialValues = { password: '', name: '' };
 
   const onVerify = async (
     data: typeof initialValues,
-    action: FormikHelpers<typeof initialValues>,
   ) => {
-    console.log('Token before verification check:', token)
-
-    if (!token) {
+    if (!params.token) {
       setVerificationError('Token tidak valid atau sudah kedaluarsa');
       return;
     }
 
     try {
-      const result = await verifyUser({ ...data, token });
+      const result = await verifyUser( data, params.token );
       if (result.ok) {
         router.push('/login');
       } else {

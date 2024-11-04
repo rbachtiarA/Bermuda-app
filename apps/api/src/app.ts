@@ -16,6 +16,7 @@ import { StoreRouter } from './routers/store.router';
 import { OrderRouter } from './routers/order.router';
 import { CategoryRouter } from './routers/category.router';
 import path from 'path';
+import { AuthRouter } from './routers/auth.router';
 
 export default class App {
   private app: Express;
@@ -62,6 +63,7 @@ export default class App {
     const productRouter = new ProductRouter();
     const cartRouter = new CartRouter();
     const categoryRouter = new CategoryRouter();
+    const authRouter = new AuthRouter();
     const storeRouter = new StoreRouter()
     const orderRouter = new OrderRouter()
 
@@ -74,6 +76,7 @@ export default class App {
     this.app.use('/api/store', storeRouter.getRouter());
     this.app.use('/api/order', orderRouter.getRouter());
     this.app.use('/api/categories', categoryRouter.getRouter())
+    this.app.use('/api/auth', authRouter.getRouter());
   }
 
   public start(): void {

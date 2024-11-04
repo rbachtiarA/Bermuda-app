@@ -24,7 +24,7 @@ const CategoryDropdown: React.FC = () => {
     <div
       className="relative inline-block text-left container"
       onMouseEnter={() => setIsDropdownOpen(true)}
-      onMouseLeave={() => setIsDropdownOpen(false)}
+      onClick={() => setIsDropdownOpen(false)}
     >
       <button className="px-4 py-2 text-sm font-medium text-gray-700 bg-white rounded-md hover:bg-gray-100">
         Kategori
