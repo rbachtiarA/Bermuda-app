@@ -11,14 +11,16 @@ import { Button, Card, CardBody, Checkbox } from "@nextui-org/react"
 export default function CartList() {
     const user = useAppSelector(state => state.user)
     const cart = useAppSelector(state => state.cart)
+    const itemOnStock = cart.filter((item) => item.product?.stock![0].quantity! > 0)
+    const itemSoldOut = cart.filter((item) => item.product?.stock![0].quantity! === 0)
     const store = useAppSelector(state => state.store)
     const checkout = useAppSelector(state => state.checkout)
     const dispatch = useAppDispatch()    
     const router = useRouter()    
 
     const onSelectAll = () => {
-        const allItemsId = cart.map((item) => item.id)
-        if(checkout.length === cart.length) {
+        const allItemsId = itemOnStock.map((item) => item.id)
+        if(checkout.length === itemOnStock.length) {
             dispatch(resetCheckout())
         } else {
             dispatch(selectedAllItems(allItemsId))
@@ -48,23 +50,47 @@ export default function CartList() {
     return (
         <section className="grid grid-cols-1 md:grid-cols-[4fr_2fr] lg:grid-cols-[1fr_4fr_2fr] w-full max-w-[1500px] mt-2 md:gap-2 md:px-2 ">
             <div className="lg:col-start-2">
-                {cart.length === 0 && <p>Cart is Empty</p>}
                     <div className="sticky top-2 z-10 px-2">
                         <Card>
                             <CardBody>
                                 <div className="flex justify-between">
-                                    <Checkbox  onValueChange={onSelectAll} isIndeterminate={checkout.length > 0 && checkout.length !== cart.length} isSelected={cart.length === checkout.length}>Semua</Checkbox>
+                                    <Checkbox  onValueChange={onSelectAll} isIndeterminate={checkout.length > 0 && checkout.length !== itemOnStock.length} isSelected={itemOnStock.length !== 0 && itemOnStock.length === checkout.length}>Semua</Checkbox>
                                     {checkout.length !== 0 && <Button color="danger" variant="light" size="sm" className="max-h-6">Hapus</Button>}
                                 </div>
                             </CardBody>
                         </Card>
                     </div>
-                    <ul className="grid grid-rows-[auto] gap-y-4 p-2">
-                        {cart.map((cartItem, idx) => (
-                            <CartCard key={idx} cart={cartItem} checkout={checkout}/>
-                    
-                        ))}
-                    </ul>
+                    {
+                        cart.length === 0 && 
+                        <div className="p-2">
+                            <Card>
+                                <CardBody>
+                                     <p>Cart is Empty</p>
+                                     <p>Please choose product at product page</p>
+                                </CardBody>
+                            </Card>
+                        </div>
+                    }
+                    {
+                        itemOnStock.length !== 0 &&
+                        <ul className="grid grid-rows-[auto] gap-y-4 p-2">
+                            {itemOnStock.map((cartItem, idx) => (
+                                <CartCard key={idx} cart={cartItem} checkout={checkout}/>
+                        
+                            ))}
+                        </ul>
+                    }
+                    {   
+                        itemSoldOut.length !== 0 && 
+                        <div>
+                            <h2 className="p-2 font-semibold">Product Sold Out</h2>
+                            <ul className="grid grid-rows-[auto] gap-y-4 p-2">
+                                {itemSoldOut.map((cartItem, idx) => (
+                                    <CartCard key={idx} cart={cartItem} checkout={checkout} soldOut/>
+                                ))}
+                            </ul>
+                        </div>
+                    }
             </div>
             <div className="sticky bottom-[56px] md:bottom-[100vw]">
                 <CartCheckout totalPayment={totalSelectedItemsAmount} checkout={checkout} onCheckout={onCheckout}/>

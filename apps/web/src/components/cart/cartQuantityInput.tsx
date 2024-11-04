@@ -12,12 +12,12 @@ import { useDebounce } from "use-debounce";
 export default function CartQuantityInput({cart}: { cart: ICartItem}) {
     const user = useAppSelector(state => state.user)
     const dispatch = useAppDispatch()
-    const productStock = cart.product?.stock![0].quantity || 10
+    const productStock = cart.product?.stock![0].quantity!
     const [quantity, setQuantity] = useState(cart.quantity)
     const [debouncedQuantity] = useDebounce(quantity, 1000)
     // isDebouncing for css purpose, when isDebounce it will change input bg color till debouncing finish
     const [isDebouncing, setIsDebouncing] = useState(false)
-
+    
     // minus / plus button is pressed add value to quantity
     const onPressQuantityButton = (val:number) => {
         const tempQuantity = quantity+val

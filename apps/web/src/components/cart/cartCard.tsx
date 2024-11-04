@@ -11,7 +11,7 @@ import CartQuantityInput from "./cartQuantityInput";
 import currencyRupiah from "@/lib/rupiahCurrency";
 import { addSelectedCheckout, removeSelectedCheckout } from "@/redux/slice/checkoutSlice";
 
-export default function CartCard({cart, checkout}: {cart: ICartItem, checkout: number[]}) {
+export default function CartCard({cart, checkout, soldOut}: {cart: ICartItem, checkout: number[], soldOut?: boolean}) {
     const dispatch = useAppDispatch()
     const checkRef = useRef<HTMLInputElement>(null)
     const [isChecked, setIsChecked] = useState<boolean>(false)
@@ -44,8 +44,8 @@ export default function CartCard({cart, checkout}: {cart: ICartItem, checkout: n
     <Card isHoverable className="w-full">
         <CardBody >
             <div className="flex gap-4">
-                <Checkbox size="sm" ref={checkRef} value={`${cart.productId}`} isSelected={isChecked} onClick={onPressedCard} className="md:hidden"/>
-                <Checkbox size="lg" ref={checkRef} value={`${cart.productId}`} isSelected={isChecked} onClick={onPressedCard} className="hidden md:block"/>
+                <Checkbox size="sm" ref={checkRef} value={`${cart.productId}`} isDisabled={soldOut} isSelected={isChecked} onClick={onPressedCard} className="md:hidden"/>
+                <Checkbox size="lg" ref={checkRef} value={`${cart.productId}`} isDisabled={soldOut} isSelected={isChecked} onClick={onPressedCard} className="hidden md:block"/>
                 <div className="flex w-full gap-x-2 justify-center items-center">
                     <div className="">
                         <Skeleton className="rounded-lg w-[50px] h-[50px] md:w-[150px] md:h-[150px]" />
