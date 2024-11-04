@@ -5,12 +5,12 @@ import { useState } from "react";
 
 export default function PaymentTotalList(
     {
-        itemTotalPayment, travelPayment, isPaymentInvalid, isLoading,
+        itemTotalPayment, travelPayment, isPaymentInvalid, isLoading, isError,
         updateMethodPayment, onBuy} 
     : 
     { 
         itemTotalPayment:number | null, travelPayment: number | null, isLoading: boolean, methodPayment: 'Transfer' | 'Gateway' | null, isPaymentInvalid: boolean,
-        updateMethodPayment: (paymentMethod:string) => void, onBuy: () => void
+        isError:string | null,updateMethodPayment: (paymentMethod:string) => void, onBuy: () => void
     }) {
     
     const paymentMethodOptions = () => {
@@ -52,6 +52,7 @@ export default function PaymentTotalList(
                         <Divider />    
                     </div>
                         <Button color="primary" className="my-2" onPress={onBuy} fullWidth isDisabled={isPaymentInvalid || isLoading}>{isLoading? 'Loading' :'Bayar Sekarang' }</Button>
+                        {isError !== null && <p className="text-sm text-warning-500 text-wrap md:max-w-[270px]">{isError}</p>}
                         {isLoading && <p>LOADING</p>}
             </CardFooter>
         </Card>
