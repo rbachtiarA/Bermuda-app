@@ -1,0 +1,134 @@
+'use client';
+import { verifyUser } from '@/lib/user.handler';
+import { Formik, Form, Field, FormikHelpers, FormikProps } from 'formik';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import * as Yup from 'yup';
+
+const VerifyScchema = Yup.object().shape({
+  password: Yup.string()
+    .min(6, 'Password minimal 6 karakter')
+    .required('Password harus diisi'),
+});
+
+const VerifyUserRegister: React.FC<object> = () => {
+  const router = useRouter();
+  const [verificationError, setVerificationError] = useState<string | null>(
+    null,
+  );
+  const [token, setToken] = useState<string | null>(null)
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tokenParams = urlParams.get('token');
+    setToken(tokenParams)
+
+    console.log('Token from URL:', tokenParams)
+  }, []);
+
+  const initialValues = { password: '', name: '' };
+
+  const onVerify = async (
+    data: typeof initialValues,
+    action: FormikHelpers<typeof initialValues>,
+  ) => {
+    console.log('Token before verification check:', token)
+
+    if (!token) {
+      setVerificationError('Token tidak valid atau sudah kedaluarsa');
+      return;
+    }
+
+    try {
+      const result = await verifyUser({ ...data, token });
+      if (result.ok) {
+        router.push('/login');
+      } else {
+        setVerificationError("'Terjadi kesalahan saat verifikasi.'");
+      }
+    } catch (err) {
+      setVerificationError('Verifikasi gagal, silahkan coba kembali');
+    }
+  };
+
+  return (
+    <div className="flex justify-center items-center bg-gray-100 py-12">
+      <div className="bg-white p-8 rounded-md shadow-md w-full max-w-md">
+        <div className="p-1 w-full text-center bg-green-200 text-green-600 rounded-lg">
+          Verifikasi Berhasil.
+        </div>
+        <h1 className="text-2xl font-bold mb-6 text-center">
+          Lengkapi Data Anda
+        </h1>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={VerifyScchema}
+          onSubmit={onVerify}
+        >
+          {(props: FormikProps<typeof initialValues>) => {
+            const { values, errors, touched, handleChange } = props;
+
+            return (
+              <Form>
+                <div className="mt-4">
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-bold text-gray-700"
+                  >
+                    Nama Lengkap
+                  </label>
+                  <Field
+                    type="text"
+                    name="name"
+                    onChange={handleChange}
+                    value={values.name}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    placeholder="Masukkan nama lengkap"
+                  />
+                  {touched.name && errors.name ? (
+                    <div className="text-red-500 text-xs">{errors.name}</div>
+                  ) : null}
+                </div>
+                <div>
+                  <label
+                    htmlFor="password"
+                    className="block text-sm font-bold text-gray-700"
+                  >
+                    Password
+                  </label>
+                  <Field
+                    type="password"
+                    name="password"
+                    onChange={handleChange}
+                    value={values.password}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    placeholder="Masukkan password"
+                  />
+                  {touched.password && errors.password ? (
+                    <div className="text-red-500 text-xs">
+                      {errors.password}
+                    </div>
+                  ) : null}
+                </div>
+                <button
+                  type="submit"
+                  className="mt-6 w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 focus:outline-none focus:bg-red-700"
+                >
+                  Buat Akun
+                </button>
+
+                {verificationError && (
+                  <div className="text-center text-red-500 text-xs mt-4">
+                    {verificationError}
+                  </div>
+                )}
+              </Form>
+            );
+          }}
+        </Formik>
+      </div>
+    </div>
+  );
+};
+
+export default VerifyUserRegister;

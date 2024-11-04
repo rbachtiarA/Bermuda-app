@@ -1,3 +1,6 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,23 +11,28 @@ datasource db {
 }
 
 model User {
-  id                Int      @id @default(autoincrement())
+  id                Int        @id @default(autoincrement())
   name              String
-  email             String   @unique
+  email             String     @unique
   password          String
-  role              UserRole
+  role              UserRole   @default(USER)
+  referralCode      String?    @unique
+  referredBy        User?      @relation("UserReferral", fields: [referredById], references: [id])
+  referredById      Int?
+  referredUsers     User[]     @relation("UserReferral") //Daftar user yang menggunakan referral kode user ini
   avatarUrl         String?
-  isVerified        Boolean  @default(false)
+  isVerified        Boolean    @default(false)
   verificationToken String?
-  store             Store?   @relation(fields: [storeId], references: [id])
+  store             Store?     @relation(fields: [storeId], references: [id])
   storeId           Int?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-
-  orders   Order[]
-  cart     Cart?
-  Checkout Checkout?
-  Address  Address[]
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+  address           Address[]
+  orders            Order[]
+  givenReferrals    Discount[] @relation("ReferralGiver") //diskon untuk pemberi referal
+  receivedReferrals Discount[] @relation("ReferralUser") //diskon untuk pengguna referal
+  cart              Cart?
+  checkout          Checkout?
 }
 
 model Store {
@@ -72,9 +80,14 @@ model Discount {
   discountType DiscountType
   value        Float
   minPurchase  Float?
-  products     Product[]    @relation("ProductDiscounts")
-  store        Store        @relation(fields: [storeId], references: [id])
+  products     Product?     @relation("ProductDiscounts", fields: [productId], references: [id])
+  productId    Int?
+  stores       Store        @relation(fields: [storeId], references: [id])
   storeId      Int
+  giver        User?        @relation("ReferralGiver", fields: [giverId], references: [id])
+  giverId      Int?
+  user         User?        @relation("ReferralUser", fields: [userId], references: [id])
+  userId       Int?
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
 }
@@ -147,9 +160,9 @@ model Cart {
   id        Int        @id @default(autoincrement())
   user      User       @relation(fields: [userId], references: [id])
   userId    Int        @unique
-  cartItems CartItem[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
+  CartItem  CartItem[]
 }
 
 model CartItem {
@@ -167,16 +180,15 @@ model CartItem {
 
 model Checkout {
   id       Int        @id @default(autoincrement())
-  User     User       @relation(fields: [userId], references: [id])
+  user     User       @relation(fields: [userId], references: [id])
   userId   Int        @unique
   CartItem CartItem[]
 }
 
 model Order {
-  id     Int  @id @default(autoincrement())
-  user   User @relation(fields: [userId], references: [id])
-  userId Int
-
+  id               Int            @id @default(autoincrement())
+  user             User           @relation(fields: [userId], references: [id])
+  userId           Int
   shippingOption   ShippingOption @relation(fields: [shippingOptionId], references: [id])
   shippingOptionId Int
   status           OrderStatus
@@ -225,6 +237,8 @@ enum DiscountType {
   FLAT
   PERCENTAGE
   BUY_ONE_GET_ONE
+  REFERRAL_GIVER // Diskon untuk pemberi referral
+  REFERRAL_USER // Diskon untuk pemakai referral
 }
 
 enum ChangeType {

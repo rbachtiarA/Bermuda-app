@@ -12,7 +12,9 @@
       "@/*": ["./src/*"]
     },
     "typeRoots": ["./src/types"],
-    "allowJs": true
+    "allowJs": true,
+    "types": ["./src/custom.d.ts"]
+    
   },
   // "include": ["src/**/*"],
   "include": ["**/*.ts", "src/services/midtrans-s.js"],
