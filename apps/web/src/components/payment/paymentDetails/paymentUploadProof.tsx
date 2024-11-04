@@ -16,7 +16,7 @@ const createSchema = yup.object({
         })
 })
 
-export default function PaymentUploadProof() {
+export default function PaymentUploadProof({onClickCancelOrder}: {onClickCancelOrder:() => void}) {
     const formik = useFormik<FormikValues>({
         initialValues: {
             paymentProof: null,
@@ -50,7 +50,7 @@ export default function PaymentUploadProof() {
                 <Button type="submit" color="primary">Upload Payment Proof</Button>
             </div>
         </form>    
-        <Button className='w-full' color="danger" variant="light">Cancel Payment</Button>
+        <Button className='w-full' color="danger" variant="light" onPress={onClickCancelOrder}>Cancel Payment</Button>
     </div>
   )
 }

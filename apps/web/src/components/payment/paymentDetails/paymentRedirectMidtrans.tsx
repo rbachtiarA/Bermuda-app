@@ -1,13 +1,13 @@
-import { getMidtransStatus } from "@/lib/order"
+import { cancelOrder, getMidtransStatus } from "@/lib/order"
 import { Button } from "@nextui-org/react"
 
-export default function PaymentRedirectMidtrans({token, orderId, getData}: {token: string, orderId:number, getData: ()=> void}) {
+export default function PaymentRedirectMidtrans({token, orderId, getData, onClickCancelOrder}: {token: string, orderId:number, getData: ()=> void, onClickCancelOrder:() => void}) {
     const onClickRedirect = () => {
         window.open(`https://app.sandbox.midtrans.com/snap/v4/redirection/${token}`, '_blank', 'popup,noopener,norefferer')
     }
     const onClickCheckStatus = async () => {
         const status = await getMidtransStatus(orderId)
-        console.log(status);
+        console.log(status.midtrans);
         getData()
     }
 
@@ -17,7 +17,7 @@ export default function PaymentRedirectMidtrans({token, orderId, getData}: {toke
                 <Button color={'primary'} onPress={onClickRedirect} className="">Pay with Gateway</Button>
                 <Button color={'primary'} variant="bordered" onPress={onClickCheckStatus} className="">Check Status</Button>
             </div>
-            <Button color={'danger'} variant="light" size="sm" className="">Cancel Payment</Button>
+            <Button color={'danger'} variant="light" size="sm" onPress={onClickCancelOrder} className="">Cancel Payment</Button>
         </div>
     )
 }
