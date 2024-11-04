@@ -35,9 +35,9 @@ export const getMidtransToken = async (userId: number, orderId: number) => {
 
 export const getMidtransStatus = async (orderId: number) => {
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}order/gateway/status/${orderId}`, {cache: "no-cache"})
-    const { status, midtrans }:{status: 'ok' | 'NOT_FOUND' ,midtrans: 'pending' | 'expire' | 'settlement' | null} = await res.json()
+    const { status, midtrans }:{status: 'ok' | 'NOT_FOUND' ,midtrans: 'pending' | 'expire' | 'settlement' | null, error:string} = await res.json()
     
-    // status = NOT_FOUND || ok, midtrans = 'pending' | 'expire' | 'settlement' | null
+    // status = NOT_FOUND || ok, midtrans = 'pending' | 'expire' | 'settlement' | null    
     return {status , midtrans}
 }
 export const getOrderPendingPayment = async (userId: number) => {
@@ -49,4 +49,18 @@ export const getOrderPendingPayment = async (userId: number) => {
     } else {
         return false
     }
+}
+
+export const cancelOrder = async (orderId: number) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}order/cancel`, {
+        method:'PATCH',
+        body: JSON.stringify({orderId}),
+        headers: {
+            "Content-type":"application/json"
+        }
+    })
+
+    const { status, msg, error } = await res.json()
+    
+    return { status, msg, error }
 }
