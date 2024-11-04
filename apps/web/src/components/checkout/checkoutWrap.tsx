@@ -5,24 +5,41 @@ import CheckoutList from "./checkoutList"
 import PaymentTotalList from "./paymentList"
 import { useAppSelector } from "@/redux/hook"
 import { IAddress } from "@/type/address"
+import { getMidtransToken, getOrderPendingPayment, postOrder } from "@/lib/order"
+import { useRouter } from "next/navigation"
 
 export default function CheckoutWrapper() {
     const user = useAppSelector(state => state.user)
+    const store = useAppSelector(state => state.store)
     const [itemTotalPayment, setItemTotalPayment] = useState<number | null>(null)
     const [travelPayment, setTravelPayment] = useState<number | null>(null)
-    const [methodPayment, setMethodPayment] = useState<'TRANSFER' | 'PAYMENT_GATEWAY' | null>(null)
-    const [paymentGatewayService, setPaymentGatewayService] = useState<'MOBILE_BANKING' | 'CREDIT_CARD' | null>(null)
-    const [handphone, setHandphone] = useState<string>('')
-    const [creditCard, setCreditCard] = useState<string>('')
+    const [methodPayment, setMethodPayment] = useState<'Transfer' | 'Gateway' | null>(null)
     const [selectedAddress, setselectedAddress] = useState<IAddress | undefined>(undefined)
-
-    
-    const onBuy = () => {
-        const data = {
-            userId: user.id,
-            totalAmount: itemTotalPayment
+    const [isLoading, setIsLoading] = useState(false)
+    const router = useRouter()
+    const onBuy = async () => {
+        setIsLoading(true)
+        const pendingOrder = await getOrderPendingPayment(user.id)
+        if(pendingOrder) {
+            console.log('You need to proccess your payment previous order to make new order');
+        } else {
+            try {
+                const {status, order, msg} = await postOrder(user.id, itemTotalPayment!+travelPayment!, travelPayment!, selectedAddress?.id!, store.id! ,methodPayment! )
+                if(status === 'failed' || status === 'error') throw msg
+                        
+                if(order && methodPayment === 'Gateway') {
+                    const token = await getMidtransToken(user.id, order.order.id as number)
+                    window.open(`https://app.sandbox.midtrans.com/snap/v4/redirection/${token}`, '_blank', 'noopener,noreferrer')
+                }
+                if(order) router.push('/payment')
+            } catch (error) {
+                console.log(error);
+            }
+            
         }
+        setIsLoading(false)
     }
+
     const updateSelectedAddress = (address: IAddress | undefined) => {
         setselectedAddress(address)
     }
@@ -35,39 +52,18 @@ export default function CheckoutWrapper() {
     }
     
     const updateMethodPayment = (methodPayment: string) => {
-        if(methodPayment === 'TRANSFER' || methodPayment === 'PAYMENT_GATEWAY' ) {
+        if(methodPayment === 'Transfer' || methodPayment === 'Gateway' ) {
             setMethodPayment(methodPayment)
         } else {
             setMethodPayment(null)
         }
-        setPaymentGatewayService(null)
         
     }
-    
-    const updateGatewayService = (paymentGatewayService: string) => {
-        if(paymentGatewayService === 'MOBILE_BANKING' || paymentGatewayService === 'CREDIT_CARD') {
-            setPaymentGatewayService(paymentGatewayService)
-        } else {
-            setPaymentGatewayService(null)
-        }
-        setHandphone('')
-        setCreditCard('')
-    }
-
-    const updateHandphone = (value: string) => {
-        setHandphone(value)
-    } 
-    const updateCreditCard = (value: string) => {
-        setCreditCard(value)
-    } 
 
     const isPaymentInvalid = useMemo(
         () => {
-            return !travelPayment || !itemTotalPayment || !methodPayment || 
-            (methodPayment === 'PAYMENT_GATEWAY' && !paymentGatewayService) || 
-            (paymentGatewayService === 'CREDIT_CARD' && (creditCard.length < 16 || creditCard.length > 19)) ||
-            (paymentGatewayService === 'MOBILE_BANKING' && (handphone.length < 10 || handphone.length > 13))
-        }, [travelPayment, itemTotalPayment, methodPayment, paymentGatewayService, handphone, creditCard])
+            return !travelPayment || !itemTotalPayment || !methodPayment
+        }, [travelPayment, itemTotalPayment, methodPayment])
     
     return (
         <div className="grid md:grid-cols-[2fr_1fr] gap-2">
@@ -81,13 +77,9 @@ export default function CheckoutWrapper() {
                     travelPayment={travelPayment} 
                     isPaymentInvalid={isPaymentInvalid} 
                     methodPayment={methodPayment} 
-                    paymentGatewayService={paymentGatewayService}
-                    handphone={handphone}
-                    creditCard={creditCard}
-                    updateMethodPayment={updateMethodPayment} 
-                    updateGatewayService={updateGatewayService}
-                    updateHandphone={updateHandphone}
-                    updateCreditCard={updateCreditCard}
+                    isLoading={isLoading}
+                    updateMethodPayment={updateMethodPayment}
+                    onBuy={onBuy}
                 />
             </div>
         </div>
