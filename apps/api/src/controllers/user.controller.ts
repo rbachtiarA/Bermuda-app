@@ -39,7 +39,7 @@ export class UserController {
       const existingUser = await prisma.user.findUnique({
         where: { email: email },
       });
-      if (existingUser) throw 'Email sudah digunakan';
+      if (!existingUser) throw 'Email sudah digunakan';
 
       const verificationToken = sign({ email }, process.env.SECRET_JWT!, { expiresIn: '1h'});
       await prisma.user.create({

@@ -37,7 +37,8 @@ export class OrderController {
             
             const order = await prisma.$transaction(async (tx) => {
                 //expiredDate
-                const THREE_HOURS_EXPIRED = 60 * 60 * 3 * 1000
+                const HOURS_EXPIRED = 1
+                const HOURS_EXPIRED_IN_MS = 60 * 60 * HOURS_EXPIRED * 1000
 
                 //reduce quantity stock
                 for (const item of orderItem) {
@@ -47,10 +48,13 @@ export class OrderController {
                                 productId: item.productId,
                                 storeId: +storeId
                             }
+                        },
+                        include: {
+                            product: true
                         }
                     })
                     if(!existStock) throw 'Some product stock is invalid'
-                    if(existStock!.quantity - item.quantity < 0) throw 'Product stock is insufficient'
+                    if(existStock!.quantity - item.quantity < 0) throw {code: 'ITEM_INSUFFICIENT', details: `${existStock.product.name} is insuffficient`}
 
                     await tx.stock.update({
                         where: {
@@ -75,7 +79,7 @@ export class OrderController {
                             create: {
                                 amountPaid: totalAmount,
                                 paymentMethod: methodPayment,
-                                expiredDate: new Date(Date.now() + THREE_HOURS_EXPIRED),
+                                expiredDate: new Date(Date.now() + HOURS_EXPIRED_IN_MS),
                                 isConfirmed: false,
                                 confirmedAt: null,
                             }
@@ -113,13 +117,13 @@ export class OrderController {
                         },
                         expiry: {
                             unit: "hour",
-                            duration: 3
+                            duration: HOURS_EXPIRED
                         }
                     }
 
                     const midtransTransaction = await midtrans.snap.createTransaction(parameter)
                     
-                    if(!midtransTransaction) return res.status(200).send({status:'failed', msg: 'Please Choose Gateway Service first' })
+                    if(!midtransTransaction) throw 'error on creating midtrans token'
                     const payment = await tx.payment.update({
                         where: {
                             orderId: order.id
@@ -219,7 +223,7 @@ export class OrderController {
     // get midtrans transaction status, from 'orderId', 
     //      if status "expire" or "cancel" update order status with 'cancelled', and return all order items quantity to store quantity
     //      if status "settlement" update order status with 'confirmed' and update payment isConfirmed to true & confirmedAt to date.now()
-    async getMidtransStatus(req:Request, res: Response) {
+    async getMidtransStatus(req:Request, res: Response) {   
         try {
             const { orderId } = req.params 
             
@@ -230,11 +234,11 @@ export class OrderController {
             if(!existOrder) throw 'Order id is invalid'
 
             //get midtransStatus, if customer didnt pick one of midtrans service will return 404
-            const midtransStatus = await midtrans.snap.transaction.status(`ORDER_${orderId}`)            
+            const midtransStatus = await midtrans.snap.transaction.status(`ORDER_${orderId}`)        
 
             //convert status to converStatus, which for grouping purpose
             const status = midtransStatus?.transaction_status
-            const convertStatus = status === 'cancel'? 'expire' : status;
+            const convertStatus = status === 'cancel' || status === 'null' ? 'expire' : status;
 
             //this condition to prevent unecessary multiple running proccessed
             if((convertStatus === 'expire' && existOrder.status !== 'Cancelled') || (convertStatus === 'settlement' && existOrder.status !== 'Confirmed')) {
@@ -301,18 +305,83 @@ export class OrderController {
             
             return res.status(200).send({
                 status: 'ok',
-                midtrans: status
+                midtrans: midtransStatus
             })
-        } catch (error) {
-            console.log(error);
-            
+        } catch (error) {            
             return res.status(200).send({
                 status: 'not_found',
                 midtrans: null, 
-                msg:'You need to select your transaction service first'
+                msg:'You need to select your transaction service first',
             })
         }
 
 
+    }
+
+    async cancelOrder(req:Request, res: Response) {
+        try {
+            const { orderId } = req.body
+            const existOrder = await prisma.order.findUnique({
+                where: {
+                    id: +orderId
+                },
+                include: {
+                    Payment: true,
+                    Store:true,
+                }
+            })
+            if(!existOrder) throw 'Order is Invalid'
+            if(existOrder.status !== 'PendingPayment') throw 'You cannot cancel payment anymore'
+            if(existOrder.Payment?.paymentMethod === 'Gateway') {
+                //cancel midtrans
+                const midtransStatus = await midtrans.snap.transaction.cancel(`ORDER_${existOrder.id}`)
+            }
+            
+            if(existOrder.paymentProofUrl !== null) throw 'You already have uploaded payment proof'
+
+            await prisma.$transaction(async (tx) => {
+                const updatedOrder = await tx.order.update({
+                    where: { id: +orderId },
+                    include: { orderItems: true },
+                    data: {
+                        status: 'Cancelled',
+                    }
+                })
+
+                // code for update store quantity with cancelled order Items
+                const cancelledOrderItems = updatedOrder.orderItems.map((item) => {
+                    return { productId: item.productId, quantity: item.quantity }
+                })
+                
+                // update all quantity stock back to store
+                for (const item of cancelledOrderItems) {
+                    const existStock = await tx.stock.findFirst({
+                        where: {
+                            AND: {
+                                productId: item.productId,
+                                storeId: updatedOrder.storeId
+                            }
+                        }
+                    })
+                    if(!existStock) throw 'Something wrong when addedd product quantity to store'
+
+                    await tx.stock.update({
+                        where: { id: existStock.id },
+                        data: { quantity: existStock.quantity + item.quantity }
+                    })
+                } 
+            })
+
+            return res.status(200).send({
+                status: 'ok',
+                msg: 'Cancel payment success'
+            })
+        } catch (error) {
+            return res.status(400).send({
+                status: 'error',
+                msg: 'not_found',
+                error: `${error}`
+            })
+        }
     }
 }
