@@ -8,7 +8,7 @@ export const cartSlice = createSlice({
     initialState,
     reducers:{
         updatedCartFromDatabase: (state, action: PayloadAction<ICartItem[]>) => {
-            const cartItems = action.payload            
+            const cartItems = action.payload
             return [...cartItems]
         },
         addedToCart: (state, action: PayloadAction<ICartItem>) => {
