@@ -1,7 +1,7 @@
 'use client'
 import { ICartItem } from "@/type/cart";
 import { Button, Checkbox, Skeleton } from "@nextui-org/react"
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {Card, CardBody} from "@nextui-org/react";
 import { useAppDispatch } from "@/redux/hook";
 import { removedFromCart } from "@/redux/slice/cartSlice";
@@ -9,27 +9,37 @@ import Image from "next/image";
 import { deleteCartItem } from "@/lib/cart";
 import CartQuantityInput from "./cartQuantityInput";
 import currencyRupiah from "@/lib/rupiahCurrency";
+import { addSelectedCheckout, removeSelectedCheckout } from "@/redux/slice/checkoutSlice";
 
-export default function CartCard({cart, onSelectCartItem}: {cart: ICartItem, onSelectCartItem:any}) {
-    const checkRef = useRef<HTMLInputElement>(null)
-    const [isChecked, setIsChecked] = useState(false)
+export default function CartCard({cart, checkout}: {cart: ICartItem, checkout: number[]}) {
     const dispatch = useAppDispatch()
+    const checkRef = useRef<HTMLInputElement>(null)
+    const [isChecked, setIsChecked] = useState<boolean>(false)
     const product = cart.product
 
     const onPressedCard = () => {
-        const checked = !isChecked
-        setIsChecked(checked)
-        onSelectCartItem(checked, cart.id)
+        // const checked = !isChecked
+        // setIsChecked(checked)
+        if(!isChecked) {
+            dispatch(addSelectedCheckout(cart.id))
+        } else {
+            dispatch(removeSelectedCheckout(cart.id))
+        }
     }
 
     const onRemovedItem = async (cartItemId: number) => {
         const checked = false
         const { data } = await deleteCartItem(cartItemId)
         dispatch(removedFromCart(data.data))
+        dispatch(removeSelectedCheckout(cartItemId))
         setIsChecked(checked)
-        onSelectCartItem(checked, cart.productId)
     }
     
+    useEffect(() => {
+        setIsChecked(checkout.includes(cart.id))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[checkout])
+
     const nextUICardV2: React.ReactNode = 
     <Card isHoverable className="w-full">
         <CardBody >
@@ -42,7 +52,7 @@ export default function CartCard({cart, onSelectCartItem}: {cart: ICartItem, onS
                     </div>
                     <div className="flex flex-col w-full h-full justify-between">
                         <div>
-                            <p className="text-balance max-w-[200px] md:max-w-none">{product?.name || 'Product Name Null'}</p>
+                            <p className="text-balance max-w-[200px] md:max-w-none line-clamp-2 break-words">{product?.name || 'Product Name Null'}</p>
                             <p className="font-extrabold">{currencyRupiah(product?.price!) || 'Product Price Null'}</p>
                         </div>
                         <div className="w-full grid grid-cols-2 items-end">
