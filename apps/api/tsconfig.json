@@ -10,9 +10,11 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "typeRoots": ["./src/types"],
+    "allowJs": true
   },
   // "include": ["src/**/*"],
-  "include": ["**/*.ts"],
+  "include": ["**/*.ts", "src/services/midtrans-s.js"],
   "exclude": ["node_modules"]
 }

@@ -39,6 +39,7 @@ model Store {
   stockReports StockReport[]
   users        User[]
   stocks       Stock[]
+  Order        Order[]
 }
 
 model Product {
@@ -186,7 +187,9 @@ model Order {
   orderItems       OrderItem[]
   Address          Address        @relation(fields: [addressId], references: [id])
   addressId        Int
+  Store            Store          @relation(fields: [storeId], references: [id])
   Payment          Payment?
+  storeId          Int
 }
 
 model OrderItem {
@@ -206,6 +209,8 @@ model Payment {
   orderId       Int           @unique
   amountPaid    Float
   paymentMethod PaymentMethod
+  expiredDate   DateTime
+  token         String?
   isConfirmed   Boolean       @default(false)
   confirmedAt   DateTime?
 }
