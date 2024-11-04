@@ -39,7 +39,7 @@ export class UserController {
       const existingUser = await prisma.user.findUnique({
         where: { email: email },
       });
-      if (existingUser) throw 'Email sudah digunakan';
+      if (!existingUser) throw 'Email sudah digunakan';
 
       
       await prisma.user.create({

@@ -1,20 +1,20 @@
 {
   "compilerOptions": {
-    "target": "ES2015",
-    "module": "commonjs",
-    "strict": true,
-    "esModuleInterop": true,
+    "target": "es2015",                            
+    "module": "commonjs",                            
+    "strict": true,                                      
+    "esModuleInterop": true,                             
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    },
-    "types": ["./src/custom.d.ts"]
-    
+      },
+    "types": ["./src/types/custom.d.ts"],
+    "allowJs": true,
   },
-  // "include": ["src/**/*"],
+
   "include": ["**/*.ts"],
   "exclude": ["node_modules"]
 }

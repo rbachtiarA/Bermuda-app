@@ -5,18 +5,19 @@ import { IAddress } from "@/type/address"
 import { Button, Card, CardBody, CardFooter, CardHeader } from "@nextui-org/react"
 import { useEffect, useState } from "react"
 
-export default function AddressessList({ updateTravelPayment }: { updateTravelPayment: (travelPayment: number) => void }) {
+export default function AddressessList({ selectedAddress, updateTravelPayment, updateSelectedAddress }: 
+    { selectedAddress:IAddress | undefined, updateTravelPayment: (travelPayment: number) => void, updateSelectedAddress:(address: IAddress | undefined) => void  }) {
     const user = useAppSelector(state => state.user)
     const [addressess, setAddressess] = useState<IAddress[]>([])
-    const [selectedAddress, setselectedAddress] = useState<IAddress | undefined>(undefined)
-
+    
     //get address user from database
     const getData = async () => {
         const data: IAddress[] = await getUserAddressess(user.id)        
         setAddressess([...data])
-
+        console.log(data);
+        
         //select the primary address
-        setselectedAddress(data.find((item) => item.isPrimary))
+        updateSelectedAddress(data.find((item) => item.isPrimary))
 
         //edit this when travelPayment function already implemented
         updateTravelPayment(10000)

@@ -1,32 +1,24 @@
+'use client'
 import currencyRupiah from "@/lib/rupiahCurrency";
-import { Button, Card, CardBody, CardFooter, CardHeader, Divider, Select, SelectItem } from "@nextui-org/react";
+import { Button, Card, CardBody, CardFooter, CardHeader, Divider, Input } from "@nextui-org/react";
+import { useState } from "react";
 
 export default function PaymentTotalList(
     {
-        itemTotalPayment, travelPayment, methodPayment, isPaymentValid, 
-        updateMethodPayment, updateGatewayService} 
+        itemTotalPayment, travelPayment, isPaymentInvalid, isLoading, isError,
+        updateMethodPayment, onBuy} 
     : 
     { 
-        itemTotalPayment:number | null, travelPayment: number | null, methodPayment: 'TRANSFER' | 'PAYMENT_GATEWAY' | null, isPaymentValid: boolean
-        updateMethodPayment: (paymentMethod:string) => void, updateGatewayService: (paymentGatewayService: string) => void 
+        itemTotalPayment:number | null, travelPayment: number | null, isLoading: boolean, methodPayment: 'Transfer' | 'Gateway' | null, isPaymentInvalid: boolean,
+        isError:string | null,updateMethodPayment: (paymentMethod:string) => void, onBuy: () => void
     }) {
-
+    
     const paymentMethodOptions = () => {
         return (
-            <select className="w-full my-2" onChange={(e) => updateMethodPayment(e.currentTarget.value)}>
+            <select className={`p-2 w-full bg-slate-100 rounded-sm`} onChange={(e) => updateMethodPayment(e.currentTarget.value)}>
                 <option value={''}>- pilih metode pembayaran -</option>
-                <option value={'TRANSFER'}>Transfer</option>
-                <option value={'PAYMENT_GATEWAY'}>Payment Gateway</option>
-            </select>
-        )
-    }
-
-    const paymentGatewayOptions = () => {
-        return (
-            <select className="w-full my-2" onChange={(e) => updateGatewayService(e.currentTarget.value)}>
-                <option value={''}>- pilih jasa pembayaran -</option>
-                <option value={'MOBILE_BANKING'}>Mobile Banking</option>
-                <option value={'CREDIT_CARD'}>Credit Card</option>
+                <option value={'Transfer'}>Transfer</option>
+                <option value={'Gateway'}>Payment Gateway</option>
             </select>
         )
     }
@@ -54,13 +46,14 @@ export default function PaymentTotalList(
                 <Divider />
             </CardBody>
             <CardFooter className="flex flex-col">
-                    <div className="w-full flex flex-col">
+                    <div className="w-full flex flex-col gap-2">
                         <h2 className="font-semibold">Metode Pembayaran</h2>
                         {paymentMethodOptions()}
-                        {methodPayment === 'PAYMENT_GATEWAY' && paymentGatewayOptions()}
                         <Divider />    
                     </div>
-                        <Button color="primary" className="my-2" fullWidth isDisabled={isPaymentValid}>Bayar Sekarang</Button>
+                        <Button color="primary" className="my-2" onPress={onBuy} fullWidth isDisabled={isPaymentInvalid || isLoading}>{isLoading? 'Loading' :'Bayar Sekarang' }</Button>
+                        {isError !== null && <p className="text-sm text-warning-500 text-wrap md:max-w-[270px]">{isError}</p>}
+                        {isLoading && <p>LOADING</p>}
             </CardFooter>
         </Card>
     )

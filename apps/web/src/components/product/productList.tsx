@@ -1,15 +1,16 @@
 
-import { IProduct } from "@/type/product"
+import { IStocks } from "@/type/product"
 import ProductCard from "./productCard"
 import { getProductsData } from "@/lib/product"
 
 export default async function ProductList() {
-    const productList:IProduct[] = await getProductsData()
-
+    // remove store id if geolocation is implemented
+    const stocksList:IStocks[] = await getProductsData(1)
+    
     return (
         <ul className="flex flex-col gap-2">
-            {productList.map((product) => (
-                <ProductCard key={product.id} product={product} />
+            {stocksList.map((stock) => (
+                <ProductCard key={stock.id} stock={stock} />
             ))}
         </ul>
     )
