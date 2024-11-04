@@ -1,13 +1,12 @@
-import { getToken } from '@/lib/server';
+'use client'
+
 import AddressBar from './addressBar';
 import SiteLogo from './logo';
 import Navbar from './navbar';
-import Link from 'next/link';
-import AvatarMenu from './avatar';
 import CategoryDropdown from './category';
+import AvatarMenu from './avatar';
 
-export const Header = async () => {
-  const token = await getToken();
+export const Header = () => {  
   return (
     <div className="shadow-lg w-full pb-3">
       <div className="container">
@@ -17,14 +16,7 @@ export const Header = async () => {
         <SiteLogo />
         <CategoryDropdown />
         <Navbar />
-        {token ? (
-          <Link href="#">Keluar</Link>
-        ) : (
-          <div className="gap-1">
-            <Link href="/register">Daftar</Link>
-            <Link href="/login">Masuk</Link>
-          </div>
-        )}
+        <AvatarMenu />
       </div>
     </div>
   );

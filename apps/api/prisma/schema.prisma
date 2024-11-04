@@ -14,7 +14,8 @@ model User {
   id                Int        @id @default(autoincrement())
   name              String
   email             String     @unique
-  password          String
+  googleId          String?     @unique
+  password          String?
   role              UserRole   @default(USER)
   referralCode      String?    @unique
   referredBy        User?      @relation("UserReferral", fields: [referredById], references: [id])
@@ -22,7 +23,8 @@ model User {
   referredUsers     User[]     @relation("UserReferral") //Daftar user yang menggunakan referral kode user ini
   avatarUrl         String?
   isVerified        Boolean    @default(false)
-  verificationToken String?
+  accessToken       String?
+  refreshToken      String?
   store             Store?     @relation(fields: [storeId], references: [id])
   storeId           Int?
   createdAt         DateTime   @default(now())
@@ -52,7 +54,7 @@ model Store {
 model Product {
   id            Int               @id @default(autoincrement())
   name          String
-  description   String
+  description   String            @db.Text
   price         Int
   imageUrl      String?
   categories    ProductCategory[]
