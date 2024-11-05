@@ -1,7 +1,9 @@
 //all userId should be change to JWT TOKEN if already implemented
 
-export const getAllCartItems = async (userId: number) => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}cart/${userId}`, {next: {revalidate: 1}})
+import { ICartItem } from "@/type/cart"
+
+export const getAllCartItems = async (userId: number, storeId:number) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}cart/${userId}/store/${storeId}`, {next: {revalidate: 1}})
     const { status, data } = await res.json()
     
     return data
@@ -16,8 +18,9 @@ export const postCartItems = async (userId:number , productId:number, quantity:n
         }
     })
 
-    const data = await res.json()
-    return { ok: res.ok, data }
+    const { cartItem }: {cartItem: ICartItem} = await res.json()
+        
+    return { ok: res.ok, cartItem }
 }
 
 export const updateCartItem = async (userId:number , productId:number, quantity:number) => {

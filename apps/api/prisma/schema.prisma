@@ -1,9 +1,56 @@
+<<<<<<<<< Temporary merge branch 1
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                Int      @id @default(autoincrement())
+  name              String
+  email             String   @unique
+  password          String
+  role              UserRole
+  avatarUrl         String?
+  isVerified        Boolean  @default(false)
+  verificationToken String?
+  store             Store?   @relation(fields: [storeId], references: [id])
+  storeId           Int?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  orders   Order[]
+  cart     Cart?
+  Checkout Checkout?
+  Address  Address[]
+}
+
+=========
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
 model User {
   id                Int       @id @default(autoincrement())
   name              String
   email             String    @unique
   password          String
-  role              UserRole
+  role              UserRole  @default(USER)
+  referralCode      String?   @unique
+  referredBy        User?     @relation("UserReferral", fields: [referredById], references: [id])
+  referredById      Int?
+  referredUsers     User[]    @relation("UserReferral") //Daftar user yang menggunakan referral kode user ini
   avatarUrl         String?
   isVerified        Boolean   @default(false)
   verificationToken String?
@@ -11,9 +58,10 @@ model User {
   storeId           Int?
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
-  addresses         Address[]
+  address           Address[]
   orders            Order[]
   cart              Cart?
+  checkout          Checkout?
 }
 
 model Store {
@@ -28,13 +76,14 @@ model Store {
   stockReports StockReport[]
   users        User[]
   stocks       Stock[]
+  Order        Order[]
 }
 
 model Product {
   id            Int               @id @default(autoincrement())
   name          String
   description   String
-  price         Float
+  price         Int
   imageUrl      String?
   categories    ProductCategory[]
   isRecommended Boolean
@@ -47,6 +96,32 @@ model Product {
   orderItems    OrderItem[]
   stockReports  StockReport[]
   discounts     Discount[]        @relation("ProductDiscounts")
+  =========
+  products      Product[]
+  discounts     Discount[]
+  salesReports  SalesReport[]
+  stockReports  StockReport[]
+  User          User[]
+  Stock         Stock[]
+}
+
+model Product {
+  id          Int               @id @default(autoincrement())
+  slug        String
+  name        String
+  description String
+  price       Float
+  imageUrl    String?
+  categories  ProductCategory[]
+  stores      Store[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  stock       Stock[]
+  orderItems  OrderItem[]
+  StockReport StockReport[]
+  Discount    Discount[]
+  CartItem    CartItem[]
+  >>>>>>>>> Temporary merge branch 2
 }
 
 model ProductCategory {
@@ -60,29 +135,25 @@ model Discount {
   discountType DiscountType
   value        Float
   minPurchase  Float?
+  <<<<<<<<< Temporary merge branch 1
   products     Product[]    @relation("ProductDiscounts")
   store        Store        @relation(fields: [storeId], references: [id])
   storeId      Int
+  =========
+  products     Product?     @relation(fields: [productId], references: [id])
+  productId    Int?
+  stores       Store        @relation(fields: [storeId], references: [id])
+  storeId      Int
+  giver        User?        @relation("ReferralGiver", fields: [giverId], references: [id])
+  giverId      Int?
+  user         User?        @relation("ReferralUser", fields: [userId], references: [id])
+  userId       Int?
+  >>>>>>>>> Temporary merge branch 2
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
 }
 
-model Address {
-  id          Int     @id @default(autoincrement())
-  user        User    @relation(fields: [userId], references: [id])
-  userId      Int
-  addressLine String
-  city        String
-  state       String
-  postalCode  String
-  latitude    Float?
-  longitude   Float?
-  isPrimary   Boolean @default(false)
-  orders      Order[]
-
-  @@unique(fields: [userId], name: "only_one_primary_address_per_user")
-}
-
+<<<<<<<<< Temporary merge branch 1
 model ShippingOption {
   id             Int     @id @default(autoincrement())
   name           String
@@ -102,193 +173,8 @@ model Stock {
   stockHistory StockHistory[]
 }
 
-model StockHistory {
-  id         Int        @id @default(autoincrement())
-  changeType ChangeType
-  quantity   Int
-  createdAt  DateTime   @default(now())
-  stock      Stock      @relation(fields: [stockId], references: [id])
-  stockId    Int
-}
-
-model SalesReport {
-  id         Int   @id @default(autoincrement())
-  store      Store @relation(fields: [storeId], references: [id])
-  storeId    Int
-  totalSales Float
-  month      Int
-  year       Int
-}
-
-model StockReport {
-  id           Int     @id @default(autoincrement())
-  store        Store   @relation(fields: [storeId], references: [id])
-  storeId      Int
-  product      Product @relation(fields: [productId], references: [id])
-  productId    Int
-  totalAdded   Int
-  totalRemoved Int
-  finalStock   Int
-  month        Int
-  year         Int
-}
-
-model Cart {
-  id        Int        @id @default(autoincrement())
-  user      User       @relation(fields: [userId], references: [id])
-  userId    Int        @unique
-  cartItems CartItem[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-}
-
-model CartItem {
-  id        Int     @id @default(autoincrement())
-  cart      Cart    @relation(fields: [cartId], references: [id])
-  cartId    Int
-  product   Product @relation(fields: [productId], references: [id])
-  productId Int
-  quantity  Int
-}
-
-model Order {
-  id               Int            @id @default(autoincrement())
-  user             User           @relation(fields: [userId], references: [id])
-  userId           Int
-  address          Address        @relation(fields: [addressId], references: [id])
-  addressId        Int
-  shippingOption   ShippingOption @relation(fields: [shippingOptionId], references: [id])
-  shippingOptionId Int
-  status           OrderStatus
-  totalAmount      Float
-  paymentProofUrl  String?
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-  orderItems       OrderItem[]
-  payments         Payment[]
-}
-
-model OrderItem {
-  id            Int     @id @default(autoincrement())
-  order         Order   @relation(fields: [orderId], references: [id])
-  orderId       Int
-  product       Product @relation(fields: [productId], references: [id])
-  productId     Int
-  quantity      Int
-  price         Float
-  discountValue Float
-}
-
-model Payment {
-  id            Int           @id @default(autoincrement())
-  order         Order         @relation(fields: [orderId], references: [id])
-  orderId       Int
-  amountPaid    Float
-  paymentMethod PaymentMethod
-  isConfirmed   Boolean       @default(false)
-  confirmedAt   DateTime?
-}
-
-enum UserRole {
-  SUPER_ADMIN
-  STORE_ADMIN
-  USER
-}
-
-enum DiscountType {
-  FLAT
-  PERCENTAGE
-  BUY_ONE_GET_ONE
-}
-
-enum ChangeType {
-  INCREASE
-  DECREASE
-}
-
-enum OrderStatus {
-  PendingPayment
-  Confirmed
-  Shipped
-  Completed
-  Cancelled
-}
-
-enum PaymentMethod {
-  Transfer
-  CreditCard
-  Gateway
-}
-
-model User {
-  id                Int       @id @default(autoincrement())
-  name              String
-  email             String    @unique
-  password          String
-  role              UserRole
-  avatarUrl         String?
-  isVerified        Boolean   @default(false)
-  verificationToken String?
-  store             Store?    @relation(fields: [storeId], references: [id])
-  storeId           Int?
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  address           Address[]
-  orders            Order[]
-  cart              Cart?
-}
-
-model Store {
-  id           Int           @id @default(autoincrement())
-  name         String
-  location     String
-  latitude     Float
-  longitude    Float
-  products     Product[]
-  discounts    Discount[]
-  salesReports SalesReport[]
-  stockReports StockReport[]
-  User         User[]
-  Stock        Stock[]
-}
-
-model Product {
-  id          Int               @id @default(autoincrement())
-  slug        String
-  name        String
-  description String
-  price       Float
-  imageUrl    String?
-  categories  ProductCategory[]
-  stores      Store[]
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
-  stock       Stock[]
-  orderItems  OrderItem[]
-  StockReport StockReport[]
-  Discount    Discount[]
-  CartItem    CartItem[]
-}
-
-model ProductCategory {
-  id       Int       @id @default(autoincrement())
-  name     String    @unique
-  products Product[]
-}
-
-model Discount {
-  id           Int          @id @default(autoincrement())
-  discountType DiscountType
-  value        Float
-  minPurchase  Float?
-  products     Product?     @relation(fields: [productId], references: [id])
-  productId    Int?
-  stores       Store        @relation(fields: [storeId], references: [id])
-  storeId      Int
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-}
-
+=========
+>>>>>>>>> Temporary merge branch 2
 model Address {
   id          Int     @id @default(autoincrement())
   user        User    @relation(fields: [userId], references: [id])
@@ -300,6 +186,9 @@ model Address {
   latitude    Float?
   longitude   Float?
   isPrimary   Boolean @default(false)
+  <<<<<<<<< Temporary merge branch 1
+  orders      Order[]
+  =========
   Order       Order[]
 }
 
@@ -320,6 +209,7 @@ model Stock {
   product      Product        @relation(fields: [productId], references: [id])
   productId    Int
   StockHistory StockHistory[]
+  >>>>>>>>> Temporary merge branch 2
 }
 
 model StockHistory {
@@ -357,29 +247,59 @@ model Cart {
   id        Int        @id @default(autoincrement())
   user      User       @relation(fields: [userId], references: [id])
   userId    Int        @unique
+  <<<<<<<<< Temporary merge branch 1
+  cartItems CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id        Int        @id @default(autoincrement())
+  cart      Cart       @relation(fields: [cartId], references: [id])
+  =========
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   CartItem  CartItem[]
 }
 
 model CartItem {
-  id         Int      @id @default(autoincrement())
-  cart       Cart     @relation(fields: [cartId], references: [id])
+  id         Int       @id @default(autoincrement())
+  cart       Cart      @relation(fields: [cartId], references: [id])
+  >>>>>>>>> Temporary merge branch 2
   cartId     Int
-  product    Product  @relation(fields: [productId], references: [id])
+  product    Product   @relation(fields: [productId], references: [id])
   productId  Int
   totalPrice Int
   quantity   Int
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  Checkout   Checkout? @relation(fields: [checkoutId], references: [id])
+  checkoutId Int?
+}
+
+model Checkout {
+  id       Int        @id @default(autoincrement())
+  User     User       @relation(fields: [userId], references: [id])
+  userId   Int        @unique
+  CartItem CartItem[]
 }
 
 model Order {
-  id        Int     @id @default(autoincrement())
-  user      User    @relation(fields: [userId], references: [id])
-  userId    Int
-  address   Address @relation(fields: [addressId], references: [id])
-  addressId Int
+  id     Int  @id @default(autoincrement())
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+
+  shippingOption   ShippingOption @relation(fields: [shippingOptionId], references: [id])
+  shippingOptionId Int
+  status           OrderStatus
+  totalAmount      Float
+  paymentProofUrl  String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  orderItems       OrderItem[]
+  payments         Payment[]
+  Address          Address        @relation(fields: [addressId], references: [id])
+  addressId        Int
 }
 
 model OrderItem {
@@ -396,9 +316,11 @@ model OrderItem {
 model Payment {
   id            Int           @id @default(autoincrement())
   order         Order         @relation(fields: [orderId], references: [id])
-  orderId       Int
+  orderId       Int           @unique
   amountPaid    Float
   paymentMethod PaymentMethod
+  expiredDate   DateTime
+  token         String?
   isConfirmed   Boolean       @default(false)
   confirmedAt   DateTime?
 }

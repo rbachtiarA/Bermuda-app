@@ -9,14 +9,11 @@ export const cartSlice = createSlice({
     reducers:{
         updatedCartFromDatabase: (state, action: PayloadAction<ICartItem[]>) => {
             const cartItems = action.payload
-            console.log(cartItems);
-            
             return [...cartItems]
         },
         addedToCart: (state, action: PayloadAction<ICartItem>) => {
             const { id, cartId, productId, quantity, totalPrice } = action.payload
             const isItemExist = state.findIndex((item) => item.productId === productId)
-            console.log(isItemExist)
             
             if(isItemExist !== -1) {
                 state[isItemExist].quantity += quantity

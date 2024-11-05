@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 import { Roboto } from 'next/font/google';
 import './globals.css';
-import { Header } from '@/components/header';
 import StoreProvider from '@/components/reduxStore/storeProvider';
 import BottomNavbar from '@/components/bottomNavbar/bottomNavbar';
 import { NextProviders } from './nextuiProvider';
 import Footer from '@/components/footer/footer';
+import { Header } from '@/components/Header';
 
 const roboto = Roboto({ subsets: ['latin'], weight: ['400', '700'] });
 
@@ -22,14 +22,26 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} relative`}>
+<<<<<<<<< Temporary merge branch 1
+      <body className={`${inter.className} relative`} >
+            <NextProviders>
+                <StoreProvider>
+                  <Header />
+                  {children}
+                  <BottomNavbar />
+                </StoreProvider>
+            </NextProviders>
+=========
+      <body className={`${roboto.className} relative`} >
         <NextProviders>
-          <StoreProvider>
-            <Header />
-            {children}
-            <BottomNavbar />
-          </StoreProvider>
+            <StoreProvider>
+              <Header />
+              {children}
+              <Footer />
+              <BottomNavbar />
+            </StoreProvider>
         </NextProviders>
+>>>>>>>>> Temporary merge branch 2
       </body>
     </html>
   );

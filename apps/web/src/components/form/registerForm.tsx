@@ -22,7 +22,7 @@ const RegisterUser: React.FC<object> = () => {
       const { result, ok } = await regUser(data);
       if (!ok) throw result.msg;
       action.resetForm();
-      setEmailSent(true)
+      setEmailSent(true);
     } catch (err) {
       console.log(err);
     }
@@ -33,8 +33,12 @@ const RegisterUser: React.FC<object> = () => {
       <div className="bg-white p-8 rounded-md shadow-md w-full max-w-md">
         {emailSent ? (
           <div className="text-center">
-            <h2 className="text-xl font-bold mb4 text-gray-700">Email Terkirim!</h2>
-            <p className='text-gray-500'>Silahkan periksa email anda untuk melanjutkan verifikasi.</p>
+            <h2 className="text-xl font-bold mb4 text-gray-700">
+              Email Terkirim!
+            </h2>
+            <p className="text-gray-500">
+              Silahkan periksa email anda untuk melanjutkan verifikasi.
+            </p>
           </div>
         ) : (
           <div>
