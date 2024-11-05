@@ -22,26 +22,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-<<<<<<<<< Temporary merge branch 1
-      <body className={`${inter.className} relative`} >
-            <NextProviders>
-                <StoreProvider>
-                  <Header />
-                  {children}
-                  <BottomNavbar />
-                </StoreProvider>
-            </NextProviders>
-=========
-      <body className={`${roboto.className} relative`} >
+      <body className={`${roboto.className} relative`}>
         <NextProviders>
-            <StoreProvider>
-              <Header />
-              {children}
-              <Footer />
-              <BottomNavbar />
-            </StoreProvider>
+          <StoreProvider>
+            <Header />
+            {children}
+            <Footer />
+            <BottomNavbar />
+          </StoreProvider>
         </NextProviders>
->>>>>>>>> Temporary merge branch 2
       </body>
     </html>
   );
