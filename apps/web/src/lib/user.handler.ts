@@ -13,12 +13,12 @@ export const  regUser = async (data: IRegEmail) => {
     return { result, ok: res.ok }
 }
 
-export const verifyUser = async (data: { token: string; password: string; name: string } ) => {
-    const res = await fetch(`${base_url}/users/data-register`, {
-        method: "POST",
+export const verifyUser = async (data: { password: string; name: string }, token: string ) => {
+    const res = await fetch(`${base_url}/users/data-register/${token}`, {
+        method: "PATCH",
         body: JSON.stringify(data),
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         }
     })
     const result = await res.json()

@@ -5,4 +5,5 @@
 
 */
 -- AlterTable
-ALTER TABLE `product` DROP COLUMN `storeId`;
+ALTER TABLE `product` DROP COLUMN `storeId`,
+    MODIFY `price` INTEGER NOT NULL;
