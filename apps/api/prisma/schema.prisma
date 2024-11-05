@@ -1,0 +1,263 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id                Int        @id @default(autoincrement())
+    name              String
+    email             String     @unique
+    googleId          String?    @unique
+    password          String?
+    role              UserRole   @default(USER)
+    referralCode      String?    @unique
+    referredBy        User?      @relation("UserReferral", fields: [referredById], references: [id])
+    referredById      Int?
+    referredUsers     User[]     @relation("UserReferral") //Daftar user yang menggunakan referral kode user ini
+    avatarUrl         String?
+    isVerified        Boolean    @default(false)
+    accessToken       String?
+    refreshToken      String?
+    store             Store?     @relation(fields: [storeId], references: [id])
+    storeId           Int?
+    createdAt         DateTime   @default(now())
+    updatedAt         DateTime   @updatedAt
+    address           Address[]
+    orders            Order[]
+    givenReferrals    Discount[] @relation("ReferralGiver") //diskon untuk pemberi referal
+    receivedReferrals Discount[] @relation("ReferralUser") //diskon untuk pengguna referal
+    cart              Cart?
+    checkout          Checkout?
+}
+
+model Store {
+    id           Int           @id @default(autoincrement())
+    name         String
+    location     String
+    latitude     Float
+    longitude    Float
+    products     Product[]     @relation("ProductStores")
+    discounts    Discount[]
+    salesReports SalesReport[]
+    stockReports StockReport[]
+    users        User[]
+    stocks       Stock[]
+    Order        Order[]
+}
+
+model Product {
+    id            Int               @id @default(autoincrement())
+    name          String
+    description   String            @db.Text
+    price         Int
+    imageUrl      String?
+    categories    ProductCategory[]
+    isRecommended Boolean           @default(false)
+    slug          String
+    stores        Store[]           @relation("ProductStores")
+    createdAt     DateTime          @default(now())
+    updatedAt     DateTime          @updatedAt
+    cartItems     CartItem[]
+    stock         Stock[]
+    orderItems    OrderItem[]
+    stockReports  StockReport[]
+    discounts     Discount[]        @relation("ProductDiscounts")
+}
+
+model ProductCategory {
+    id       Int       @id @default(autoincrement())
+    name     String    @unique
+    products Product[]
+}
+
+model Discount {
+    id           Int          @id @default(autoincrement())
+    discountType DiscountType
+    value        Float
+    minPurchase  Float?
+    products     Product?     @relation("ProductDiscounts", fields: [productId], references: [id])
+    productId    Int?
+    stores       Store        @relation(fields: [storeId], references: [id])
+    storeId      Int
+    giver        User?        @relation("ReferralGiver", fields: [giverId], references: [id])
+    giverId      Int?
+    user         User?        @relation("ReferralUser", fields: [userId], references: [id])
+    userId       Int?
+    createdAt    DateTime     @default(now())
+    updatedAt    DateTime     @updatedAt
+}
+
+model ShippingOption {
+    id             Int     @id @default(autoincrement())
+    name           String
+    baseCost       Float
+    additionalCost Float
+    maxDistance    Float
+    orders         Order[]
+}
+
+model Stock {
+    id           Int            @id @default(autoincrement())
+    quantity     Int
+    store        Store          @relation(fields: [storeId], references: [id])
+    storeId      Int
+    product      Product        @relation(fields: [productId], references: [id])
+    productId    Int
+    stockHistory StockHistory[]
+}
+
+model Address {
+    id          Int     @id @default(autoincrement())
+    user        User    @relation(fields: [userId], references: [id])
+    userId      Int
+    addressLine String
+    city        String
+    state       String
+    postalCode  String
+    latitude    Float?
+    longitude   Float?
+    isPrimary   Boolean @default(false)
+    orders      Order[]
+}
+
+model StockHistory {
+    id         Int        @id @default(autoincrement())
+    changeType ChangeType
+    quantity   Int
+    createdAt  DateTime   @default(now())
+    stock      Stock      @relation(fields: [stockId], references: [id])
+    stockId    Int
+}
+
+model SalesReport {
+    id         Int   @id @default(autoincrement())
+    store      Store @relation(fields: [storeId], references: [id])
+    storeId    Int
+    totalSales Float
+    month      Int
+    year       Int
+}
+
+model StockReport {
+    id           Int     @id @default(autoincrement())
+    store        Store   @relation(fields: [storeId], references: [id])
+    storeId      Int
+    product      Product @relation(fields: [productId], references: [id])
+    productId    Int
+    totalAdded   Int
+    totalRemoved Int
+    finalStock   Int
+    month        Int
+    year         Int
+}
+
+model Cart {
+    id        Int        @id @default(autoincrement())
+    user      User       @relation(fields: [userId], references: [id])
+    userId    Int        @unique
+    createdAt DateTime   @default(now())
+    updatedAt DateTime   @updatedAt
+    CartItem  CartItem[]
+}
+
+model CartItem {
+    id         Int       @id @default(autoincrement())
+    cart       Cart      @relation(fields: [cartId], references: [id])
+    cartId     Int
+    product    Product   @relation(fields: [productId], references: [id])
+    productId  Int
+    quantity   Int
+    createdAt  DateTime  @default(now())
+    updatedAt  DateTime  @updatedAt
+    Checkout   Checkout? @relation(fields: [checkoutId], references: [id])
+    checkoutId Int?
+}
+
+model Checkout {
+    id       Int        @id @default(autoincrement())
+    user     User       @relation(fields: [userId], references: [id])
+    userId   Int        @unique
+    CartItem CartItem[]
+}
+
+model Order {
+    id               Int            @id @default(autoincrement())
+    user             User           @relation(fields: [userId], references: [id])
+    userId           Int
+    shippingOption   ShippingOption @relation(fields: [shippingOptionId], references: [id])
+    shippingOptionId Int
+    status           OrderStatus
+    totalAmount      Float
+    paymentProofUrl  String?
+    createdAt        DateTime       @default(now())
+    updatedAt        DateTime       @updatedAt
+    orderItems       OrderItem[]
+    Address          Address        @relation(fields: [addressId], references: [id])
+    addressId        Int
+    Store            Store          @relation(fields: [storeId], references: [id])
+    Payment          Payment?
+    storeId          Int
+}
+
+model OrderItem {
+    id            Int     @id @default(autoincrement())
+    order         Order   @relation(fields: [orderId], references: [id])
+    orderId       Int
+    product       Product @relation(fields: [productId], references: [id])
+    productId     Int
+    quantity      Int
+    price         Float
+    discountValue Float
+}
+
+model Payment {
+    id            Int           @id @default(autoincrement())
+    order         Order         @relation(fields: [orderId], references: [id])
+    orderId       Int           @unique
+    amountPaid    Float
+    paymentMethod PaymentMethod
+    expiredDate   DateTime
+    token         String?
+    isConfirmed   Boolean       @default(false)
+    confirmedAt   DateTime?
+}
+
+enum UserRole {
+    SUPER_ADMIN
+    STORE_ADMIN
+    USER
+}
+
+enum DiscountType {
+    FLAT
+    PERCENTAGE
+    BUY_ONE_GET_ONE
+    REFERRAL_GIVER // Diskon untuk pemberi referral
+    REFERRAL_USER // Diskon untuk pemakai referral
+}
+
+enum ChangeType {
+    INCREASE
+    DECREASE
+}
+
+enum OrderStatus {
+    PendingPayment
+    Confirmed
+    Shipped
+    Completed
+    Cancelled
+}
+
+enum PaymentMethod {
+    Transfer
+    CreditCard
+    Gateway
+}
