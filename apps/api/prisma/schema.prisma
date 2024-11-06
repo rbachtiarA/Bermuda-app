@@ -14,7 +14,7 @@ model User {
   id                Int        @id @default(autoincrement())
   name              String
   email             String     @unique
-  googleId          String?     @unique
+  googleId          String?    @unique
   password          String?
   role              UserRole   @default(USER)
   referralCode      String?    @unique
@@ -250,7 +250,9 @@ enum ChangeType {
 
 enum OrderStatus {
   PendingPayment
+  Waiting
   Confirmed
+  Proccessed
   Shipped
   Completed
   Cancelled

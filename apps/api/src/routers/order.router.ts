@@ -13,13 +13,15 @@ export class OrderRouter {
   }
 
   private initializeRoutes(): void {
+    //get rid userId params when verify middleware implemented
     this.router.get('/user/:userId/order/:orderId', this.orderController.getOrderById);
+    this.router.get('/user/:userId', this.orderController.getUserOrder);
+    this.router.get('/store/:userId', this.orderController.getStoreOrder);
     this.router.get('/pending/:userId', this.orderController.getPendingOrder);
     this.router.post('/neworder', this.orderController.createNewOrder);
     this.router.get('/gateway/status/:orderId', this.orderController.getMidtransStatus);
     this.router.patch('/cancel', this.orderController.cancelOrder);
-    // this.router.patch('/paymentProof', uploader("avatar", "/avatar").single('avatar'), this.userController.editAvatar);
-  
+    this.router.patch('/paymentProof', uploader("paymentProof-", "/paymentProof").single('paymentProof'), this.orderController.updatePaymentProof);
   }
 
   getRouter(): Router {
