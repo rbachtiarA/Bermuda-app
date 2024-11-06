@@ -17,6 +17,8 @@ import { OrderRouter } from './routers/order.router';
 import { CategoryRouter } from './routers/category.router';
 import path from 'path';
 import { AuthRouter } from './routers/auth.router';
+import session from 'express-session';
+import passport from 'passport';
 
 export default class App {
   private app: Express;
@@ -33,6 +35,14 @@ export default class App {
     this.app.use(json());
     this.app.use(urlencoded({ extended: true }));
     this.app.use('/api/public', express.static(path.join(__dirname, "../public")))
+    this.app.use(session({
+      secret: 'Finpro015',
+      resave: false,
+      saveUninitialized: true,
+      cookie: { secure: false }
+    }));
+    this.app.use(passport.initialize());
+    this.app.use(passport.session());
   }
 
   private handleError(): void {
@@ -59,24 +69,26 @@ export default class App {
   }
 
   private routes(): void {
+<<<<<<<<< Temporary merge branch 1
+    // const sampleRouter = new SampleRouter();
+=========
+>>>>>>>>> Temporary merge branch 2
     const userRouter = new UserRouter();
     const productRouter = new ProductRouter();
-    const cartRouter = new CartRouter();
-    const categoryRouter = new CategoryRouter();
-    const authRouter = new AuthRouter();
-    const storeRouter = new StoreRouter()
-    const orderRouter = new OrderRouter()
+    const cartRouter = new CartRouter()
 
     this.app.get('/api', (req: Request, res: Response) => {
       res.send(`Hello, Purwadhika Student API!`);
     });
+
+<<<<<<<<< Temporary merge branch 1
+    // this.app.use('/api/samples', sampleRouter.getRouter());
+=========
+>>>>>>>>> Temporary merge branch 2
     this.app.use('/api/users', userRouter.getRouter());
     this.app.use('/api/product', productRouter.getRouter());
     this.app.use('/api/cart', cartRouter.getRouter());
-    this.app.use('/api/store', storeRouter.getRouter());
-    this.app.use('/api/order', orderRouter.getRouter());
-    this.app.use('/api/categories', categoryRouter.getRouter())
-    this.app.use('/api/auth', authRouter.getRouter());
+    
   }
 
   public start(): void {
