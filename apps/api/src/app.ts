@@ -17,6 +17,8 @@ import { OrderRouter } from './routers/order.router';
 import { CategoryRouter } from './routers/category.router';
 import path from 'path';
 import { AuthRouter } from './routers/auth.router';
+import session from 'express-session';
+import passport from 'passport';
 
 export default class App {
   private app: Express;
@@ -33,6 +35,14 @@ export default class App {
     this.app.use(json());
     this.app.use(urlencoded({ extended: true }));
     this.app.use('/api/public', express.static(path.join(__dirname, "../public")))
+    this.app.use(session({
+      secret: 'Finpro015',
+      resave: false,
+      saveUninitialized: true,
+      cookie: { secure: false }
+    }));
+    this.app.use(passport.initialize());
+    this.app.use(passport.session());
   }
 
   private handleError(): void {

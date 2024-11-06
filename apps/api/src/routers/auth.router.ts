@@ -1,5 +1,7 @@
+
 import { AuthController } from "@/controllers/auth.controller";
 import { Router } from "express";
+import passport from "passport";
 
 export class AuthRouter {
     private router: Router;
@@ -12,7 +14,8 @@ export class AuthRouter {
     }
 
     private initializeRoutes(): void {
-        this.router.post('/google/callback', this.authController.googleAuthCallback)
+        this.router.get('/google', this.authController.googleAuth)
+        this.router.get("/google/callback", passport.authenticate('google', { failureRedirect: '/login'}), this.authController.googleCallback)
     }
     getRouter(): Router {
         return this.router;

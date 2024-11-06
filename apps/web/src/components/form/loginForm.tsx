@@ -37,9 +37,7 @@ const LoginForm: React.FC = () => {
   };
 
   const handleGoogleLogin = () => {
-    const googleAuthUrl =
-      'https://accounts.google.com/o/oauth2/auth?client_id=865829291737-mlsil03gppq4le1b74l5bu1f218kopp0.apps.googleusercontent.com&redirect_uri=http://localhost:3000/auth/google/callback&response_type=code&scope=email profile';
-    window.location.href = googleAuthUrl;
+    window.location.href = "http://localhost:8000/api/auth/google";
   };
 
   return (
