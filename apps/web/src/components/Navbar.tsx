@@ -1,12 +1,8 @@
 'use client';
-import {
-  Navbar,
-  NavbarContent,
-  Input
-} from '@nextui-org/react';
-import { SearchIcon } from './searchIcon';
+import { Navbar, NavbarContent, Input } from '@nextui-org/react';
+import { SearchIcon } from './SearchIcon';
 
- export default function SiteNavbar() {
+export default function SiteNavbar() {
   return (
     <Navbar isBordered>
       <NavbarContent as="div" className="items-center" justify="end">
@@ -20,12 +16,10 @@ import { SearchIcon } from './searchIcon';
           }}
           placeholder="Temukan produk faforitmu"
           size="sm"
-          endContent={<SearchIcon size={18}/>}
+          endContent={<SearchIcon size={18} />}
           type="search"
         />
-        
       </NavbarContent>
-      
     </Navbar>
   );
 }

@@ -5,6 +5,7 @@ export const content = [
   './pages/**/*.{js,ts,jsx,tsx,mdx}',
   './components/**/*.{js,ts,jsx,tsx,mdx}',
   '../../node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}',
+  // Or if using `src` directory:
   './src/**/*.{js,ts,jsx,tsx,mdx}',
 ];
 export const theme = {
@@ -28,14 +29,3 @@ export const theme = {
 };
 export const darkMode = 'class';
 export const plugins = [nextui()];
-/** @type {import('tailwindcss').Config} */
-module.exports = {
-  content: [
-    './src/app/**/*.{js,jsx,ts,tsx,mdex}',
-    './src/components/**/*.{js,jsx,ts,tsx,mdex}',
-    './src/pages/**/*.{js,jsx,ts,tsx,mdex}',
-  ],
-  theme: {
-    extend: {},
-  },
-  plugins: []

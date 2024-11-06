@@ -1,12 +1,12 @@
-'use client'
+'use client';
 
-import AddressBar from './addressBar';
+import AddressBar from './address/addressBar';
 import SiteLogo from './logo';
-import Navbar from './navbar';
 import CategoryDropdown from './category';
 import AvatarMenu from './avatar';
+import SiteNavbar from './Navbar';
 
-export const Header = () => {  
+export const Header = () => {
   return (
     <div className="shadow-lg w-full pb-3">
       <div className="container">
@@ -15,7 +15,7 @@ export const Header = () => {
       <div className="flex container mx-auto items-center">
         <SiteLogo />
         <CategoryDropdown />
-        <Navbar />
+        <SiteNavbar />
         <AvatarMenu />
       </div>
     </div>
