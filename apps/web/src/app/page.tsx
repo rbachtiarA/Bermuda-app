@@ -1,18 +1,20 @@
-import PromoCarousel from "@/components/carousel/promo";
+import PromoCarousel from '@/components/carousel/promo';
+import Wrapper from '@/components/wrapper';
+import { NextPage } from 'next';
 
-export default function Home() {
-  
+const HomePage: NextPage = () => {
   return (
-    <div>
-      <div className="container">
-        <PromoCarousel />
+    <Wrapper>
+      <div className="container mx-auto mt-8">
+        <div className="w-full h-full p-4">
+          <PromoCarousel />
+        </div>
+        <h1 className="text-2xl font-bold pt-8 px-4">
+          Selamat Datang di Toko Grosir Online
+        </h1>
       </div>
-      <div className="h-screen flex container justify-center items-center">
-      <h1 className="text-9xl font-bold underline text-gray-200 text-center">
-      Landing Page
-    </h1>
-    </div>
-    </div>
-    
-  )
-}
+    </Wrapper>
+  );
+};
+
+export default HomePage;

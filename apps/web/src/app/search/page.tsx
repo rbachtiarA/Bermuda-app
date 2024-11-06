@@ -1,6 +1,6 @@
 'use client';
 
-import { SearchIcon } from '@/components/searchIcon';
+import { SearchIcon } from '@/components/navbar/searchIcon';
 import Wrapper from '@/components/wrapper';
 import { Input } from '@nextui-org/react';
 import { useRef, useState } from 'react';
@@ -9,7 +9,7 @@ import { useDebounce } from 'use-debounce';
 export default function searchProducts() {
   const searchRef = useRef<HTMLInputElement | null>(null);
   const [search, setSearch] = useState<string>('');
-  const [value] = useDebounce(search, 1000)
+  const [value] = useDebounce(search, 1000);
   const handleChange = () => {
     if (searchRef.current) {
       setSearch(searchRef.current.value);
