@@ -1,6 +1,6 @@
 'use client'
 import { ICartItem } from "@/type/cart";
-import { Button, Checkbox, Skeleton } from "@nextui-org/react"
+import { Button, Checkbox, Skeleton, Tooltip } from "@nextui-org/react"
 import React, { useEffect, useRef, useState } from "react";
 import {Card, CardBody} from "@nextui-org/react";
 import { useAppDispatch } from "@/redux/hook";
@@ -56,7 +56,9 @@ export default function CartCard({cart, checkout, soldOut}: {cart: ICartItem, ch
                             <p className="font-extrabold">{currencyRupiah(product?.price!) || 'Product Price Null'}</p>
                         </div>
                         <div className="w-full grid grid-cols-2 items-end">
-                            <Button color="danger" onPress={() => onRemovedItem(cart.id)} size="sm" isIconOnly><Image src={'/icon-trashcan.svg'} alt="delete" width={24} height={24} /></Button>
+                            <Tooltip content="Remove item" delay={0}>
+                                <Button color="danger" onPress={() => onRemovedItem(cart.id)} size="sm" isIconOnly><Image src={'/icon-trashcan.svg'} alt="delete" width={24} height={24} /></Button>
+                            </Tooltip>
                             <CartQuantityInput cart={cart}/>
                         </div>
                     </div>
