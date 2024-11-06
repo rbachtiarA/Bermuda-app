@@ -9,9 +9,12 @@ export const checkoutSlice = createSlice({
     reducers:{
         addSelectedCheckout: (state, action:PayloadAction<number>) => {
             const id = action.payload
-            if(state.includes(id)) {
+            if(!state.includes(id)) {
                 return [...state, id]
             } 
+        },
+        selectedAllItems: (state, action:PayloadAction<number[]>) => {
+            return [...action.payload]
         },
         removeSelectedCheckout: (state, action:PayloadAction<number>) => {
             const removedId = action.payload
@@ -22,5 +25,5 @@ export const checkoutSlice = createSlice({
 
 })
 
-export const {} = checkoutSlice.actions
+export const { addSelectedCheckout, removeSelectedCheckout, selectedAllItems, resetCheckout} = checkoutSlice.actions
 export default checkoutSlice.reducer

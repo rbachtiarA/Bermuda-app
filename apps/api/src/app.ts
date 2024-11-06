@@ -12,6 +12,8 @@ import { PORT } from './config';
 import { UserRouter } from './routers/user.router';
 import { ProductRouter } from './routers/product.router';
 import { CartRouter } from './routers/cart.router';
+import { StoreRouter } from './routers/store.router';
+import { OrderRouter } from './routers/order.router';
 import { CategoryRouter } from './routers/category.router';
 import path from 'path';
 import { AuthRouter } from './routers/auth.router';
@@ -67,20 +69,26 @@ export default class App {
   }
 
   private routes(): void {
+<<<<<<<<< Temporary merge branch 1
+    // const sampleRouter = new SampleRouter();
+=========
+>>>>>>>>> Temporary merge branch 2
     const userRouter = new UserRouter();
     const productRouter = new ProductRouter();
-    const cartRouter = new CartRouter();
-    const categoryRouter = new CategoryRouter();
-    const authRouter = new AuthRouter();
+    const cartRouter = new CartRouter()
 
     this.app.get('/api', (req: Request, res: Response) => {
       res.send(`Hello, Purwadhika Student API!`);
     });
+
+<<<<<<<<< Temporary merge branch 1
+    // this.app.use('/api/samples', sampleRouter.getRouter());
+=========
+>>>>>>>>> Temporary merge branch 2
     this.app.use('/api/users', userRouter.getRouter());
     this.app.use('/api/product', productRouter.getRouter());
     this.app.use('/api/cart', cartRouter.getRouter());
-    this.app.use('/api/categories', categoryRouter.getRouter())
-    this.app.use('/api/auth', authRouter.getRouter());
+    
   }
 
   public start(): void {

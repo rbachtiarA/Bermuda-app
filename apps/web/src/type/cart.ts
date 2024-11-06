@@ -15,3 +15,8 @@ export interface IUpdateQuantityCart {
     productId: number
     quantity: number
 }
+
+export interface IReduxCartItem {
+    productId: number
+    quantity: number
+}

@@ -6,7 +6,7 @@ export const getCategories = async () => {
         method: 'GET', 
         headers: {
             "Content-Type": "appliication/json"
-        }
+        }, next: { revalidate: 1 }
     })
 
     if (!res.ok) {

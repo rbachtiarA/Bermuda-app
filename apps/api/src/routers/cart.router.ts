@@ -16,7 +16,7 @@ export class CartRouter {
     this.router.post('/', this.cartController.postCartsItem);
     this.router.put('/', this.cartController.updateQuantityCartItem);
     this.router.delete('/remove/:cartItemId', this.cartController.deleteCartItem);
-    this.router.get('/:userId', this.cartController.getCartsItemByIdCart);
+    this.router.get('/:userId/store/:storeId', this.cartController.getCartsItemByIdCart);
     this.router.get('/checkout/:userId', this.cartController.getCheckoutByUserId);
     // when selected cart ready to checkout
     this.router.post('/checkout', this.cartController.updateCheckoutCartItem);

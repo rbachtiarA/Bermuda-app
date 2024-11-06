@@ -10,10 +10,8 @@ export class CartController {
   }
   async getCartsItemByIdCart(req: Request, res: Response) {
     try {
-        //this variable need to be middleware where from cookies is checked then return the cart id
-        console.log(req.params);
-        
-        const { userId } = req.params
+        //this variable need to be middleware where from cookies is checked then return the cart id        
+        const { userId, storeId } = req.params
 
         const userCart = await prisma.user.findUnique({
           select: {
@@ -32,7 +30,15 @@ export class CartController {
 
         const cartData = await prisma.cartItem.findMany({
           include: {
-            product:true,
+            product: {
+              include: {
+                stock: {
+                  //change storeId value when store is dyncamic
+                  where: {storeId: +storeId}
+                }
+              }
+            },
+            
 
           },
           where: {cartId: userCart.cart?.id}
@@ -91,7 +97,7 @@ export class CartController {
       }
 
       
-      return res.status(200).send({status: 'ok', data: cartItem})
+      return res.status(200).send({status: 'ok', cartItem})
     } catch (error) {
       return res.status(400).send({status: 'error', error})
       

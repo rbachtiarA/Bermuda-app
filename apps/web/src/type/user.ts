@@ -1,8 +1,17 @@
 export interface IRegEmail {
-    email: string;
+  email: string;
 }
 
 export interface ILoginData {
-    email: string;
-    password: string;
+  email: string;
+  password: string;
+}
+
+export interface IUserState {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  avatar: string;
+  addresses: string;
 }

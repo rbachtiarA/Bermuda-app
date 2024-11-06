@@ -1,7 +1,7 @@
 import currencyRupiah from '@/lib/rupiahCurrency'
 import { Button, Card, CardBody, CardFooter, CardHeader } from '@nextui-org/react'
 export default function CartCheckout({ totalPayment, checkout, onCheckout }: { totalPayment: number, checkout: number[], onCheckout: () => void }) {
-
+    
     const nextCardDesktop = 
     <div className='sticky top-2 hidden md:block'>
         <Card className='w-full rounded-none md:rounded-md' >
