@@ -6,7 +6,7 @@ import BottomNavbar from '@/components/bottomNavbar/bottomNavbar';
 import { NextProviders } from './nextuiProvider';
 import Footer from '@/components/footer/footer';
 import { Header } from '@/components/Header';
-
+import "react-toastify/dist/ReactToastify.css";
 const roboto = Roboto({ subsets: ['latin'], weight: ['400', '700'] });
 
 export const metadata: Metadata = {
@@ -27,7 +27,7 @@ export default function RootLayout({
             <StoreProvider>
               <main className='flex flex-col min-h-screen'>
                 <Header />
-                <div className='flex-1'>
+                <div className='flex-1 h-full'>
                   {children}
                 </div>
                 <Footer />
