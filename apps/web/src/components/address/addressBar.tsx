@@ -13,9 +13,8 @@ export default function AddressBar() {
   const [location, setLocation] = useState('JABODETABEK');
 
   return (
-    <div className="text-xs text-neutral-700 py-2">
+    <div className="bg-gray-100 text-xs text-neutral-700 py-2">
       <div className="container mx-auto flex justify-between items-center px-4">
-        {/* Location Info */}
         <div className="flex items-center gap-2 font-medium">
           <LocationIcon className="w-4 h-4 text-current" />
           <span>{location}</span>
@@ -27,9 +26,7 @@ export default function AddressBar() {
           </span>
         </div>
 
-        {/* Right Menu Options */}
         <div className="flex gap-4">
-          {/* Layanan Pelanggan Dropdown */}
           <Dropdown>
             <DropdownTrigger>
               <button className="text-neutral-700 text-xs">
@@ -76,7 +73,6 @@ export default function AddressBar() {
             </DropdownMenu>
           </Dropdown>
 
-          {/* Jelajahi Bermuda Store Dropdown */}
           <Dropdown>
             <DropdownTrigger>
               <button className="text-neutral-700 text-xs">
@@ -114,7 +110,6 @@ export default function AddressBar() {
             </DropdownMenu>
           </Dropdown>
 
-          {/* Download Bermuda Store Dropdown */}
           <Dropdown>
             <DropdownTrigger>
               <button className="text-neutral-700 text-xs flex items-center">

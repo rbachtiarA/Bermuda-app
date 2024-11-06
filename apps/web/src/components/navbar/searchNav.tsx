@@ -1,8 +1,8 @@
 'use client';
 import { Navbar, NavbarContent, Input } from '@nextui-org/react';
-import { SearchIcon } from './SearchIcon';
+import { SearchIcon } from './searchIcon';
 
-export default function SiteNavbar() {
+export default function SearchNav() {
   return (
     <Navbar isBordered>
       <NavbarContent as="div" className="items-center" justify="end">
