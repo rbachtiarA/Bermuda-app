@@ -19,7 +19,7 @@ export default function BottomNavbar () {
                     <LinkButtonBottomNavbar label='Profile' href="/user" imgsrc="/icon-user-profile.svg" imgalt="user" />
                 </li>
                 <li className="w-full">
-                    <LinkButtonBottomNavbar label='Order' href="/order" imgsrc="/icon-order.svg" imgalt="order" />
+                    <LinkButtonBottomNavbar label='Order' href="/userorder" imgsrc="/icon-order.svg" imgalt="order" />
                 </li>
                 <li className="w-full">
                     <LinkButtonBottomNavbar label='Cart' href="/cart" imgsrc="/icon-shopping-cart.svg" imgalt="cart" component={<NotificationBottomNavbar data={cart}/>}/>

@@ -5,13 +5,14 @@ export interface IOrder {
     id: number,
     userId: number,
     shippingOptions: number,
-    status: 'PendingPayment'| 'PendingConfirmed' | 'Proccess' | 'Shipped' | 'Completed' | 'Cancelled'
+    status: 'PendingPayment'| 'Waiting' | 'Confirmed' | 'Proccessed' | 'Shipped' | 'Completed' | 'Cancelled'
     paymentProofUrl: string,
     totalAmount: number,
     addressId: number,
     Payment: IPayment,
     orderItems: IOrderItem[],
     Address: IAddress
+    createdAt: string
 }
     
 

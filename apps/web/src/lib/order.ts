@@ -21,6 +21,8 @@ export const postOrder = async (
         })
         
         const { status, order, msg } = await res.json()
+        console.log({status, msg});
+        
         return {status, order, msg }
     }
 
@@ -51,6 +53,16 @@ export const getOrderPendingPayment = async (userId: number) => {
     }
 }
 
+export const getUserOrders = async (userId: number) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}order/user/${userId}`, { next: { revalidate: 1 } })
+    const { status, msg, order } = await res.json()
+    return { status, msg, order }
+}
+export const getStoreOrders = async (userId: number) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}order/store/${userId}`, { next: { revalidate: 1 } })
+    const { status, msg, order } = await res.json()
+    return { status, msg, order }
+}
 export const cancelOrder = async (orderId: number) => {
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}order/cancel`, {
         method:'PATCH',
@@ -63,4 +75,19 @@ export const cancelOrder = async (orderId: number) => {
     const { status, msg, error } = await res.json()
     
     return { status, msg, error }
+}
+
+export const uploadPaymentProof = async (values: any, orderId: number) => {
+    const formData = new FormData();
+    formData.append('orderId', `${orderId}`)
+    formData.append('paymentProof', values.paymentProof)
+    
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}order/paymentProof`, {
+        method: 'PATCH',
+        body: formData,
+    })
+
+    const { status, msg } = await res.json()
+
+    return { status, msg }
 }
