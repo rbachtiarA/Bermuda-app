@@ -6,7 +6,7 @@ export interface IOrder {
     userId: number,
     shippingOptions: number,
     status: 'PendingPayment'| 'Waiting' | 'Confirmed' | 'Proccessed' | 'Shipped' | 'Completed' | 'Cancelled'
-    paymentProofUrl: string,
+    paymentProofUrl?: string,
     totalAmount: number,
     addressId: number,
     Payment: IPayment,
@@ -24,6 +24,7 @@ export interface IPayment {
     expiredDate: string,
     token: string | null,
     isConfirmed: boolean,
+    confirmedAt: string
 }
 
 export interface IOrderItem {
