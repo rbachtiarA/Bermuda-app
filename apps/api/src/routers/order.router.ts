@@ -21,6 +21,7 @@ export class OrderRouter {
     this.router.post('/neworder', this.orderController.createNewOrder);
     this.router.get('/gateway/status/:orderId', this.orderController.getMidtransStatus);
     this.router.patch('/cancel', this.orderController.cancelOrder);
+    this.router.patch('/complete', this.orderController.patchCompletedOrder);
     this.router.patch('/paymentProof', uploader("paymentProof-", "/paymentProof").single('paymentProof'), this.orderController.updatePaymentProof);
   }
 

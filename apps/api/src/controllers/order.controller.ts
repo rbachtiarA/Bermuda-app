@@ -368,9 +368,11 @@ export class OrderController {
                     Store:true,
                 }
             })
+            
             if(!existOrder) throw 'Order is Invalid'
             if(existOrder.status !== 'PendingPayment') throw 'You cannot cancel payment anymore'
-            if(existOrder.Payment?.paymentMethod === 'Gateway') {
+            const isExpired = Date.parse(String(existOrder.Payment?.expiredDate)) < Date.now()
+            if(existOrder.Payment?.paymentMethod === 'Gateway' && !isExpired) {
                 //cancel midtrans
                 const midtransStatus = await midtrans.snap.transaction.cancel(`ORDER_A${existOrder.id}`)
             }
@@ -486,6 +488,36 @@ export class OrderController {
             })
         } catch (error) {
             return res.status(400).send({
+                status: 'error',
+                msg: `${error}`
+            })
+        }
+    }
+
+    async patchCompletedOrder(req:Request, res: Response) {
+        try {
+            const { orderId, userId } = req.body
+            const existOrder = await prisma.order.findFirst({
+                where: {
+                    AND: {
+                        id: +orderId,
+                        userId: +userId
+                    }
+                }
+            })
+            if(!existOrder) throw "User doesnt have any order"
+
+            const updatedOrder = await prisma.order.update({
+                where: {  id: existOrder.id },
+                data: { status: 'Completed' }
+            })
+
+            return res.status(200).send({
+                status: 'ok',
+                msg: 'Success update order',
+            })
+        } catch (error) {
+            return res.status(401).send({
                 status: 'error',
                 msg: `${error}`
             })
