@@ -19,7 +19,7 @@ export default function PaymentCard() {
     const [data, setData] = useState<IOrder | null>(null)
     
     const getData = async () => {
-        const orderPending: IOrder = await getOrderPendingPayment(user.id) 
+        const orderPending: IOrder = await getOrderPendingPayment() 
         setData(orderPending)
     }
     

@@ -37,7 +37,7 @@ export default function CartList() {
     }
 
     const onCheckout = async () => {
-            const res = await postCheckoutItems(user.id, checkout)
+            const res = await postCheckoutItems(checkout)
             router.push('/cart/checkout')
     }
                     

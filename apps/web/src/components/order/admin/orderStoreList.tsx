@@ -37,7 +37,7 @@ export default function AdminOrderList({}) {
     }, [data, statusFilter])
     
     const onDenyPayment = async (orderId: number) => {
-        const { status } = await denyPaymentOrder(orderId, user.id)
+        const { status } = await denyPaymentOrder(orderId)
         if(status === 'ok') {
             const orderIndex = data.findIndex((item) => item.id === orderId)
             data[orderIndex].status = 'PendingPayment'
@@ -46,7 +46,7 @@ export default function AdminOrderList({}) {
     }
 
     const onAcceptPayment = async (orderId: number) => {
-        const { status } = await acceptPaymentOrder(orderId, user.id)
+        const { status } = await acceptPaymentOrder(orderId)
         if(status === 'ok') {
             const updatedOrderIndex = data.findIndex((item) => item.id === orderId)
             data[updatedOrderIndex].status = 'Proccessed'
@@ -56,7 +56,7 @@ export default function AdminOrderList({}) {
         }
     }
     const onCancelOrder = async (orderId: number) => {
-        const { status } = await canceledOrder(orderId, user.id)
+        const { status } = await canceledOrder(orderId)
         if(status === 'ok') {
             const updatedOrderIndex = data.findIndex((item) => item.id === orderId)
             const tempData = data
@@ -65,7 +65,7 @@ export default function AdminOrderList({}) {
         } 
     }
     const onShipOrder = async (orderId: number) => {
-        const { status } = await shippedOrder(orderId, user.id)
+        const { status } = await shippedOrder(orderId)
         if(status === 'ok') {
             const updatedOrderIndex = data.findIndex((item) => item.id === orderId)
             const tempData = data

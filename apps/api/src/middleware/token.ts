@@ -13,10 +13,24 @@ export const verifyToken = async ( req: Request, res: Response, next: NextFuncti
 
         const verifiedToken = verify(token, process.env.SECRET_JWT!)
         req.user = verifiedToken as IUser 
+        console.log(verifiedToken);
         
         next()
     } catch (err) {
         res.status(404).send({
+            status: 'error',
+            msg: err
+        })
+    }
+}
+
+export const checkAdmin = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        if (req.user?.role !== 'SUPER_ADMIN' || 'STORE_ADMIN') throw "unauthorized!"
+
+        next()
+    } catch (err) {
+        res.status(400).send({
             status: 'error',
             msg: err
         })

@@ -1,18 +1,23 @@
 import prisma from "@/prisma"
 import { Request, Response } from "express"
 
+const getExistingOrder = async (orderId: number, userId: number) => {
+    return await prisma.order.findFirst({
+        where: {
+            AND: {
+                id: +orderId,
+                userId: +userId
+            }
+        }
+    })
+}
 export class AdminController {
+    
     async updateDeniedPayment(req: Request, res: Response) {
         try {
-            const { orderId, userId } = req.body
-            const existOrder = await prisma.order.findFirst({
-                where: {
-                    AND: {
-                        id: +orderId,
-                        userId: +userId
-                    }
-                }
-            })
+            const { orderId } = req.body
+            const userId = req.user?.id
+            const existOrder = await getExistingOrder(orderId, userId!)
             if(!existOrder) throw 'Order is invalid'
 
             const updatedOrder = await prisma.order.update({
@@ -38,15 +43,9 @@ export class AdminController {
     async updateAcceptedPayment(req: Request, res: Response) {
 
         try {
-            const { orderId, userId } = req.body
-            const existOrder = await prisma.order.findFirst({
-                where: {
-                    AND: {
-                        id: +orderId,
-                        userId: +userId
-                    }
-                }
-            })
+            const { orderId } = req.body
+            const userId = req.user?.id
+            const existOrder = await getExistingOrder(orderId, userId!)
             if(!existOrder) throw 'Order is invalid'
 
             const updatedOrder = await prisma.order.update({
@@ -77,15 +76,9 @@ export class AdminController {
     async updateCanceledOrder(req: Request, res: Response) {
 
         try {
-            const { orderId, userId } = req.body
-            const existOrder = await prisma.order.findFirst({
-                where: {
-                    AND: {
-                        id: +orderId,
-                        userId: +userId
-                    }
-                }
-            })
+            const { orderId } = req.body
+            const userId = req.user?.id
+            const existOrder = await getExistingOrder(orderId, userId!)
             if(!existOrder) throw 'Order is invalid'
 
             const updatedOrder = await prisma.order.update({
@@ -101,6 +94,8 @@ export class AdminController {
                 msg: 'success update order'
             })
         } catch (error) {
+            console.log(`${error}`);
+            
             return res.status(401).send({
                 status: 'error',
                 msg: `${error}`
@@ -110,15 +105,9 @@ export class AdminController {
     async updateShippedOrder(req: Request, res: Response) {
 
         try {
-            const { orderId, userId } = req.body
-            const existOrder = await prisma.order.findFirst({
-                where: {
-                    AND: {
-                        id: +orderId,
-                        userId: +userId
-                    }
-                }
-            })
+            const { orderId } = req.body
+            const userId = req.user?.id
+            const existOrder = await getExistingOrder(orderId, userId!)
             if(!existOrder) throw 'Order is invalid'
 
             const updatedOrder = await prisma.order.update({

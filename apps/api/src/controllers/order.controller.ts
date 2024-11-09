@@ -7,11 +7,11 @@ export class OrderController {
     async createNewOrder(req: Request, res: Response) {
         let codeError;
         try {
-            const { userId, totalAmount, shippingCost, addressId, methodPayment, storeId } = req.body
-            
+            const { totalAmount, shippingCost, addressId, methodPayment, storeId } = req.body
+            const userId = req.user?.id
             //get user data
             const user = await prisma.user.findUnique({
-                where: { id: +userId }
+                where: { id: +userId! }
                 
             })
             if(!user) throw 'User is invalid'
@@ -73,7 +73,7 @@ export class OrderController {
                 //create order, payment, and orderItem
                 const order = await tx.order.create({
                     data: {
-                        userId,
+                        userId: user.id,
                         addressId,
                         status: 'PendingPayment',
                         totalAmount: totalAmount,
@@ -189,11 +189,12 @@ export class OrderController {
 
     async getOrderById(req: Request, res: Response) {
         try {
-            const { userId, orderId } = req.params
+            const userId = req.user?.id
+            const { orderId } = req.params
             const order = await prisma.order.findUnique({
                 where: {
                     id: +orderId,
-                    userId: +userId
+                    userId: +userId!
                 },
                 include: {
                     Payment: true
@@ -217,10 +218,10 @@ export class OrderController {
     // get order which have status 'pending', return msg FOUND / NOT FOUND and Order with Order & Payment
     async getPendingOrder(req: Request, res: Response) {
         try {
-            const { userId } = req.params
+            const userId = req.user?.id
             const user = await prisma.user.findUnique({
                 where: {
-                    id: +userId
+                    id: +userId!
                 }
             })
             if(!user) throw 'User is not valid'
@@ -359,9 +360,14 @@ export class OrderController {
     async cancelOrder(req:Request, res: Response) {
         try {
             const { orderId } = req.body
-            const existOrder = await prisma.order.findUnique({
+            const userId = req.user?.id
+            const existOrder = await prisma.order.findFirst({
                 where: {
-                    id: +orderId
+                    AND: {
+                        id: +orderId,
+                        userId: +userId!
+
+                    }
                 },
                 include: {
                     Payment: true,
@@ -427,10 +433,10 @@ export class OrderController {
 
     async getUserOrder(req:Request, res: Response) {
         try {
-            const { userId } = req.params
+            const userId = req.user?.id
             const userOrder = await prisma.order.findMany({
                 where: {
-                    userId: +userId
+                    userId: +userId!
                 },
                 include: {
                     Payment: true
@@ -457,11 +463,11 @@ export class OrderController {
     async getStoreOrder(req:Request, res: Response) {
         try {
             //change this when verification user implemented, get storeId from user store
-            const { userId } = req.params
+            const userId = req.user?.id
             const admin = await prisma.user.findFirst({
                 where: {
                     AND:{
-                        id: +userId,
+                        id: +userId!,
                         role: 'STORE_ADMIN'
                     }
                 }
@@ -496,12 +502,13 @@ export class OrderController {
 
     async patchCompletedOrder(req:Request, res: Response) {
         try {
-            const { orderId, userId } = req.body
+            const { orderId } = req.body
+            const userId = req.user?.id
             const existOrder = await prisma.order.findFirst({
                 where: {
                     AND: {
                         id: +orderId,
-                        userId: +userId
+                        userId: +userId!
                     }
                 }
             })

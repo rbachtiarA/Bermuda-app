@@ -22,7 +22,7 @@ export default function CartQuantityInput({cart}: { cart: ICartItem}) {
     const updatedQuantity = async () => {
         const productId = cart.product?.id
         if(productId) {
-            await updateCartItem(user.id, productId, debouncedQuantity)
+            await updateCartItem(productId, debouncedQuantity)
             dispatch(updatedCartQuantity({productId, quantity: debouncedQuantity}))
         }
     }

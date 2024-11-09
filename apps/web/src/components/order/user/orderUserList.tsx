@@ -13,7 +13,7 @@ export default function OrderList({}) {
     const [page, setPage] = useState<number>(1)
     const [pages, setPages] = useState<number>(1)
     const getData = async () => {
-        const res = await getUserOrders(user.id)
+        const res = await getUserOrders()
         const order = res.order
         setData([...order])
         setPages(Math.ceil(order.length/10))

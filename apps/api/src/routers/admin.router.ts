@@ -1,4 +1,5 @@
 import { AdminController } from '@/controllers/admin.controller';
+import { checkAdmin, verifyToken } from '@/middleware/token';
 import { Router } from 'express';
 
 export class AdminRouter {
@@ -12,10 +13,10 @@ export class AdminRouter {
   }
 
   private initializeRoutes(): void {
-    this.router.patch('/denypayment', this.adminController.updateDeniedPayment);
-    this.router.patch('/acceptpayment', this.adminController.updateAcceptedPayment);
-    this.router.patch('/cancelorder', this.adminController.updateCanceledOrder);
-    this.router.patch('/shiporder', this.adminController.updateShippedOrder);
+    this.router.patch('/denypayment',verifyToken, checkAdmin, this.adminController.updateDeniedPayment);
+    this.router.patch('/acceptpayment', verifyToken, checkAdmin, this.adminController.updateAcceptedPayment);
+    this.router.patch('/cancelorder', verifyToken, checkAdmin, this.adminController.updateCanceledOrder);
+    this.router.patch('/shiporder', verifyToken, checkAdmin, this.adminController.updateShippedOrder);
   }
 
   getRouter(): Router {
