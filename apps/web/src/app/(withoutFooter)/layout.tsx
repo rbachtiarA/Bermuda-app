@@ -1,13 +1,11 @@
 import type { Metadata } from 'next';
 import { Roboto } from 'next/font/google';
-import './globals.css';
+// import './global.css';
 import "react-toastify/dist/ReactToastify.css";
-
+import { AppProvider } from '../AppProvider';
 import AddressBar from '@/components/address/addressBar';
 import SiteNavbar from '@/components/navbar/siteNavbar';
-import Footer from '@/components/footer/footer';
 import BottomNavbar from '@/components/bottomNavbar/bottomNavbar';
-import { AppProvider } from './AppProvider';
 const roboto = Roboto({ subsets: ['latin'], weight: ['400', '700'] });
 
 export const metadata: Metadata = {
@@ -22,18 +20,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={`${roboto.className} relative`}>
-          <AppProvider>
-              {/* <AddressBar />
-              <SiteNavbar /> */}
-              {/* <main className='flex-1'> */}
-                {children}
-              {/* </main> */}
-              {/* <Footer />
-              <BottomNavbar /> */}
-          </AppProvider>            
-      </body>
-    </html>
+    <main className='flex flex-col min-h-screen'>
+      <AddressBar />
+      <SiteNavbar />
+      <section className='flex-1'>
+        {children}
+      </section>
+      <BottomNavbar />
+    </main>
+      
   );
 }
