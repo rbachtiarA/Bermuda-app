@@ -1,5 +1,5 @@
 'use client'
-import { uploadPaymentProof } from "@/lib/order";
+import { uploadPaymentProof } from "@/lib/order.handler";
 import { IOrder } from "@/type/order";
 import { Button } from "@nextui-org/react";
 import { Formik, FormikValues, useFormik } from "formik";

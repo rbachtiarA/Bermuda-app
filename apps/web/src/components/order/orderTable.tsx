@@ -1,19 +1,23 @@
+'use client'
 import currencyRupiah from "@/lib/rupiahCurrency";
 import { IOrder } from "@/type/order";
-import { Chip, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tooltip } from "@nextui-org/react";
-import { Key, useCallback } from "react";
-import AcceptPaymentIcon from "../icon/acceptPaymentIcon";
-import DeniedPaymentIcon from "../icon/deniedPaymentIcon";
-import CancelOrderIcon from "../icon/cancelOrderIcon";
-import ShippingOrderIcon from "../icon/ShipOrderIcon";
+import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tooltip } from "@nextui-org/react";
+import { Key, useCallback, useEffect } from "react";
+import StatusCell from "./tableCell/statusCell";
+import PaymentMethodCell from "./tableCell/paymentMethodCell";
+import AdminActionsCell from "./tableCell/AdminActionsCell";
+import UserActionsCell from "./tableCell/UserActionsCell";
 
-export default function OrderTable({data, admin}:{admin?:boolean, data: IOrder[]}) {
+export default function OrderTable({data, admin, onAccept, onCancel, onDeny, onShip, onReceive}:{admin?:boolean, data: IOrder[],
+	onDeny?:(orderId: number) => void, onAccept?:(orderId: number) => void, onCancel?:(orderId: number) => void, onShip?:(orderId: number) => void, onReceive?:(orderId: number) => void 
+}) {
 	const COLUMN_TABLE_USER = [
 		{name: 'CREATED DATE', uid: 'date'},
 		{name: 'ORDER NO', uid: 'id'},
 		{name: 'STATUS', uid: 'status'},
 		{name: 'PAYMENT METHOD', uid: 'paymentMethod'},
 		{name: 'TOTAL PAYMENT', uid: 'totalAmount'},
+		{name: 'ACTIONS', uid: 'userActions'}
 	]
 
 	const COLUMN_TABLE_ADMIN = [
@@ -23,10 +27,14 @@ export default function OrderTable({data, admin}:{admin?:boolean, data: IOrder[]
 		{name: 'PAYMENT METHOD', uid: 'paymentMethod'},
 		{name: 'TOTAL PAYMENT', uid: 'totalAmount'},
 		{name: 'ACTIONS', uid: 'adminActions'}
-	]
+	]	
+	
+	const onLook = () => {
 
-	const renderCell = useCallback((order: IOrder, columnKey: Key) => {
+	}
 
+	const renderCell = (order: IOrder, columnKey: Key) => {
+		const isImageExist = !!order.paymentProofUrl
 		switch (columnKey) {
 			case 'id':
 				return (
@@ -36,24 +44,16 @@ export default function OrderTable({data, admin}:{admin?:boolean, data: IOrder[]
 				)
 			case 'status':
 				return (
-					<Chip className="capitalize" 
-						color={order.status === 'Proccessed'? 'success' : order.status === "Cancelled" ?  'danger' : order.status === 'Completed'? 'success' :'warning'} 
-						variant={order.status === "Shipped" || order.status === 'Completed' || order.status === 'Cancelled'? 'solid' : 'dot'}
-						size='sm'
-					>
-						{order.status}
-					</Chip>
+					<StatusCell status={order.status}/>
 				)
 			case 'paymentMethod':
 				return (
-					<Chip className="capitalize" color={order.Payment.paymentMethod === "Gateway"? "primary" : 'secondary'} size='sm'>
-						{order.Payment.paymentMethod}
-					</Chip>
+					<PaymentMethodCell paymentMethod={order.Payment.paymentMethod}/>
 				)
 			case 'date':
 				return (
 					<div>
-						<p>{order.createdAt}</p>
+						<p>{new Date(order.createdAt).toLocaleString()}</p>
 					</div>
 				)
 			case 'totalAmount':
@@ -62,54 +62,38 @@ export default function OrderTable({data, admin}:{admin?:boolean, data: IOrder[]
 						<p>{currencyRupiah(order.totalAmount)}</p>
 					</div>
 				)
-			case `adminActions`:
-				const isDenyAble = (order.paymentProofUrl && order.status=== 'Waiting' && !order.Payment.isConfirmed) || false
-				const isAcceptable = isDenyAble
-				const isCancelAble = !(order.status === 'Completed' || order.status === 'Cancelled' || order.status === 'Shipped') || false
-				const isShippedAble = order.status === 'Proccessed'
+			case 'userActions':
+				const isReceiveAble = order.status === "Shipped"
 				return (
 					<div className="flex gap-2">
-						<Tooltip content="Deny Payment" hidden={!isDenyAble}>
-							<span 
-								className={`text-lg text-default-400 
-								${isDenyAble? `cursor-pointer active:opacity-50` : ''}`} 
-								onClick={isDenyAble? () => console.log('hello'): () => null}
-							>
-								<DeniedPaymentIcon fill={!isDenyAble? '#aaaaaa': undefined}/>
-							</span>
-						</Tooltip>
-						<Tooltip content="Accept Payment" hidden={!isAcceptable}>
-							<span 
-								className={`text-lg text-default-400 
-								${isAcceptable? `cursor-pointer active:opacity-50`: ''}`} 
-								onClick={() => console.log('hello')}
-							>
-								<AcceptPaymentIcon fill={!isAcceptable? '#aaaaaa': undefined}/>
-							</span>
-						</Tooltip>
-						<Tooltip content="Cancel Order" hidden={!isCancelAble}>
-							<span className={`text-lg text-default-400 
-								${isCancelAble? `cursor-pointer active:opacity-50` : ''}`} 
-								onClick={() => console.log('hello')}
-							>
-								<CancelOrderIcon fill={!isCancelAble? '#aaaaaa': undefined}/>
-							</span>
-						</Tooltip>
-						<Tooltip content="Deliver" hidden={!isShippedAble}>
-							<span className={`text-lg text-default-400 
-								${isShippedAble? `cursor-pointer active:opacity-50` : ''}`} 
-								onClick={() => console.log('hello')}
-							>
-								<ShippingOrderIcon fill={!isShippedAble? '#aaaaaa': undefined}/>
-							</span>
-						</Tooltip>
+						<UserActionsCell order={order} isImageExist={isImageExist} isReceiveAble={isReceiveAble} onLook={onLook} onReceive={onReceive!}/>
 					</div>
 				)
+			case `adminActions`:
+				const isDenyAble = (order.paymentProofUrl && order.status=== 'Waiting' && !order.Payment.isConfirmed) || false
+				const isAcceptAble = isDenyAble
+				const isCancelAble = !(order.status === 'Completed' || order.status === 'Cancelled' || order.status === 'Shipped') || false
+				const isShippedAble = order.status === 'Proccessed'
+				
+				return (
+					<AdminActionsCell
+						onAccept={onAccept!}
+						onCancel={onCancel!}
+						onDeny={onDeny!}
+						onShip={onShip!}
+						order={order}
+						isDenyAble={isDenyAble}
+						isAcceptAble={isAcceptAble}
+						isCancelAble={isCancelAble}
+						isShippedAble={isShippedAble}
+						isImageExist={isImageExist}
+					/>
+				)
 		}
-
-	}, [])
+	}
+	
     return (
-      <div>
+      <div className="">
 		<Table aria-label="User Order Table">
 			<TableHeader columns={admin? COLUMN_TABLE_ADMIN : COLUMN_TABLE_USER}>
 				{(column) => (
@@ -118,12 +102,14 @@ export default function OrderTable({data, admin}:{admin?:boolean, data: IOrder[]
 					</TableColumn>
 				)}
 			</TableHeader>
-			<TableBody items={data}>
-				{(item) => (
-					<TableRow key={item.id}>
-						{(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
-					</TableRow>
-				)}
+			<TableBody>
+				{
+					data.map((item) => (
+						<TableRow key={item.id}>
+							{(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+						</TableRow>
+					))
+				}
 			</TableBody>
 		</Table>
 	  </div>

@@ -1,3 +1,4 @@
+'use client'
 import { useAppSelector } from '@/redux/hook';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -15,8 +16,8 @@ export default function SideBar() {
     setAccountOpen(!isAccountOpen);
   };
   return (
-    <aside className="hidden lg:block lg:w-1/4">
-      <div className="bg-white rounded-md shadow-md p-4 h-full">
+    <aside className="hidden lg:flex h-full">
+      <div className="bg-foreground-100 shadow-md p-4 h-full">
         <div className="p-3 border-b border-gray-300">
           <div className="flex justify-between">
             <p className="text-sm font-semibold py-2">Dashboard</p>
@@ -74,7 +75,7 @@ export default function SideBar() {
               </li>
               <li className="py-4">
                 <Link
-                  href="/super-admin-account/order-management"
+                  href="/admin/order"
                   className="no-underline text-gray-700 relative"
                 >
                   Order Management

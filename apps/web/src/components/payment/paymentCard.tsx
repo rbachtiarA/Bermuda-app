@@ -1,5 +1,5 @@
 'use client'
-import { cancelOrder, getOrderPendingPayment } from "@/lib/order"
+import { cancelOrder, getOrderPendingPayment } from "@/lib/order.handler"
 import { useAppSelector } from "@/redux/hook"
 import { IOrder } from "@/type/order"
 import { Card, CardBody, CardFooter, CardHeader } from "@nextui-org/react"

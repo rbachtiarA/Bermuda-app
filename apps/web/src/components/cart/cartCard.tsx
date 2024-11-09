@@ -1,6 +1,6 @@
 'use client'
 import { ICartItem } from "@/type/cart";
-import { Button, Checkbox, Skeleton, Tooltip } from "@nextui-org/react"
+import { Button, Checkbox, Skeleton, Tooltip, useDisclosure } from "@nextui-org/react"
 import React, { useEffect, useRef, useState } from "react";
 import {Card, CardBody} from "@nextui-org/react";
 import { useAppDispatch } from "@/redux/hook";
@@ -10,16 +10,16 @@ import { deleteCartItem } from "@/lib/cart";
 import CartQuantityInput from "./cartQuantityInput";
 import currencyRupiah from "@/lib/rupiahCurrency";
 import { addSelectedCheckout, removeSelectedCheckout } from "@/redux/slice/checkoutSlice";
+import ConfirmationModal from "../modal/confirmationModal";
 
 export default function CartCard({cart, checkout, soldOut}: {cart: ICartItem, checkout: number[], soldOut?: boolean}) {
     const dispatch = useAppDispatch()
     const checkRef = useRef<HTMLInputElement>(null)
     const [isChecked, setIsChecked] = useState<boolean>(false)
+    const {isOpen, onOpen ,onOpenChange} = useDisclosure()
     const product = cart.product
 
     const onPressedCard = () => {
-        // const checked = !isChecked
-        // setIsChecked(checked)
         if(!isChecked) {
             dispatch(addSelectedCheckout(cart.id))
         } else {
@@ -57,8 +57,9 @@ export default function CartCard({cart, checkout, soldOut}: {cart: ICartItem, ch
                         </div>
                         <div className="w-full grid grid-cols-2 items-end">
                             <Tooltip content="Remove item" delay={0}>
-                                <Button color="danger" onPress={() => onRemovedItem(cart.id)} size="sm" isIconOnly><Image src={'/icon-trashcan.svg'} alt="delete" width={24} height={24} /></Button>
+                                <Button color="danger" onPress={onOpen} size="sm" isIconOnly><Image src={'/icon-trashcan.svg'} alt="delete" width={24} height={24} /></Button>
                             </Tooltip>
+                            <ConfirmationModal isOpen={isOpen} onOpenChange={onOpenChange} onConfirm={() => onRemovedItem(cart.id)} title='Remove item from cart' content={`Are you sure want to remove ${cart.product?.name} from your cart ?`} />
                             <CartQuantityInput cart={cart}/>
                         </div>
                     </div>

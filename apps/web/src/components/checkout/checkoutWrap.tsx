@@ -5,7 +5,7 @@ import CheckoutList from "./checkoutList"
 import PaymentTotalList from "./paymentList"
 import { useAppDispatch, useAppSelector } from "@/redux/hook"
 import { IAddress } from "@/type/address"
-import { getMidtransToken, getOrderPendingPayment, postOrder } from "@/lib/order"
+import { getMidtransToken, getOrderPendingPayment, postOrder } from "@/lib/order.handler"
 import { useRouter } from "next/navigation"
 import { resetCheckout } from "@/redux/slice/checkoutSlice"
 

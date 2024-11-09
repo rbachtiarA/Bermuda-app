@@ -57,7 +57,7 @@ export default function CartList() {
     }, [])
 
     return (
-        <section className="grid grid-cols-1 md:grid-cols-[4fr_2fr] lg:grid-cols-[1fr_4fr_2fr] w-full max-w-[1500px] mt-2 md:gap-2 md:px-2 ">
+        <section className="grid grid-cols-1 md:grid-cols-[4fr_2fr] lg:grid-cols-[1fr_4fr_2fr] w-full max-w-[1500px] mt-2 md:gap-2 md:px-2 mb-[66px] md:mb-0">
             <div className="lg:col-start-2">
                     <div className="sticky top-2 z-10 px-2">
                         <Card>
@@ -101,7 +101,7 @@ export default function CartList() {
                         </div>
                     }
             </div>
-            <div className="sticky bottom-[56px] md:bottom-[100vw]">
+            <div className="fixed md:sticky w-full bottom-[56px] md:bottom-[100vw]">
                 <CartCheckout totalPayment={totalSelectedItemsAmount} checkout={checkout} onCheckout={onCheckout}/>
             </div>
         </section>

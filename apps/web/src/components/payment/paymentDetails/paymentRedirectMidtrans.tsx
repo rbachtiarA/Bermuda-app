@@ -1,11 +1,13 @@
 'use client'
-import { cancelOrder, getMidtransStatus } from "@/lib/order"
+import ConfirmationModal from "@/components/modal/confirmationModal"
+import { getMidtransStatus } from "@/lib/order.handler"
 import { IOrder } from "@/type/order"
-import { Button } from "@nextui-org/react"
+import { Button, useDisclosure } from "@nextui-org/react"
 import { Dispatch, SetStateAction, useState } from "react"
-import { toast, ToastContainer } from "react-toastify"
+import { toast } from "react-toastify"
 
 export default function PaymentRedirectMidtrans({token, orderId, data, setData, onClickCancelOrder}: {token: string, orderId:number, data: IOrder | null, setData:Dispatch<SetStateAction<IOrder | null>>, onClickCancelOrder:() => any}) {
+    const {isOpen, onOpenChange, onOpen} = useDisclosure()
     const [isError, setIsError] = useState<string | null>(null)
     const onClickRedirect = () => {
         window.open(`https://app.sandbox.midtrans.com/snap/v4/redirection/${token}`, '_blank', 'popup,noopener,norefferer')
@@ -21,6 +23,7 @@ export default function PaymentRedirectMidtrans({token, orderId, data, setData, 
         switch (status.midtrans) {
             case "expire":
                 toast.error('your payment is Expired')
+                await onCancel()
                 break;
             
             case "settlement":
@@ -36,7 +39,8 @@ export default function PaymentRedirectMidtrans({token, orderId, data, setData, 
 
     const onCancel = async () => {
         const status = await onClickCancelOrder()
-        if(status.msg === 'NOT_FOUND') {
+        
+        if(status === 'error') {
             setIsError("Please choose method in 'Pay with Gateway' first before 'Cancel Payment'")
         }
         
@@ -48,7 +52,8 @@ export default function PaymentRedirectMidtrans({token, orderId, data, setData, 
                 <Button color={'primary'} onPress={onClickRedirect} className="">Pay with Gateway</Button>
                 <Button color={'primary'} variant="bordered" onPress={onClickCheckStatus} className="">Check Status</Button>
             </div>
-            <Button color={'danger'} variant="light" size="sm" onPress={onCancel} className="">Cancel Payment</Button>
+            <Button color={'danger'} variant="light" size="sm" onPress={onOpen} className="">Cancel Payment</Button>
+            <ConfirmationModal isOpen={isOpen} onConfirm={() => onCancel()} onOpenChange={onOpenChange} title="Cancel Payment" content="Are you sure want to cancel this order ?" />
             
         </div>
     )
