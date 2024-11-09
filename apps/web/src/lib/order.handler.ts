@@ -91,3 +91,17 @@ export const uploadPaymentProof = async (values: any, orderId: number) => {
 
     return { status, msg }
 }
+
+export const completeOrder = async (orderId: number, userId: number) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}order/complete`, {
+        method:'PATCH',
+        body: JSON.stringify({orderId, userId}),
+        headers: {
+            "Content-type":"application/json"
+        }
+    })
+
+    const { status, msg } = await res.json()
+    
+    return { status, msg }
+}
