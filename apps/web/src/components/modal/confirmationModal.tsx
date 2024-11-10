@@ -3,7 +3,7 @@ import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from
 export default function ConfirmationModal({isOpen, title, content,onOpenChange, onConfirm}: {isOpen: boolean, onOpenChange: () => void, title: string, content?: string, onConfirm: () => void}) {
 
     return (
-        <Modal isOpen={isOpen} placement="bottom-center" onOpenChange={onOpenChange} isDismissable={false}>
+        <Modal isOpen={isOpen} placement="center" onOpenChange={onOpenChange}>
             <ModalContent>
 
             {(onClose) => (
