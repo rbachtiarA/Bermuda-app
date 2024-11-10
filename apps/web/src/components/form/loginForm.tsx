@@ -1,6 +1,8 @@
 'use client';
 import { createToken } from '@/lib/server';
 import { loginUser } from '@/lib/user.handler';
+import { useAppDispatch } from '@/redux/hook';
+import { loginAction } from '@/redux/slice/userSlice';
 import { ILoginData } from '@/type/user';
 import { Formik, Form, Field, FormikProps, FormikHelpers } from 'formik';
 import Link from 'next/link';
@@ -16,6 +18,7 @@ const LoginSchema = Yup.object().shape({
 });
 const LoginForm: React.FC = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch()
   const [loginError, setLoginError] = useState<string | null>(null);
   const initialValues: ILoginData = { email: '', password: '' };
 
@@ -23,12 +26,13 @@ const LoginForm: React.FC = () => {
     data: ILoginData,
     action: FormikHelpers<ILoginData>,
   ) => {
-    console.log('Data form yang dikirim:', data);
     try {
       const { result, ok } = await loginUser(data);
+      console.log('Data yang di terima:', result); // debuging
       if (!ok) throw result.msg;
 
       action.resetForm();
+      dispatch(loginAction(result.user))
       createToken(result.token);
       router.push('/');
     } catch (err) {

@@ -7,11 +7,7 @@ import { persistStore } from 'redux-persist';
 import { PersistGate } from 'redux-persist/integration/react';
 import Loading from './storeLoading';
 
-export default function StoreProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function StoreProvider({ children }: { children: React.ReactNode; }) {
   {
     const storeRef = useRef<AppStore>();
     if (!storeRef.current) {
@@ -23,7 +19,7 @@ export default function StoreProvider({
         <PersistGate
           persistor={persistStore(storeRef.current)}
           loading={<Loading />}
-        >
+        >  
           {children}
         </PersistGate>
       </Provider>

@@ -39,4 +39,11 @@ export const loginUser = async (data: { email: string; password: string}) => {
     return { result, ok: res.ok}
 }
 
+export const capitalizeWord = (name: string): string => {
+    return name
+    .toLowerCase()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
+}
 
