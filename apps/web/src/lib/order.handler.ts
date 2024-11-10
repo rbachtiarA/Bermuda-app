@@ -92,7 +92,7 @@ export const getStoreOrders = async (userId: number) => {
     return { status, msg, order }
 }
 export const cancelOrder = async (orderId: number) => {
-    const token = getToken()
+    const token = await getToken()
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}order/cancel`, {
         method:'PATCH',
         body: JSON.stringify({orderId}),

@@ -3,10 +3,10 @@ import React from 'react'
 
 export default function layout({children}:{children: React.ReactNode}) {
   return (
-    <div className='grid md:grid-cols-[25%_75%]'>
-      <div className=''>
-        <SideBar />
-      </div>
+    <div className='flex w-full h-full'>
+        <div className='mr-[227px] md:block hidden'>
+          <SideBar />
+        </div>
         {children}
     </div>
   )
