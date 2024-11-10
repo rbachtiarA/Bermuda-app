@@ -19,6 +19,7 @@ import path from 'path';
 import { AuthRouter } from './routers/auth.router';
 import session from 'express-session';
 import passport from 'passport';
+import { AdminRouter } from './routers/admin.router';
 
 export default class App {
   private app: Express;
@@ -76,10 +77,11 @@ export default class App {
     const authRouter = new AuthRouter();
     const storeRouter = new StoreRouter()
     const orderRouter = new OrderRouter()
-
+    const adminRouter = new AdminRouter()
     this.app.get('/api', (req: Request, res: Response) => {
       res.send(`Hello, Purwadhika Student API!`);
     });
+
     this.app.use('/api/users', userRouter.getRouter());
     this.app.use('/api/product', productRouter.getRouter());
     this.app.use('/api/cart', cartRouter.getRouter());
@@ -87,6 +89,7 @@ export default class App {
     this.app.use('/api/order', orderRouter.getRouter());
     this.app.use('/api/categories', categoryRouter.getRouter())
     this.app.use('/api/auth', authRouter.getRouter());
+    this.app.use('/api/admin', adminRouter.getRouter());
   }
 
   public start(): void {

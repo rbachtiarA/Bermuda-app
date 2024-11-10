@@ -3,6 +3,7 @@ import { postCartItems } from "@/lib/cart"
 import { useAppDispatch, useAppSelector } from "@/redux/hook"
 import { addedToCart } from "@/redux/slice/cartSlice"
 import { IStocks } from "@/type/product"
+import { Button } from "@nextui-org/react"
 
 export default function ProductCard({stock}:{stock: IStocks}) {
     const dispatch = useAppDispatch()
@@ -23,9 +24,9 @@ export default function ProductCard({stock}:{stock: IStocks}) {
                 <p>product name: {product.name}</p>
                 <p>product price: {product.price}</p>
             </div>
-            <button className="bg-green-200 p-2" onClick={() => onClickedAddToCart(1)}>
+            <Button color="primary" variant="bordered" onPress={() => onClickedAddToCart(1)} isDisabled={stock.quantity === 0}>
                 Add to Cart    
-            </button>       
+            </Button>       
         </li>
     )
     

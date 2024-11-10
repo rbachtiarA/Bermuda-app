@@ -1,16 +1,17 @@
-import { json, Request, Response } from 'express';
+import { Request, Response } from 'express';
 import  midtrans  from '../services/midtrans.js'
 import prisma from '@/prisma';
+import { formatDateMidtrans } from '@/helpers/midtrans-dateformat';
 
 export class OrderController {
     async createNewOrder(req: Request, res: Response) {
+        let codeError;
         try {
-            const { userId, totalAmount, shippingCost, addressId, methodPayment, storeId } = req.body
-            console.log(storeId);
-            
+            const { totalAmount, shippingCost, addressId, methodPayment, storeId } = req.body
+            const userId = req.user?.id
             //get user data
             const user = await prisma.user.findUnique({
-                where: { id: +userId }
+                where: { id: +userId! }
                 
             })
             if(!user) throw 'User is invalid'
@@ -54,7 +55,10 @@ export class OrderController {
                         }
                     })
                     if(!existStock) throw 'Some product stock is invalid'
-                    if(existStock!.quantity - item.quantity < 0) throw {code: 'ITEM_INSUFFICIENT', details: `${existStock.product.name} is insuffficient`}
+                    if(existStock!.quantity - item.quantity < 0) {
+                        codeError = {code: 'ITEM_INSUFFICIENT', details: `${existStock.product.name} is insuffficient`}
+                        throw 'Insufficient product stock'
+                    } 
 
                     await tx.stock.update({
                         where: {
@@ -69,7 +73,7 @@ export class OrderController {
                 //create order, payment, and orderItem
                 const order = await tx.order.create({
                     data: {
-                        userId,
+                        userId: user.id,
                         addressId,
                         status: 'PendingPayment',
                         totalAmount: totalAmount,
@@ -104,7 +108,7 @@ export class OrderController {
                     //midtrans body
                     const parameter = {
                         transaction_details: {
-                            order_id: `ORDER_${order.id}`,
+                            order_id: `ORDER_A${order.id}`,
                             gross_amount: totalAmount
                         },
                         item_details: [...itemDetails, {
@@ -116,11 +120,12 @@ export class OrderController {
                             first_name: user.name
                         },
                         expiry: {
+                            start_time: formatDateMidtrans(new Date(Date.now())),
                             unit: "hour",
                             duration: HOURS_EXPIRED
                         }
                     }
-
+                    
                     const midtransTransaction = await midtrans.snap.createTransaction(parameter)
                     
                     if(!midtransTransaction) throw 'error on creating midtrans token'
@@ -144,18 +149,52 @@ export class OrderController {
         } catch (error) {
             return res.status(400).send({
                 status: 'error',
-                msg: error
+                msg: codeError,
+                error: `${error}`
             })
         }
     }
 
+    async updatePaymentProof(req: Request, res: Response) {
+        try {            
+            const { orderId } = req.body
+            if(!req?.file) throw 'Please upload validated file'
+            const imgLink = `${process.env.IMAGE_STORAGE_URL}paymentProof/${req.file.filename}`
+
+            const existOrder = await prisma.order.findUnique({
+                where: { id: +orderId }
+            })
+            if(!existOrder) throw 'Order is invalid'
+
+            const updatedOrder = await prisma.order.update({
+                where: {id: existOrder.id},
+                data: {
+                    paymentProofUrl: imgLink,
+                    status: 'Waiting'
+                }
+            })
+
+            return res.status(200).send({
+                status: 'ok',
+                msg: imgLink
+            })
+        } catch (error) {
+            return res.status(400).send({
+                status: 'error',
+                msg: `${error}`
+            })
+        }
+        
+    }
+
     async getOrderById(req: Request, res: Response) {
         try {
-            const { userId, orderId } = req.params
+            const userId = req.user?.id
+            const { orderId } = req.params
             const order = await prisma.order.findUnique({
                 where: {
                     id: +orderId,
-                    userId: +userId
+                    userId: +userId!
                 },
                 include: {
                     Payment: true
@@ -179,10 +218,10 @@ export class OrderController {
     // get order which have status 'pending', return msg FOUND / NOT FOUND and Order with Order & Payment
     async getPendingOrder(req: Request, res: Response) {
         try {
-            const { userId } = req.params
+            const userId = req.user?.id
             const user = await prisma.user.findUnique({
                 where: {
-                    id: +userId
+                    id: +userId!
                 }
             })
             if(!user) throw 'User is not valid'
@@ -222,7 +261,7 @@ export class OrderController {
 
     // get midtrans transaction status, from 'orderId', 
     //      if status "expire" or "cancel" update order status with 'cancelled', and return all order items quantity to store quantity
-    //      if status "settlement" update order status with 'confirmed' and update payment isConfirmed to true & confirmedAt to date.now()
+    //      if status "settlement" update order status with 'Proccessed' and update payment isConfirmed to true & confirmedAt to date.now()
     async getMidtransStatus(req:Request, res: Response) {   
         try {
             const { orderId } = req.params 
@@ -234,14 +273,14 @@ export class OrderController {
             if(!existOrder) throw 'Order id is invalid'
 
             //get midtransStatus, if customer didnt pick one of midtrans service will return 404
-            const midtransStatus = await midtrans.snap.transaction.status(`ORDER_${orderId}`)        
+            const midtransStatus = await midtrans.snap.transaction.status(`ORDER_A${orderId}`)        
 
             //convert status to converStatus, which for grouping purpose
             const status = midtransStatus?.transaction_status
             const convertStatus = status === 'cancel' || status === 'null' ? 'expire' : status;
 
             //this condition to prevent unecessary multiple running proccessed
-            if((convertStatus === 'expire' && existOrder.status !== 'Cancelled') || (convertStatus === 'settlement' && existOrder.status !== 'Confirmed')) {
+            if((convertStatus === 'expire' && existOrder.status !== 'Cancelled') || (convertStatus === 'settlement' && existOrder.status !== 'Proccessed')) {
                 switch (convertStatus) {
                     // if expire, status transaction will be 'cancelled' and any ordered items quantity will revert back to stock store
                     case 'expire':
@@ -283,13 +322,13 @@ export class OrderController {
                         break;
                     
                     case 'settlement':
-                        // update status of order to confirmed
+                        // update status of order to processed
                         const updateOrder = await prisma.order.update({
                             where: {
                                 id: +orderId
                             },
                             data: {
-                                status: 'Confirmed',
+                                status: 'Proccessed',
                                 Payment: {
                                     update: {
                                         isConfirmed: true,
@@ -305,11 +344,11 @@ export class OrderController {
             
             return res.status(200).send({
                 status: 'ok',
-                midtrans: midtransStatus
+                midtrans: midtransStatus.transaction_status
             })
         } catch (error) {            
             return res.status(200).send({
-                status: 'not_found',
+                status: 'NOT_FOUND',
                 midtrans: null, 
                 msg:'You need to select your transaction service first',
             })
@@ -321,20 +360,29 @@ export class OrderController {
     async cancelOrder(req:Request, res: Response) {
         try {
             const { orderId } = req.body
-            const existOrder = await prisma.order.findUnique({
+            const userId = req.user?.id
+            console.log(userId, orderId);
+            
+            const existOrder = await prisma.order.findFirst({
                 where: {
-                    id: +orderId
+                    AND: {
+                        id: +orderId,
+                        userId: +userId!
+
+                    }
                 },
                 include: {
                     Payment: true,
                     Store:true,
                 }
             })
+            
             if(!existOrder) throw 'Order is Invalid'
             if(existOrder.status !== 'PendingPayment') throw 'You cannot cancel payment anymore'
-            if(existOrder.Payment?.paymentMethod === 'Gateway') {
+            const isExpired = Date.parse(String(existOrder.Payment?.expiredDate)) < Date.now()
+            if(existOrder.Payment?.paymentMethod === 'Gateway' && !isExpired) {
                 //cancel midtrans
-                const midtransStatus = await midtrans.snap.transaction.cancel(`ORDER_${existOrder.id}`)
+                const midtransStatus = await midtrans.snap.transaction.cancel(`ORDER_A${existOrder.id}`)
             }
             
             if(existOrder.paymentProofUrl !== null) throw 'You already have uploaded payment proof'
@@ -379,8 +427,108 @@ export class OrderController {
         } catch (error) {
             return res.status(400).send({
                 status: 'error',
-                msg: 'not_found',
+                msg: 'NOT_FOUND',
                 error: `${error}`
+            })
+        }
+    }
+
+    async getUserOrder(req:Request, res: Response) {
+        try {
+            const userId = req.user?.id
+            const userOrder = await prisma.order.findMany({
+                where: {
+                    userId: +userId!
+                },
+                include: {
+                    Payment: true
+                },
+                orderBy: {
+                    createdAt: 'desc'
+                }
+            })
+            if(!userOrder) throw "User doesnt have any order"
+
+            return res.status(200).send({
+                status: 'ok',
+                msg: 'Success get data',
+                order: userOrder
+            })
+        } catch (error) {
+            return res.status(400).send({
+                status: 'error',
+                msg: `${error}`
+            })
+        }
+    }
+
+    async getStoreOrder(req:Request, res: Response) {
+        try {
+            //change this when verification user implemented, get storeId from user store
+            const userId = req.user?.id
+            const admin = await prisma.user.findFirst({
+                where: {
+                    AND:{
+                        id: +userId!,
+                        role: 'STORE_ADMIN'
+                    }
+                }
+            })
+            if(!admin) return res.status(401).send({status: 'error', msg: 'Unauthoritized user'}) 
+
+            const storeOrder = await prisma.order.findMany({
+                where: {
+                    storeId: admin?.storeId!
+                },
+                include: {
+                    Payment: true
+                },
+                orderBy: {
+                    createdAt: 'desc'
+                }
+            })
+            if(!storeOrder) return res.status(200).send({status: 'ok', msg: 'there is no order in this store'})
+
+            return res.status(200).send({
+                status: 'ok',
+                msg: 'Success get data',
+                order: storeOrder
+            })
+        } catch (error) {
+            return res.status(400).send({
+                status: 'error',
+                msg: `${error}`
+            })
+        }
+    }
+
+    async patchCompletedOrder(req:Request, res: Response) {
+        try {
+            const { orderId } = req.body
+            const userId = req.user?.id
+            const existOrder = await prisma.order.findFirst({
+                where: {
+                    AND: {
+                        id: +orderId,
+                        userId: +userId!
+                    }
+                }
+            })
+            if(!existOrder) throw "User doesnt have any order"
+
+            const updatedOrder = await prisma.order.update({
+                where: {  id: existOrder.id },
+                data: { status: 'Completed' }
+            })
+
+            return res.status(200).send({
+                status: 'ok',
+                msg: 'Success update order',
+            })
+        } catch (error) {
+            return res.status(401).send({
+                status: 'error',
+                msg: `${error}`
             })
         }
     }

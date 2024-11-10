@@ -1,20 +1,31 @@
 //all userId should be change to JWT TOKEN if already implemented
 
 import { ICartItem } from "@/type/cart"
+import { getToken } from "./server"
+
 
 export const getAllCartItems = async (userId: number, storeId:number) => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}cart/${userId}/store/${storeId}`, {next: {revalidate: 1}})
+    const token = await getToken()
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}cart/store/${storeId}`, {
+        headers: {
+            "Content-type":"application/json",
+            'Authorization': `Bearer ${token}`
+        },
+        next: {revalidate: 1}})
     const { status, data } = await res.json()
     
     return data
 }
 
+//already add token
 export const postCartItems = async (userId:number , productId:number, quantity:number) => {
+    const token = await getToken()
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}cart`, {
         method:'POST',
         body: JSON.stringify({userId, productId, quantity}),
         headers: {
-            "Content-type":"application/json"
+            "Content-type":"application/json",
+            'Authorization': `Bearer ${token}`
         }
     })
 
@@ -23,12 +34,14 @@ export const postCartItems = async (userId:number , productId:number, quantity:n
     return { ok: res.ok, cartItem }
 }
 
-export const updateCartItem = async (userId:number , productId:number, quantity:number) => {
+export const updateCartItem = async (productId:number, quantity:number) => {
+    const token = await getToken()
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}cart`, {
         method:'PUT',
-        body: JSON.stringify({userId, productId, quantity}),
+        body: JSON.stringify({productId, quantity}),
         headers: {
-            "Content-type":"application/json"
+            "Content-type":"application/json",
+            'Authorization': `Bearer ${token}`
         }
     })
 
@@ -45,12 +58,14 @@ export const deleteCartItem = async (cartItemId:number) => {
     return { ok: res.ok, data }
 }
 
-export const postCheckoutItems = async (userId:number, selectedIds: number[]) => {
+export const postCheckoutItems = async (selectedIds: number[]) => {
+    const token = await getToken()
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}cart/checkout`, {
         method:'POST',
-        body: JSON.stringify({userId, selectedIds}),
+        body: JSON.stringify({selectedIds}),
         headers: {
-            "Content-type":"application/json"
+            "Content-type":"application/json",
+            'Authorization': `Bearer ${token}`
         }
     })
 
@@ -59,7 +74,13 @@ export const postCheckoutItems = async (userId:number, selectedIds: number[]) =>
 }
 
 export const getCheckoutItems = async (userId: number) => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}cart/checkout/${userId}`, { next: { revalidate: 1 } })
+    const token = await getToken()
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}cart/checkout`, { 
+        headers: {
+            "Content-type":"application/json",
+            'Authorization': `Bearer ${token}`
+        },
+        next: { revalidate: 1 } })
     const { status, data } = await res.json()
     console.log(res);
     

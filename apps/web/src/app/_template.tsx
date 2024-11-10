@@ -8,10 +8,12 @@ export default function Template({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <div>
+    <div className='flex flex-col min-h-screen w-full'>
       <AddressBar />
       <SiteNavbar />
-      {children}
+      <main className='flex-1'>
+        {children}
+      </main>
       <Footer />
       <BottomNavbar />
     </div>

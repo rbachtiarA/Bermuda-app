@@ -10,9 +10,9 @@ export class CartController {
   }
   async getCartsItemByIdCart(req: Request, res: Response) {
     try {
-        //this variable need to be middleware where from cookies is checked then return the cart id        
-        const { userId, storeId } = req.params
-
+        //this variable need to be middleware where from cookies is checked then return the cart id, ---done        
+        const { storeId } = req.params
+        const userId = req.user?.id
         const userCart = await prisma.user.findUnique({
           select: {
             cart: {
@@ -23,7 +23,7 @@ export class CartController {
           }
           ,
           where: {
-            id: +userId
+            id: +userId!
           }
         })
         if(!userCart) throw 'User is not exist'
@@ -53,13 +53,14 @@ export class CartController {
 
   async postCartsItem(req: Request, res: Response) {
     try {
-      const { userId, productId, quantity } = req.body
-      
+      const { productId, quantity } = req.body
+      const userId = req.user?.id
+
       //check is user exist, then give cart Id
       const user = await prisma.user.findUnique({
         select: { cart: true },
         where: {
-          id: +userId
+          id: +userId!
         }
       })
       if (!user?.cart) throw 'User / Cart not found'
@@ -106,13 +107,13 @@ export class CartController {
 
   async updateQuantityCartItem(req: Request, res: Response) {
     try {
-      const { userId, productId, quantity } = req.body
-      
+      const { productId, quantity } = req.body
+      const userId = req.user?.id
       //check is user exist, then give cart Id
       const user = await prisma.user.findUnique({
         select: { cart: true },
         where: {
-          id: +userId
+          id: +userId!
         }
       })
       if (!user?.cart) throw 'User not found'
@@ -161,13 +162,13 @@ export class CartController {
   async getCheckoutByUserId(req:Request, res:Response) {
 
     // this variable should change, when middleware auth is implemented req.user
-    const {userId} = req.params
+    const userId = req.user?.id
     const data = await prisma.checkout.findUnique({
       select: { CartItem: {
         include: { product: true }
       } },
       where: {
-        userId: +userId
+        userId: +userId!
       }
     })
 
@@ -177,11 +178,11 @@ export class CartController {
   async updateCheckoutCartItem(req: Request, res: Response) {
     try {
       //change variable userId to auth system, selectIds collection of selected Item
-      const { userId, selectedIds } = req.body
-
+      const { selectedIds } = req.body
+      const userId = req.user?.id
       //verify is userId valid,and then return checkoutId
       const userCheckoutId = await prisma.user.findUnique({
-        where: { id: +userId},
+        where: { id: +userId!},
         select: {
           checkout: {
             select: {
@@ -202,9 +203,7 @@ export class CartController {
             set: []
           }
         } 
-
-        }
-      )
+      })
 
       //update cartItem which id inside selectedIds
       const updatedData = await prisma.cartItem.updateMany({
@@ -227,11 +226,11 @@ export class CartController {
   async removeCheckoutCartItem(req: Request, res: Response) {
     try {
        //change variable userId to auth system, selectIds collection of selected Item
-       const { userId } = req.body
+       const userId = req.user?.id
 
        //verify is userId valid,and then return checkoutId
        const userCheckoutId = await prisma.user.findUnique({
-         where: { id: +userId},
+         where: { id: +userId!},
          select: {
            checkout: {
              select: {
@@ -256,5 +255,3 @@ export class CartController {
     }
   }
 }
-
-console.log('Hello')

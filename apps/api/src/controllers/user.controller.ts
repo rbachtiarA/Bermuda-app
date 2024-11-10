@@ -1,3 +1,4 @@
+
 import { Request, Response } from 'express';
 import prisma from '@/prisma';
 import { sign, verify} from 'jsonwebtoken'
@@ -83,11 +84,11 @@ export class UserController {
   }
 
   async verifyUser(req: Request, res: Response) {
-    try {
+    try {      
       const { password, name} = req.body;
       const { token } = req.params;
       const referralCode = generateReferralCode(name)
-      const decoded = verify(token, process.env.SECRET_JWT!) as { email: string};
+      const decoded = verify(token, process.env.SECRET_JWT!) as { email: string};      
       const salt = await genSalt(10)
       const hashPassword = await hash(password, salt)
 
@@ -142,7 +143,7 @@ export class UserController {
         status: 'ok',
         msg: "Berhasil masuk",
         token,
-        user: existingUser,
+        user: {id: existingUser.id, role: existingUser.role},
       })
     } catch (err) {
       res.status(400).send({

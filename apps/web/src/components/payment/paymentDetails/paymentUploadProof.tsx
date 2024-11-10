@@ -1,6 +1,9 @@
 'use client'
+import { uploadPaymentProof } from "@/lib/order.handler";
+import { IOrder } from "@/type/order";
 import { Button } from "@nextui-org/react";
 import { Formik, FormikValues, useFormik } from "formik";
+import { Dispatch, SetStateAction } from "react";
 import * as yup from 'yup'
 
 const FILE_SIZE = 1 * 1024 * 1024 // MB
@@ -16,15 +19,24 @@ const createSchema = yup.object({
         })
 })
 
-export default function PaymentUploadProof({onClickCancelOrder}: {onClickCancelOrder:() => void}) {
+export default function PaymentUploadProof({data, setData,onClickCancelOrder}: {data:IOrder | null, setData:Dispatch<SetStateAction<IOrder | null>>, onClickCancelOrder:() => void}) {
+    const onUploadFile = async (file: any, orderId: number) => {
+        const { status, msg } = await uploadPaymentProof(file, orderId)
+        
+        if(status === 'ok') {
+            setData({...data!, status:'Waiting', paymentProofUrl: msg})
+            console.log({...data!, status: 'Waiting', paymentProofUrl: msg})            
+        }
+    }
+
     const formik = useFormik<FormikValues>({
         initialValues: {
             paymentProof: null,
         },
         validationSchema: createSchema,
         onSubmit: (values) => {
-            console.log(values)
-        }
+            onUploadFile(values, data!.id)
+        }   
     })
 
   return (
@@ -50,7 +62,7 @@ export default function PaymentUploadProof({onClickCancelOrder}: {onClickCancelO
                 <Button type="submit" color="primary">Upload Payment Proof</Button>
             </div>
         </form>    
-        <Button className='w-full' color="danger" variant="light" onPress={onClickCancelOrder}>Cancel Payment</Button>
+        <Button className='w-full' color="danger" variant="light" onPress={onClickCancelOrder}>Cancel Payment</Button> 
     </div>
   )
 }

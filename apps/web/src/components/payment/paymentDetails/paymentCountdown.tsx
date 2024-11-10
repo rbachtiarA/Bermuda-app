@@ -6,7 +6,8 @@ export default function PaymentCountdown({expDate}: {expDate:string}) {
 
     useEffect(() => {
         const expiredLeftInSecond = Math.ceil((Date.parse(expDate) - Date.now())/1000)
-        setTimeLeft(expiredLeftInSecond)
+        
+        setTimeLeft(expiredLeftInSecond <= 0? 0 : expiredLeftInSecond)
     },[])
 
     useEffect(() => {
