@@ -1,6 +1,7 @@
 'use client';
 import { createToken } from '@/lib/server';
 import { loginUser } from '@/lib/user.handler';
+import { useAppDispatch } from '@/redux/hook';
 import { ILoginData } from '@/type/user';
 import { Formik, Form, Field, FormikProps, FormikHelpers } from 'formik';
 import Link from 'next/link';
@@ -16,6 +17,7 @@ const LoginSchema = Yup.object().shape({
 });
 const LoginForm: React.FC = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch()
   const [loginError, setLoginError] = useState<string | null>(null);
   const initialValues: ILoginData = { email: '', password: '' };
 

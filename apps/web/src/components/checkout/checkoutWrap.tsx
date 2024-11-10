@@ -5,7 +5,7 @@ import CheckoutList from "./checkoutList"
 import PaymentTotalList from "./paymentList"
 import { useAppDispatch, useAppSelector } from "@/redux/hook"
 import { IAddress } from "@/type/address"
-import { getMidtransToken, getOrderPendingPayment, postOrder } from "@/lib/order"
+import { getMidtransToken, getOrderPendingPayment, postOrder } from "@/lib/order.handler"
 import { useRouter } from "next/navigation"
 import { resetCheckout } from "@/redux/slice/checkoutSlice"
 
@@ -22,12 +22,12 @@ export default function CheckoutWrapper() {
     const router = useRouter()
     const onBuy = async () => {
         setIsLoading(true)
-        const pendingOrder = await getOrderPendingPayment(user.id)
+        const pendingOrder = await getOrderPendingPayment()
         if(pendingOrder) {
             console.log('You need to proccess your payment previous order to make new order');
             setIsError('You need to proccess your payment previous order to make new order')
         } else {
-            const {status, order, msg} = await postOrder(user.id, itemTotalPayment!+travelPayment!, travelPayment!, selectedAddress?.id!, store.id! ,methodPayment! )
+            const {status, order, msg} = await postOrder(itemTotalPayment!+travelPayment!, travelPayment!, selectedAddress?.id!, store.id! ,methodPayment! )
             if(status === 'error') {
                 if(msg.code === 'ITEM_INSUFFICIENT') {
                     setIsError(msg.details)
@@ -35,7 +35,7 @@ export default function CheckoutWrapper() {
             }
                     
             if(order && methodPayment === 'Gateway') {
-                const token = await getMidtransToken(user.id, order.order.id as number)
+                const token = await getMidtransToken(order.order.id as number)
                 window.open(`https://app.sandbox.midtrans.com/snap/v4/redirection/${token}`, '_blank', 'noopener,noreferrer')
             }
             if(order) router.push('/payment')               

@@ -1,4 +1,5 @@
 import { OrderController } from '@/controllers/order.controller';
+import { verifyToken } from '@/middleware/token';
 import { uploader } from '@/middleware/uploader';
 import { Router } from 'express';
 
@@ -13,13 +14,16 @@ export class OrderRouter {
   }
 
   private initializeRoutes(): void {
-    this.router.get('/user/:userId/order/:orderId', this.orderController.getOrderById);
-    this.router.get('/pending/:userId', this.orderController.getPendingOrder);
-    this.router.post('/neworder', this.orderController.createNewOrder);
+    //get rid userId params when verify middleware implemented
+    this.router.get('/order/:orderId',verifyToken, this.orderController.getOrderById);
+    this.router.get('/', verifyToken, this.orderController.getUserOrder);
+    this.router.get('/store', verifyToken, this.orderController.getStoreOrder);
+    this.router.get('/pending', verifyToken, this.orderController.getPendingOrder);
+    this.router.post('/neworder',verifyToken, this.orderController.createNewOrder);
     this.router.get('/gateway/status/:orderId', this.orderController.getMidtransStatus);
-    this.router.patch('/cancel', this.orderController.cancelOrder);
-    // this.router.patch('/paymentProof', uploader("avatar", "/avatar").single('avatar'), this.userController.editAvatar);
-  
+    this.router.patch('/cancel', verifyToken, this.orderController.cancelOrder);
+    this.router.patch('/complete', verifyToken, this.orderController.patchCompletedOrder);
+    this.router.patch('/paymentProof', uploader("paymentProof-", "/paymentProof").single('paymentProof'), this.orderController.updatePaymentProof);
   }
 
   getRouter(): Router {
