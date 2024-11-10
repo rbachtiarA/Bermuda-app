@@ -12,6 +12,6 @@ export interface IUserState {
   name: string;
   email: string;
   role: string;
-  avatar: string;
-  addresses: string;
+  avatarUrl: string;
+  address: string;
 }

@@ -1,4 +1,5 @@
 import PromoCarousel from '@/components/carousel/promo';
+import ProductList from '@/components/product/productList';
 import Wrapper from '@/components/wrapper';
 import { NextPage } from 'next';
 
@@ -12,6 +13,7 @@ const HomePage: NextPage = () => {
         <h1 className="text-2xl font-bold pt-8 px-4">
           Selamat Datang di Toko Grosir Online
         </h1>
+        <ProductList />
       </div>
     </Wrapper>
   );
