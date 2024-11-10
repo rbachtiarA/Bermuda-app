@@ -1,8 +1,6 @@
 'use client'
 import currencyRupiah from "@/lib/rupiahCurrency";
-import { Button, Card, CardBody, CardFooter, CardHeader, Divider, Input } from "@nextui-org/react";
-import { useState } from "react";
-
+import { Button, Card, CardBody, CardFooter, CardHeader, Divider } from "@nextui-org/react";
 export default function PaymentTotalList(
     {
         itemTotalPayment, travelPayment, isPaymentInvalid, isLoading, isError,

@@ -13,7 +13,7 @@ export default function AddressBar() {
   const [location, setLocation] = useState('JABODETABEK');
 
   return (
-    <div className="bg-gray-100 text-xs text-neutral-700 py-2 w-full">
+    <div className="bg-gray-100 text-xs text-neutral-700 py-2 w-full hidden md:block">
       <div className="container mx-auto flex justify-between items-center px-4">
         <div className="flex items-center gap-2 font-medium">
           <LocationIcon className="w-4 h-4 text-current" />

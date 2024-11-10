@@ -16,7 +16,7 @@ export default function SideBar() {
     setAccountOpen(!isAccountOpen);
   };
   return (
-    <aside className="hidden lg:flex h-full">
+    <aside className="hidden fixed left-0 lg:flex h-screen">
       <div className="bg-foreground-100 shadow-md p-4 h-full">
         <div className="p-3 border-b border-gray-300">
           <div className="flex justify-between">

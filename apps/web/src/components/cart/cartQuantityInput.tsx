@@ -25,6 +25,7 @@ export default function CartQuantityInput({cart}: { cart: ICartItem}) {
             await updateCartItem(productId, debouncedQuantity)
             dispatch(updatedCartQuantity({productId, quantity: debouncedQuantity}))
         }
+        
     }
 
     // minus / plus button is pressed add value to quantity
@@ -61,7 +62,7 @@ export default function CartQuantityInput({cart}: { cart: ICartItem}) {
     useEffect(() => {
 
         if(debouncedQuantity > 0 && debouncedQuantity <= productStock) {
-            updatedQuantity()
+           updatedQuantity()
         }
         setIsDebouncing(false)
 
