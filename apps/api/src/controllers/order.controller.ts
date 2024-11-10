@@ -361,6 +361,8 @@ export class OrderController {
         try {
             const { orderId } = req.body
             const userId = req.user?.id
+            console.log(userId, orderId);
+            
             const existOrder = await prisma.order.findFirst({
                 where: {
                     AND: {

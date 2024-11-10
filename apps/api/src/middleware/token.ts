@@ -7,13 +7,13 @@ type IUser = {
 }
 
 export const verifyToken = async ( req: Request, res: Response, next: NextFunction) => {
-    try {
+    try {       
         const token = req.header("Authorization")?.replace("Bearer ", "")
+        
         if (!token) throw "token empty"
-
+        
         const verifiedToken = verify(token, process.env.SECRET_JWT!)
         req.user = verifiedToken as IUser 
-        console.log(verifiedToken);
         
         next()
     } catch (err) {
@@ -26,8 +26,8 @@ export const verifyToken = async ( req: Request, res: Response, next: NextFuncti
 
 export const checkAdmin = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        if (req.user?.role !== 'SUPER_ADMIN' || 'STORE_ADMIN') throw "unauthorized!"
-
+        if (!(req.user?.role === 'STORE_ADMIN' || req.user?.role === 'SUPER_ADMIN')) throw "unauthorized!"
+        
         next()
     } catch (err) {
         res.status(400).send({
