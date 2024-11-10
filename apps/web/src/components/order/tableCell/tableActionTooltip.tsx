@@ -22,8 +22,9 @@ export default function TableActionTooltip({content, children, isDisabled, noMod
                 {children}
             </span>
         </Tooltip>
-
-        <ConfirmationModal isOpen={isOpen} onOpenChange={onOpenChange} title="Are you sure?" content={`Do you want to "${content}" this order?`} onConfirm={onClick}/>
+        {!noModal && 
+            <ConfirmationModal isOpen={isOpen} onOpenChange={onOpenChange} title="Are you sure?" content={`Do you want to "${content}" this order?`} onConfirm={onClick}/>
+        }
     </>
   )
 }

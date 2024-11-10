@@ -5,36 +5,37 @@ import { useAppSelector } from '@/redux/hook'
 import { IOrder } from '@/type/order'
 import React, { useMemo, useEffect, useState } from 'react'
 import OrderTable from '../orderTable'
-import { Pagination } from '@nextui-org/react'
+import { DatePicker, DateRangePicker, Pagination } from '@nextui-org/react'
+import SelectStatusFilter from '../filter/selectStatusFilter'
+import DateFilter from '../filter/dateFilter'
+import OrderNameFilter from '../filter/orderNameFilter'
 
 export default function AdminOrderList({}) {
     const user = useAppSelector((state) => state.user)
     const [data, setData] = useState<IOrder[]>([])
-    const [statusFilter, setStatusFilter] = useState<IOrder['status'][]>([])
-    const [paymentFilter, setPaymentFilter] = useState<IOrder['Payment']['paymentMethod'] | null>()
-    const [dateFilter, setDateFilter] = useState<{min: Date | null, max: Date | null}>({min: null, max: null})
+    const [statusFilter, setStatusFilter] = useState<IOrder['status'] | ''>('')
+    const [orderNameFilter, setOrderNameFilter] = useState('')
+    const [dateMinFilter, setDateMinFilter] = useState<number|null>(null)
     const [page, setPage] = useState<number>(1)
     const [pages, setPages] = useState<number>(1)
     
     const filterOrder = useMemo(() => {
         let filteredData = data
-        if(!!statusFilter.length) {
-            filteredData = filteredData.filter((order) => statusFilter.includes(order.status))
+        if(statusFilter) {
+            filteredData = filteredData.filter((order) => order.status === statusFilter)
         }
-        if(paymentFilter) {
-            filteredData = filteredData.filter((order) => order.Payment.paymentMethod === paymentFilter)
+        
+        if(!!orderNameFilter) {
+            filteredData = filteredData.filter((order) => String(order.id) === orderNameFilter) 
         }
-        if(dateFilter.min !== null) {
-            filteredData = filteredData.filter((order) => (new Date(order.createdAt).getTime() > dateFilter.min?.getTime()!))
-        }
-        if(dateFilter.max !== null) {
-            filteredData = filteredData.filter((order) => (new Date(order.createdAt).getTime() < dateFilter.max?.getTime()!))
+        if(!!dateMinFilter) {
+            filteredData = filteredData.filter((order) => (new Date(order.createdAt).getTime() > dateMinFilter && (new Date(order.createdAt).getTime() <= dateMinFilter+ (60*60*24*1000) )))
         }
 
         setPages(Math.ceil(filteredData.length/10))
         return filteredData
 
-    }, [data, statusFilter])
+    }, [data, statusFilter, dateMinFilter, orderNameFilter])
     
     const onDenyPayment = async (orderId: number) => {
         const { status } = await denyPaymentOrder(orderId)
@@ -88,6 +89,13 @@ export default function AdminOrderList({}) {
     }, [])
     return (
         <div className='md:col-start-2 overflow-auto p-4 flex flex-col gap-2'>
+            <div className='flex flex-col md:flex-row gap-2 w-full flex-wrap'>
+                <div className='flex gap-2 w-full'>
+                    <OrderNameFilter orderNameFilter={orderNameFilter} setOrderNameFilter={setOrderNameFilter}/>
+                    <SelectStatusFilter statusFilter={statusFilter} setStatusFilter={setStatusFilter}/>
+                </div>
+                <DateFilter setDateFilter={setDateMinFilter} />
+            </div>
             <div className='w-full'>
                 <OrderTable data={filterOrder.slice(10*(page - 1), page*10)} admin onAccept={onAcceptPayment} onCancel={onCancelOrder} onDeny={onDenyPayment} onShip={onShipOrder}/>
             </div>
