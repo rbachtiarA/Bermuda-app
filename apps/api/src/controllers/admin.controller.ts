@@ -12,7 +12,10 @@ const getExistingOrder = async (orderId: number, userId: number) => {
     })
 }
 export class AdminController {
-    
+    async getIsAdmin(req:Request, res:Response) {
+        return res.status(200).send({ status: 'ok' })
+    }
+
     async updateDeniedPayment(req: Request, res: Response) {
         try {
             const { orderId } = req.body
@@ -122,7 +125,7 @@ export class AdminController {
                     })
                 } 
             })
-            
+
             return res.status(200).send({
                 status: 'ok',
                 msg: 'success update order'

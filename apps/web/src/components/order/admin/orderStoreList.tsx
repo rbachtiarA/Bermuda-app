@@ -9,6 +9,7 @@ import { DatePicker, DateRangePicker, Pagination } from '@nextui-org/react'
 import SelectStatusFilter from '../filter/selectStatusFilter'
 import DateFilter from '../filter/dateFilter'
 import OrderNameFilter from '../filter/orderNameFilter'
+import { toast, ToastContainer } from 'react-toastify'
 
 export default function AdminOrderList({}) {
     const user = useAppSelector((state) => state.user)
@@ -43,6 +44,8 @@ export default function AdminOrderList({}) {
             const orderIndex = data.findIndex((item) => item.id === orderId)
             data[orderIndex].status = 'PendingPayment'
             setData([...data])  
+        } else {
+            toast.error('something is Wrong, please contact technical services')
         }
     }
 
@@ -54,6 +57,8 @@ export default function AdminOrderList({}) {
             data[updatedOrderIndex].Payment.confirmedAt = (new Date(Date.now())).toLocaleString()
             data[updatedOrderIndex].Payment.isConfirmed = true
             setData([...data])
+        } else {
+            toast.error('something is Wrong, please contact technical services')
         }
     }
     const onCancelOrder = async (orderId: number) => {
@@ -63,7 +68,9 @@ export default function AdminOrderList({}) {
             const tempData = data
             tempData[updatedOrderIndex].status = 'Cancelled'
             setData([...tempData])
-        } 
+        } else {
+            toast.error('something is Wrong, please contact technical services')
+        }
     }
     const onShipOrder = async (orderId: number) => {
         const { status } = await shippedOrder(orderId)
@@ -72,7 +79,9 @@ export default function AdminOrderList({}) {
             const tempData = data
             tempData[updatedOrderIndex].status = 'Shipped'
             setData([...tempData])
-        } 
+        } else {
+            toast.error('something is Wrong, please contact technical services')
+        }
     }
 
     useEffect(() => {
@@ -102,6 +111,7 @@ export default function AdminOrderList({}) {
             <div className='flex justify-end'>
                 <Pagination showControls total={pages} initialPage={page} page={page} onChange={setPage}/>
             </div>
+            <ToastContainer position='top-center' />
         </div>
     )
 }

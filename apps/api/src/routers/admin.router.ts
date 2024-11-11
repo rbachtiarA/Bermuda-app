@@ -13,6 +13,7 @@ export class AdminRouter {
   }
 
   private initializeRoutes(): void {
+    this.router.get('/isAdmin', verifyToken, checkAdmin, this.adminController.getIsAdmin)
     this.router.patch('/denypayment',verifyToken, checkAdmin, this.adminController.updateDeniedPayment);
     this.router.patch('/acceptpayment', verifyToken, checkAdmin, this.adminController.updateAcceptedPayment);
     this.router.patch('/cancelorder', verifyToken, checkAdmin, this.adminController.updateCanceledOrder);

@@ -1,6 +1,6 @@
 'use client'
 import currencyRupiah from "@/lib/rupiahCurrency";
-import { Button, Card, CardBody, CardFooter, CardHeader, Divider } from "@nextui-org/react";
+import { Button, Card, CardBody, CardFooter, CardHeader, Divider, Spinner } from "@nextui-org/react";
 export default function PaymentTotalList(
     {
         itemTotalPayment, travelPayment, isPaymentInvalid, isLoading, isError,
@@ -49,9 +49,8 @@ export default function PaymentTotalList(
                         {paymentMethodOptions()}
                         <Divider />    
                     </div>
-                        <Button color="primary" className="my-2" onPress={onBuy} fullWidth isDisabled={isPaymentInvalid || isLoading}>{isLoading? 'Loading' :'Bayar Sekarang' }</Button>
+                        <Button color="primary" className="my-2" onPress={onBuy} fullWidth isDisabled={isPaymentInvalid || isLoading}>{isLoading? <Spinner color="default"/> :'Bayar Sekarang' }</Button>
                         {isError !== null && <p className="text-sm text-warning-500 text-wrap md:max-w-[270px]">{isError}</p>}
-                        {isLoading && <p>LOADING</p>}
             </CardFooter>
         </Card>
     )
