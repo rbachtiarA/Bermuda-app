@@ -5,8 +5,8 @@ import express, {
   Request,
   Response,
   NextFunction,
-  Router,
 } from 'express';
+import './services/cron'
 import cors from 'cors';
 import { PORT } from './config';
 import { UserRouter } from './routers/user.router';
@@ -20,6 +20,8 @@ import { AuthRouter } from './routers/auth.router';
 import session from 'express-session';
 import passport from 'passport';
 import { AdminRouter } from './routers/admin.router';
+import { DiscountRouter } from './routers/discount.router';
+import { CreateOrderRouter } from './routers/createOrder.router';
 
 export default class App {
   private app: Express;
@@ -79,6 +81,8 @@ export default class App {
     const storeRouter = new StoreRouter()
     const orderRouter = new OrderRouter()
     const adminRouter = new AdminRouter()
+    const discountRouter = new DiscountRouter()
+    const createOrderRouter = new CreateOrderRouter()
     this.app.get('/api', (req: Request, res: Response) => {
       res.send(`Hello, Purwadhika Student API!`);
     });
@@ -91,6 +95,8 @@ export default class App {
     this.app.use('/api/categories', categoryRouter.getRouter())
     this.app.use('/api/auth', authRouter.getRouter());
     this.app.use('/api/admin', adminRouter.getRouter());
+    this.app.use('/api/discount', discountRouter.getRouter());
+    this.app.use('/api/create', createOrderRouter.getRouter());
   }
 
   public start(): void {
