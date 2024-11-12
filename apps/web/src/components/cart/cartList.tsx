@@ -11,6 +11,11 @@ import { Button, Card, CardBody, Checkbox } from "@nextui-org/react"
 export default function CartList() {
     const user = useAppSelector(state => state.user)
     const cart = useAppSelector(state => state.cart)
+    const store = useAppSelector(state => state.store)
+    const checkout = useAppSelector(state => state.checkout)
+    const dispatch = useAppDispatch()    
+    const router = useRouter()    
+    
     const itemOnStock = cart.filter((item) => {
         if(item.product?.stock![0] !== undefined) {
            return item.product?.stock![0].quantity! > 0
@@ -22,10 +27,6 @@ export default function CartList() {
     const itemSoldOut = cart.filter((item) => {
             return item.product?.stock![0] === undefined || item.product?.stock![0].quantity! === 0
     }) 
-    const store = useAppSelector(state => state.store)
-    const checkout = useAppSelector(state => state.checkout)
-    const dispatch = useAppDispatch()    
-    const router = useRouter()    
 
     const onSelectAll = () => {
         const allItemsId = itemOnStock.map((item) => item.id)

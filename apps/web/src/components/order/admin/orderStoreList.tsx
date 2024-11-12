@@ -1,5 +1,5 @@
 'use client'
-import { getStoreOrders} from '@/lib/order.handler'
+import { getStoreOrders} from '@/lib/store.handler'
 import { acceptPaymentOrder, canceledOrder, denyPaymentOrder, shippedOrder} from '@/lib/admin.handler'
 import { useAppSelector } from '@/redux/hook'
 import { IOrder } from '@/type/order'
@@ -86,7 +86,7 @@ export default function AdminOrderList({}) {
 
     useEffect(() => {
         const getData = async () => {
-            const res = await getStoreOrders(5)
+            const res = await getStoreOrders()
             const order = res.order || []
             
             if(order.length !== 0) {
