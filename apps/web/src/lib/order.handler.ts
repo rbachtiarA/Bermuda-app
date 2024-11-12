@@ -14,7 +14,7 @@ export const postOrder = async (
     storeId: number,
     methodPayment: 'Transfer' | 'Gateway') => {
         const token = await getToken()
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}order/neworder`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}create`, {
             method:'POST',
             body: JSON.stringify({totalAmount, shippingCost, addressId, methodPayment, storeId}),
             headers: {
@@ -31,7 +31,7 @@ export const postOrder = async (
 
 export const getMidtransToken = async (orderId: number) => {
     const token = await getToken()
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}order/order/${orderId}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}order/id/${orderId}`, {
         headers: {
             "Content-type":"application/json",
             'Authorization': `Bearer ${token}`
@@ -76,18 +76,6 @@ export const getUserOrders = async () => {
             'Authorization': `Bearer ${token}`
     },
      next: { revalidate: 1 } })
-    const { status, msg, order } = await res.json()
-    return { status, msg, order }
-}
-export const getStoreOrders = async (userId: number) => {
-    const token = await getToken()
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}order/store`, {
-        headers: {
-            
-            "Content-type":"application/json",
-            'Authorization': `Bearer ${token}`
-        },
-        next: { revalidate: 1 } })
     const { status, msg, order } = await res.json()
     return { status, msg, order }
 }

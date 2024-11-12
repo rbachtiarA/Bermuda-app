@@ -35,7 +35,8 @@ export const loginUser = async (data: { email: string; password: string}) => {
         body: JSON.stringify(data)
     })
     const result = await res.json();
-    console.log('Response dari API:', result);
+    
+    console.log('Response dari API:', result, res.ok);
     return { result, ok: res.ok}
 }
 
