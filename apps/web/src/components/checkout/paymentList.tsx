@@ -3,12 +3,12 @@ import currencyRupiah from "@/lib/rupiahCurrency";
 import { Button, Card, CardBody, CardFooter, CardHeader, Divider, Spinner } from "@nextui-org/react";
 export default function PaymentTotalList(
     {
-        itemTotalPayment, travelPayment, isPaymentInvalid, isLoading, isError,
-        updateMethodPayment, onBuy} 
+        discountCut, itemTotalPayment, travelPayment, isPaymentInvalid, isLoading, isError, 
+        updateMethodPayment, onBuy, onDiscount} 
     : 
     { 
-        itemTotalPayment:number | null, travelPayment: number | null, isLoading: boolean, methodPayment: 'Transfer' | 'Gateway' | null, isPaymentInvalid: boolean,
-        isError:string | null,updateMethodPayment: (paymentMethod:string) => void, onBuy: () => void
+        discountCut: number, itemTotalPayment:number | null, travelPayment: number | null, isLoading: boolean, methodPayment: 'Transfer' | 'Gateway' | null, isPaymentInvalid: boolean,
+        isError:string | null,updateMethodPayment: (paymentMethod:string) => void, onBuy: () => void, onDiscount: () => void
     }) {
     
     const paymentMethodOptions = () => {
@@ -33,17 +33,25 @@ export default function PaymentTotalList(
                     <p>{itemTotalPayment? currencyRupiah(itemTotalPayment): '-'}</p>
                 </div>
                 <div className="flex justify-between gap-4">
+                    <p>Diskon Barang</p>
+                    <p>{discountCut? `- ${currencyRupiah(discountCut)}` : '-'}</p>
+                </div>
+                <div className="flex justify-between gap-4">
                     <p>Harga Jasa Pengiriman</p>
                     <p>{travelPayment? currencyRupiah(travelPayment) : '-'}</p>
                 </div>
                 <Divider />
                 <div className="flex gap-4 justify-between font-bold my-2">
                     <p>Total Transaksi Pembayaran</p>
-                    <p>{currencyRupiah((itemTotalPayment? itemTotalPayment : 0) + (travelPayment? travelPayment : 0))}</p>
+                    <p>{currencyRupiah((itemTotalPayment? itemTotalPayment : 0) + (travelPayment? travelPayment : 0) - (discountCut? discountCut : 0))}</p>
                 </div>
                 <Divider />
             </CardBody>
             <CardFooter className="flex flex-col">
+                    <div>
+                        <h2>Diskon yang tersedia</h2>
+                        <Button onPress={onDiscount}>Lihat Diskon</Button>  
+                    </div>
                     <div className="w-full flex flex-col gap-2">
                         <h2 className="font-semibold">Metode Pembayaran</h2>
                         {paymentMethodOptions()}
