@@ -92,6 +92,7 @@ model Discount {
   userId       Int?
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
+  Order        Order[]
 }
 
 model ShippingOption {
@@ -196,6 +197,8 @@ model Order {
   status           OrderStatus
   totalAmount      Float
   paymentProofUrl  String?
+  shippedAt        DateTime?
+  shippingCost     Float          @default(0)
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
   orderItems       OrderItem[]
@@ -204,6 +207,8 @@ model Order {
   Store            Store          @relation(fields: [storeId], references: [id])
   Payment          Payment?
   storeId          Int
+  discount         Discount?      @relation(fields: [discountId], references: [id])
+  discountId       Int?
 }
 
 model OrderItem {
