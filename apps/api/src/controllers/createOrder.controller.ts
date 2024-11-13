@@ -7,7 +7,7 @@ export class CreateOrderController {
   async createNewOrder(req: Request, res: Response) {
     let codeError;
     try {
-        const { totalAmount, shippingCost, addressId, methodPayment, storeId } = req.body
+        const { totalAmount, shippingCost, addressId, methodPayment, storeId, discountId, discountAmount } = req.body
         const userId = req.user?.id
         //get user data
         const user = await prisma.user.findUnique({
@@ -77,6 +77,8 @@ export class CreateOrderController {
                     addressId,
                     status: 'PendingPayment',
                     totalAmount: totalAmount,
+                    shippingCost: shippingCost,
+                    discountId: discountId,
                     shippingOptionId: 1,
                     storeId,
                     Payment: {

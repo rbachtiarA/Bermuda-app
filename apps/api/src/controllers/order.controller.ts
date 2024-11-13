@@ -166,82 +166,26 @@ export class OrderController {
             const isExpired = Date.parse(String(existOrder.Payment?.expiredDate)) < Date.now()
             if(existOrder.Payment?.paymentMethod === 'Gateway' && !isExpired) {
                 //cancel midtrans
-                const midtransStatus = await midtrans.snap.transaction.cancel(`ORDER_A${existOrder.id}`)
+                try {
+                    const midtransStatus = await midtrans.snap.transaction.cancel(`ORDER_A${existOrder.id}`)
+                } catch (error) {
+                    return res.status(200).send({status: 'ok', msg: 'NOT_FOUND'})
+                }
             }
-            
             if(existOrder.paymentProofUrl !== null) throw 'You already have uploaded payment proof'
 
             await cancelOrder(orderId)
 
             return res.status(200).send({
                 status: 'ok',
-                msg: 'Cancel payment success'
+                msg: 'FOUND'
             })
         } catch (error) {
             return res.status(400).send({
                 status: 'error',
-                msg: 'NOT_FOUND',
-                error: `${error}`
+                msg: `${error}`,
+                
             })
         }
-    }
-    // get midtrans transaction status, from 'orderId', 
-    //      if order is expired, update order status with 'cancelled', and return all order items quantity to store quantity
-    //      if status "settlement" update order status with 'Proccessed' and update payment isConfirmed to true & confirmedAt to date.now()
-    async getMidtransStatus(req:Request, res: Response) {   
-        try {
-            let midtransStatus;
-            const { orderId } = req.params 
-            
-            //check order exist
-            const existOrder = await prisma.order.findUnique({
-                where: { id: +orderId },
-                include: { Payment: true }
-            })
-            if(!existOrder) throw 'Order id is invalid'
-            if(existOrder.Payment?.expiredDate! < new Date() && existOrder.status !== 'PendingPayment') {
-                await cancelOrder(existOrder.id)
-            } else {
-                //get midtransStatus, if customer didnt pick one of midtrans service will return 200 with NOT_FOUND
-                try {
-                    const midtransOrder = await midtrans.snap.transaction.status(`ORDER_A${orderId}`)        
-                    //status will be 'settlement' | 'pending'
-                    midtransStatus = midtransOrder?.transaction_status
-                    if(midtransStatus === 'settlement') {
-                        await prisma.order.update({
-                            where: {
-                                id: +orderId
-                            },
-                            data: {
-                                status: 'Proccessed',
-                                Payment: {
-                                    update: {
-                                        isConfirmed: true,
-                                        confirmedAt: new Date(Date.now())
-                                    }
-                                }
-                            }
-                        })
-                    }
-                } catch (error) {
-                    return res.status(200).send({
-                        status: 'NOT_FOUND',
-                        msg:'You need to select your transaction service first'
-                    })
-                }
-            }
-            
-            return res.status(200).send({
-                status: 'ok',
-                midtrans: midtransStatus
-            })
-        } catch (error) {        
-            return res.status(400).send({
-                status: 'error', 
-                msg:`something is error : ${error}`,
-            })
-        }
-
-
-    }
+    }   
 }
