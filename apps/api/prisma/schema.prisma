@@ -209,6 +209,7 @@ model Order {
   storeId          Int
   discount         Discount?      @relation(fields: [discountId], references: [id])
   discountId       Int?
+  discountAmount   Float          @default(0)
 }
 
 model OrderItem {

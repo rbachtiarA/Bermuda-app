@@ -81,6 +81,7 @@ export class CreateOrderController {
                     discountId: discountId,
                     shippingOptionId: 1,
                     storeId,
+                    discountAmount: discountAmount,
                     Payment: {
                         create: {
                             amountPaid: totalAmount,

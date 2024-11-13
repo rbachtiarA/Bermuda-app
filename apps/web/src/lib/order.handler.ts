@@ -12,11 +12,14 @@ export const postOrder = async (
     shippingCost: number, 
     addressId: number,
     storeId: number,
-    methodPayment: 'Transfer' | 'Gateway') => {
+    discountAmount: number,
+    methodPayment: 'Transfer' | 'Gateway',
+    discountId?: number
+) => {
         const token = await getToken()
         const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}create`, {
             method:'POST',
-            body: JSON.stringify({totalAmount, shippingCost, addressId, methodPayment, storeId}),
+            body: JSON.stringify({totalAmount, shippingCost, addressId, methodPayment, storeId, discountId, discountAmount}),
             headers: {
                 "Content-type":"application/json",
                 'Authorization': `Bearer ${token}`

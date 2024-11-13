@@ -52,7 +52,7 @@ export default function CheckoutWrapper() {
             console.log('You need to proccess your payment previous order to make new order');
             setIsError('You need to proccess your payment previous order to make new order')
         } else {
-            const {status, order, msg} = await postOrder(itemTotalPayment!+travelPayment!-discountCut!, travelPayment!, selectedAddress?.id!, store.id! ,methodPayment! )
+            const {status, order, msg} = await postOrder(itemTotalPayment!+travelPayment!-discountCut!, travelPayment!, selectedAddress?.id!, store.id!, discountCut ,methodPayment!, discount?.id )
             if(status === 'error') {
                 if(msg.code === 'ITEM_INSUFFICIENT') {
                     setIsError(msg.details)
