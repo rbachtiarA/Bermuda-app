@@ -9,13 +9,14 @@ import { getMidtransToken, getOrderPendingPayment, postOrder } from "@/lib/order
 import { useRouter } from "next/navigation"
 import { resetCheckout } from "@/redux/slice/checkoutSlice"
 import { getAvailableDiscountOnCheckout } from "@/lib/discount.handler"
+import { IDiscount } from "@/type/discount"
 
 export default function CheckoutWrapper() {
     const user = useAppSelector(state => state.user)
     const store = useAppSelector(state => state.store)
     const dispatch = useAppDispatch()
-    const [itemTotalPayment, setItemTotalPayment] = useState<number | null>(null)
-    const [discount, setDiscount] = useState<any>(null)
+    const [itemTotalPayment, setItemTotalPayment] = useState<number>(0)
+    const [discount, setDiscount] = useState<IDiscount|null>(null)
     const [travelPayment, setTravelPayment] = useState<number | null>(null)
     const [methodPayment, setMethodPayment] = useState<'Transfer' | 'Gateway' | null>(null)
     const [selectedAddress, setselectedAddress] = useState<IAddress | undefined>(undefined)
@@ -43,6 +44,7 @@ export default function CheckoutWrapper() {
             return 0
         }
     },[itemTotalPayment, discount])
+
     const onBuy = async () => {
         setIsLoading(true)
         const pendingOrder = await getOrderPendingPayment()
@@ -69,11 +71,8 @@ export default function CheckoutWrapper() {
         setIsLoading(false)
     }
 
-    const onDiscount = async () => {
-        const { status, discount } = await getAvailableDiscountOnCheckout(store.id)
-        console.log(discount);
-        
-        setDiscount(discount[0])
+    const onDiscount = (discount: IDiscount|null) => {        
+        setDiscount(discount)
     }
 
     const updateSelectedAddress = (address: IAddress | undefined) => {
@@ -109,6 +108,7 @@ export default function CheckoutWrapper() {
             </div>
             <div>
                 <PaymentTotalList
+                    discount={discount}
                     discountCut={discountCut}
                     isError={isError}
                     itemTotalPayment={itemTotalPayment} 

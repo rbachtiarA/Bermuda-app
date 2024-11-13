@@ -1,14 +1,16 @@
 'use client'
 import currencyRupiah from "@/lib/rupiahCurrency";
 import { Button, Card, CardBody, CardFooter, CardHeader, Divider, Spinner } from "@nextui-org/react";
+import DiscountButton from "./discountButton";
+import { IDiscount } from "@/type/discount";
 export default function PaymentTotalList(
     {
-        discountCut, itemTotalPayment, travelPayment, isPaymentInvalid, isLoading, isError, 
+        discount, discountCut, itemTotalPayment, travelPayment, isPaymentInvalid, isLoading, isError, 
         updateMethodPayment, onBuy, onDiscount} 
     : 
     { 
-        discountCut: number, itemTotalPayment:number | null, travelPayment: number | null, isLoading: boolean, methodPayment: 'Transfer' | 'Gateway' | null, isPaymentInvalid: boolean,
-        isError:string | null,updateMethodPayment: (paymentMethod:string) => void, onBuy: () => void, onDiscount: () => void
+        discount: IDiscount | null, discountCut: number, itemTotalPayment:number, travelPayment: number | null, isLoading: boolean, methodPayment: 'Transfer' | 'Gateway' | null, isPaymentInvalid: boolean,
+        isError:string | null,updateMethodPayment: (paymentMethod:string) => void, onBuy: () => void, onDiscount: (discount: IDiscount| null) => void
     }) {
     
     const paymentMethodOptions = () => {
@@ -47,10 +49,9 @@ export default function PaymentTotalList(
                 </div>
                 <Divider />
             </CardBody>
-            <CardFooter className="flex flex-col">
-                    <div>
-                        <h2>Diskon yang tersedia</h2>
-                        <Button onPress={onDiscount}>Lihat Diskon</Button>  
+            <CardFooter className="flex flex-col gap-1">
+                    <div className="w-full">
+                        <DiscountButton itemTotalPayment={itemTotalPayment} discount={discount} onSelectDiscount={onDiscount}/> 
                     </div>
                     <div className="w-full flex flex-col gap-2">
                         <h2 className="font-semibold">Metode Pembayaran</h2>
