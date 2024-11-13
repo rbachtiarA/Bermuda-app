@@ -27,38 +27,39 @@ export default function SiteNavbar() {
   }, []);
 
   return (
-    <Navbar isBordered className="shadow-lg">
-      <NavbarContent justify="start">
-        <Link color="foreground" href="/">
-          <NavbarBrand className="mr-4">
-            <SiteLogo />
-            <p className="hidden sm:block font-bold text-inherit">
-              Bermuda Store
-            </p>
-          </NavbarBrand>
-        </Link>
-      </NavbarContent>
-      <NavbarContent justify="center" className="">
-        <SearchNav />
-      </NavbarContent>
-      <NavbarContent justify="end" className="items-center">
-        <Category />
-        {!token && (
-          <NavbarItem>
-            <Link color="foreground" href="/register">
-              Register
-            </Link>
-          </NavbarItem>
-        )}
-        {token ? (
-          <DropdownNav />
-        ) : (
-          <NavbarItem>
-            <Link color="foreground" href="/login">
-              Log In
-            </Link>
-          </NavbarItem>
-        )}
+    <Navbar isBordered className="shadow-lg px-4">
+      <NavbarContent className="justify-between w-full ">
+        <NavbarContent justify="start" className="w-auto">
+          <Link color="foreground" href="/">
+            <NavbarBrand className="flex items-center gap-2">
+              <SiteLogo />
+              <p className="hidden sm:block font-bold text-inherit">
+                Bermuda Store
+              </p>
+            </NavbarBrand>
+          </Link>
+          <Category />
+        </NavbarContent>
+
+        <NavbarContent justify="center" className="flex-1 mx-4">
+          <SearchNav />
+        </NavbarContent>
+
+        <NavbarContent justify="end" className="w-auto">
+          {token ? (
+            <DropdownNav />
+          ) : (
+            <NavbarItem className="flex gap-3">
+              <Link color="foreground" href="/register" className="text-gray-500"
+              >
+                Daftar
+              </Link>
+              <Link color="foreground" href="/login" className="text-gray-500">
+                Masuk
+              </Link>
+            </NavbarItem>
+          )}
+        </NavbarContent>
       </NavbarContent>
     </Navbar>
   );

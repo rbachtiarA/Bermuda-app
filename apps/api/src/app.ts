@@ -73,7 +73,6 @@ export default class App {
   }
 
   private routes(): void {
-
     const userRouter = new UserRouter();
     const productRouter = new ProductRouter();
     const cartRouter = new CartRouter();

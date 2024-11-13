@@ -34,6 +34,8 @@ export class UserController {
     return res.status(200).send(user)
   }
 
+  
+
   async registerUser(req: Request, res: Response) {
     try {
       const { email } = req.body;
@@ -102,13 +104,6 @@ export class UserController {
          password: hashPassword,
          name: name,
          referralCode: referralCode,
-         //make empty cart and checkout
-         checkout: {
-          create: {}
-         },
-         cart: {
-          create: {}
-         }
         }
       })
 

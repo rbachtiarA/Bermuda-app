@@ -1,4 +1,5 @@
 import { nextui } from '@nextui-org/react';
+import colors from 'tailwindcss/colors';
 /** @type {import('tailwindcss').Config} */
 export const content = [
   './app/**/*.{js,ts,jsx,tsx,mdx}',
@@ -28,4 +29,17 @@ export const theme = {
   },
 };
 export const darkMode = 'class';
-export const plugins = [nextui()];
+export const plugins = [nextui({
+  themes: {
+    light: {
+      colors: {
+        primary: {
+          DEFAULT: '#d00b0b',
+        },
+        secondary: {
+          DEFAULT: '#005da6'
+        }
+      }
+    }
+  }
+})];

@@ -14,8 +14,9 @@ export class AuthRouter {
     }
 
     private initializeRoutes(): void {
-        this.router.get('/google', this.authController.googleAuth)
-        this.router.get("/google/callback", passport.authenticate('google', { failureRedirect: '/login'}), this.authController.googleCallback)
+        this.router.get("/google", this.authController.googleAuth)
+        this.router.get("/google/callback", passport.authenticate("google", { failureRedirect: "/login"}), this.authController.googleCallback)
+        this.router.get("/user", this.authController.getUserAuth)
     }
     getRouter(): Router {
         return this.router;
