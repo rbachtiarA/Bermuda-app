@@ -1,5 +1,8 @@
 'use client';
 import { deleteToken, getToken } from '@/lib/server';
+import { useAppDispatch } from '@/redux/hook';
+import { resetCart } from '@/redux/slice/cartSlice';
+import { resetCheckout } from '@/redux/slice/checkoutSlice';
 import {
   Avatar,
   Dropdown,
@@ -11,6 +14,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 export default function AvatarMenu() {
+  const dispatch = useAppDispatch()
   const [token, setToken] = useState('');
   const fetchToken = async () => {
     const res = await getToken();
@@ -19,6 +23,8 @@ export default function AvatarMenu() {
 
   const onLogout = async () => {
     await deleteToken();
+    dispatch(resetCart())
+    dispatch(resetCheckout())
     setToken('')
   }
   useEffect(() => {

@@ -16,7 +16,7 @@ import SearchNav from './searchNav';
 
 export default function SiteNavbar() {
   const [token, setToken] = useState<string | null>(null);
-
+  
   useEffect(() => {
     const fetchToken = async () => {
       const fetchedToken = await getToken();

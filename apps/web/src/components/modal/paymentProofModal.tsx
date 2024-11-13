@@ -1,5 +1,5 @@
 import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@nextui-org/react";
-import Image from "next/image";
+import { Image } from "@nextui-org/react";
 
 export default function PaymentProofModal({isOpen, title, imgLink ,onOpenChange}: {isOpen: boolean, onOpenChange: () => void, title: string, imgLink: string}) {
 
@@ -13,13 +13,11 @@ export default function PaymentProofModal({isOpen, title, imgLink ,onOpenChange}
                         <h2>{title}</h2>
                     </ModalHeader>
                         <ModalBody className="">
-                            <Image 
+                            <Image
                                 src={`${imgLink}`}
                                 alt={`${title} paymentProof`}
-                                width={0}
-                                height={0}
-                                sizes="100vw"
-                                style={{width: '100%', height:'auto'}}
+                                width={'100%'}
+                                height={'auto'}
                             />
                         </ModalBody>
                         <ModalFooter>

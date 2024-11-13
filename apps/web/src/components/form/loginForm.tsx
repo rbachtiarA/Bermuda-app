@@ -2,6 +2,7 @@
 import { createToken } from '@/lib/server';
 import { loginUser } from '@/lib/user.handler';
 import { useAppDispatch } from '@/redux/hook';
+import { updatedCartFromDatabase } from '@/redux/slice/cartSlice';
 import { loginAction } from '@/redux/slice/userSlice';
 import { ILoginData } from '@/type/user';
 import { Formik, Form, Field, FormikProps, FormikHelpers } from 'formik';
@@ -28,9 +29,12 @@ const LoginForm: React.FC = () => {
   ) => {
     try {
       const { result, ok } = await loginUser(data);
+      dispatch(updatedCartFromDatabase(result.cart.CartItem))
+      
       console.log('Data yang di terima:', result); // debuging
       if (!ok) throw result.msg;
 
+      // dispatch(updatedCartFromDatabase(result.cart))
       action.resetForm();
       dispatch(loginAction(result.user))
       createToken(result.token);

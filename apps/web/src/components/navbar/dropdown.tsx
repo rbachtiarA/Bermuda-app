@@ -8,13 +8,16 @@ import {
   Avatar,
 } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
-import { useAppSelector } from '@/redux/hook';
+import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import { deleteToken, getToken } from '@/lib/server';
 import Link from 'next/link';
+import { resetCart } from '@/redux/slice/cartSlice';
+import { resetCheckout } from '@/redux/slice/checkoutSlice';
 import { capitalizeWord } from '@/lib/user.handler';
 
 export default function DropdownNav() {
   const router = useRouter();
+  const dispatch = useAppDispatch()
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const user = useAppSelector((state) => state.user);
   const [token, setToken] = useState<string | null>(null);
@@ -29,6 +32,8 @@ export default function DropdownNav() {
 
   const onLogout = async () => {
     await deleteToken();
+    dispatch(resetCart())
+    dispatch(resetCheckout())
     window.location.href = "/"
   };
   

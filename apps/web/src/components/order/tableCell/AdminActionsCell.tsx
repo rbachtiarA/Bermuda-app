@@ -8,6 +8,8 @@ import React from 'react'
 import TableActionTooltip from './tableActionTooltip'
 import { useRouter } from 'next/navigation'
 import OpenOrderIcon from '@/components/icon/openOrderIcon'
+import { useDisclosure } from '@nextui-org/react'
+import PaymentProofModal from '@/components/modal/paymentProofModal'
 
 export default function AdminActionsCell({
     order, isAcceptAble,isCancelAble,isDenyAble,isImageExist,isShippedAble, onAccept, onCancel, onDeny, onShip
@@ -16,6 +18,7 @@ export default function AdminActionsCell({
 	onDeny:(orderId: number) => void, onAccept:(orderId: number) => void, onCancel:(orderId: number) => void, onShip:(orderId: number) => void
 }) {
 	const router = useRouter()
+	const {isOpen, onOpen, onOpenChange} = useDisclosure()
     const openImage = () => {
         window.open(order.paymentProofUrl)
     }
@@ -25,8 +28,9 @@ export default function AdminActionsCell({
 
   return (
     <div className="flex gap-2">
-						<TableActionTooltip content='Open Image' isDisabled={isImageExist} onClick={openImage}>
+						<TableActionTooltip content='Open Image' isDisabled={isImageExist} onClick={onOpen} noModal>
 							<OpenFileIcon fill={!isImageExist? '#aaaaaa': undefined}/>
+							<PaymentProofModal imgLink={order.paymentProofUrl!} isOpen={isOpen} onOpenChange={onOpenChange} title={`${order.id!}`} />
 						</TableActionTooltip>
 						<TableActionTooltip content='Deny Payment' isDisabled={isDenyAble} onClick={() => onDeny(order.id)}>
 							<DeniedPaymentIcon fill={!isDenyAble? '#aaaaaa': undefined}/>

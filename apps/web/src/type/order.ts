@@ -13,6 +13,8 @@ export interface IOrder {
     orderItems: IOrderItem[],
     Address: IAddress
     createdAt: string
+    shippingCost: number
+    discountId?: number
 }
     
 

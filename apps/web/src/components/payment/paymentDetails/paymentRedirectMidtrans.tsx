@@ -14,7 +14,7 @@ export default function PaymentRedirectMidtrans({token, orderId, data, setData, 
     }
     const onClickCheckStatus = async () => {
         const status = await getMidtransStatus(orderId)
-        console.log(status.midtrans);
+        // console.log(status.midtrans);
         
         if(status.status === "NOT_FOUND") {
             return setIsError("Please choose method in 'Pay with Gateway' first before 'check status'")
@@ -23,7 +23,6 @@ export default function PaymentRedirectMidtrans({token, orderId, data, setData, 
         switch (status.midtrans) {
             case "expire":
                 toast.error('your payment is Expired')
-                await onCancel()
                 break;
             
             case "settlement":
@@ -34,14 +33,15 @@ export default function PaymentRedirectMidtrans({token, orderId, data, setData, 
                 toast.info('Your payment still waiting to be paid')
                 break;
         }
-        
     }
 
     const onCancel = async () => {
-        const status = await onClickCancelOrder()
+        const msg = await onClickCancelOrder()
         
-        if(status === 'error') {
+        if(msg === 'NOT_FOUND') {
             setIsError("Please choose method in 'Pay with Gateway' first before 'Cancel Payment'")
+        } else if(msg !== `FOUND`) {
+            setIsError("Error: Something is wrong")
         }
         
     }

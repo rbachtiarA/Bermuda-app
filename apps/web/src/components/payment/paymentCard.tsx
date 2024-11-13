@@ -24,11 +24,11 @@ export default function PaymentCard() {
     }
     
     const onClickCancelOrder = async () => {
-        const { status } = await cancelOrder(data?.id!)
-        if(status === 'ok') {
+        const { msg } = await cancelOrder(data?.id!)
+        if(msg === 'FOUND') {
             setData({...data!, status:"Cancelled"})
         }
-        return status
+        return msg
     }
 
     useEffect(() => {

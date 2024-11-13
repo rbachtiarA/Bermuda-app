@@ -8,18 +8,43 @@ import { IAddress } from "@/type/address"
 import { getMidtransToken, getOrderPendingPayment, postOrder } from "@/lib/order.handler"
 import { useRouter } from "next/navigation"
 import { resetCheckout } from "@/redux/slice/checkoutSlice"
+import { getAvailableDiscountOnCheckout } from "@/lib/discount.handler"
+import { IDiscount } from "@/type/discount"
 
 export default function CheckoutWrapper() {
     const user = useAppSelector(state => state.user)
     const store = useAppSelector(state => state.store)
     const dispatch = useAppDispatch()
-    const [itemTotalPayment, setItemTotalPayment] = useState<number | null>(null)
+    const [itemTotalPayment, setItemTotalPayment] = useState<number>(0)
+    const [discount, setDiscount] = useState<IDiscount|null>(null)
     const [travelPayment, setTravelPayment] = useState<number | null>(null)
     const [methodPayment, setMethodPayment] = useState<'Transfer' | 'Gateway' | null>(null)
     const [selectedAddress, setselectedAddress] = useState<IAddress | undefined>(undefined)
     const [isLoading, setIsLoading] = useState(false)
     const [isError, setIsError] = useState<string | null>(null)
     const router = useRouter()
+    const discountCut = useMemo(() => {
+        if(!!discount) {
+            let val = 0
+            switch (discount.discountType) {
+                case 'FLAT':
+                    val = discount.value
+                    break;
+                case 'PERCENTAGE':
+                    //if value based on 100/100
+                    val = itemTotalPayment!*(discount.value/100)
+                    break;
+                case 'REFERRAL_GIVER':
+                    break;
+                case 'REFERRAL_USER':
+                    break;
+            }
+            return val
+        } else {
+            return 0
+        }
+    },[itemTotalPayment, discount])
+
     const onBuy = async () => {
         setIsLoading(true)
         const pendingOrder = await getOrderPendingPayment()
@@ -27,7 +52,7 @@ export default function CheckoutWrapper() {
             console.log('You need to proccess your payment previous order to make new order');
             setIsError('You need to proccess your payment previous order to make new order')
         } else {
-            const {status, order, msg} = await postOrder(itemTotalPayment!+travelPayment!, travelPayment!, selectedAddress?.id!, store.id! ,methodPayment! )
+            const {status, order, msg} = await postOrder(itemTotalPayment!+travelPayment!-discountCut!, travelPayment!, selectedAddress?.id!, store.id!, discountCut ,methodPayment!, discount?.id )
             if(status === 'error') {
                 if(msg.code === 'ITEM_INSUFFICIENT') {
                     setIsError(msg.details)
@@ -44,6 +69,10 @@ export default function CheckoutWrapper() {
         //update checkoutItem user to null using api
         dispatch(resetCheckout())
         setIsLoading(false)
+    }
+
+    const onDiscount = (discount: IDiscount|null) => {        
+        setDiscount(discount)
     }
 
     const updateSelectedAddress = (address: IAddress | undefined) => {
@@ -79,6 +108,8 @@ export default function CheckoutWrapper() {
             </div>
             <div>
                 <PaymentTotalList
+                    discount={discount}
+                    discountCut={discountCut}
                     isError={isError}
                     itemTotalPayment={itemTotalPayment} 
                     travelPayment={travelPayment} 
@@ -87,6 +118,7 @@ export default function CheckoutWrapper() {
                     isLoading={isLoading}
                     updateMethodPayment={updateMethodPayment}
                     onBuy={onBuy}
+                    onDiscount={onDiscount}
                 />
             </div>
         </div>

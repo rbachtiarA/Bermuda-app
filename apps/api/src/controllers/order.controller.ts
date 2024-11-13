@@ -1,179 +1,23 @@
 import { Request, Response } from 'express';
 import  midtrans  from '../services/midtrans.js'
 import prisma from '@/prisma';
-import { formatDateMidtrans } from '@/helpers/midtrans-dateformat';
+import cancelOrder from '@/helpers/cancelOrder';
 
 export class OrderController {
-    async createNewOrder(req: Request, res: Response) {
-        let codeError;
-        try {
-            const { totalAmount, shippingCost, addressId, methodPayment, storeId } = req.body
-            const userId = req.user?.id
-            //get user data
-            const user = await prisma.user.findUnique({
-                where: { id: +userId! }
-                
-            })
-            if(!user) throw 'User is invalid'
-
-            //get user checkout item
-            const checkoutItem = await prisma.checkout.findUnique({
-                where: { userId: userId },
-                include: {
-                    CartItem: {
-                        include: {
-                            product: true
-                        }
-                    }
-                }
-            })
-            if(!checkoutItem) throw 'Checkout is invalid'
-
-            //convert checkout item to array of {productId, quantity, price, }
-            const orderItem = checkoutItem?.CartItem.map((item) => {
-                return { productId: item.productId, quantity: item.quantity, price: item.product.price, discountValue: 0 }
-            })
-            if(!orderItem) throw 'Order is Invalid'
-
-            
-            const order = await prisma.$transaction(async (tx) => {
-                //expiredDate
-                const HOURS_EXPIRED = 1
-                const HOURS_EXPIRED_IN_MS = 60 * 60 * HOURS_EXPIRED * 1000
-
-                //reduce quantity stock
-                for (const item of orderItem) {
-                    const existStock = await tx.stock.findFirst({
-                        where: {
-                            AND: {
-                                productId: item.productId,
-                                storeId: +storeId
-                            }
-                        },
-                        include: {
-                            product: true
-                        }
-                    })
-                    if(!existStock) throw 'Some product stock is invalid'
-                    if(existStock!.quantity - item.quantity < 0) {
-                        codeError = {code: 'ITEM_INSUFFICIENT', details: `${existStock.product.name} is insuffficient`}
-                        throw 'Insufficient product stock'
-                    } 
-
-                    await tx.stock.update({
-                        where: {
-                            id: existStock!.id
-                        },
-                        data: {
-                            quantity: existStock!.quantity - item.quantity
-                        }
-                    })   
-                }
-
-                //create order, payment, and orderItem
-                const order = await tx.order.create({
-                    data: {
-                        userId: user.id,
-                        addressId,
-                        status: 'PendingPayment',
-                        totalAmount: totalAmount,
-                        shippingOptionId: 1,
-                        storeId,
-                        Payment: {
-                            create: {
-                                amountPaid: totalAmount,
-                                paymentMethod: methodPayment,
-                                expiredDate: new Date(Date.now() + HOURS_EXPIRED_IN_MS),
-                                isConfirmed: false,
-                                confirmedAt: null,
-                            }
-                        },
-                        orderItems: {
-                            createMany: {
-                                // {productId, quantity, price, discountValue}
-                                data: [...orderItem]
-                            }
-                        }
-                    }
-                })
-                
-                //creating midtrans item details
-                const itemDetails = checkoutItem.CartItem.map((item) => {
-                    return { id: item.productId, name: item.product.name.substring(0,49), quantity: item.quantity, price: item.product.price }
-                })
-
-                //if methodPayment is Gateway, generate token midtrans
-                if(order && methodPayment === 'Gateway') {
-                    
-                    //midtrans body
-                    const parameter = {
-                        transaction_details: {
-                            order_id: `ORDER_A${order.id}`,
-                            gross_amount: totalAmount
-                        },
-                        item_details: [...itemDetails, {
-                            name: 'shipping Cost',
-                            price: shippingCost,
-                            quantity: 1
-                        }] ,
-                        customer_details: {
-                            first_name: user.name
-                        },
-                        expiry: {
-                            start_time: formatDateMidtrans(new Date(Date.now())),
-                            unit: "hour",
-                            duration: HOURS_EXPIRED
-                        }
-                    }
-                    
-                    const midtransTransaction = await midtrans.snap.createTransaction(parameter)
-                    
-                    if(!midtransTransaction) throw 'error on creating midtrans token'
-                    const payment = await tx.payment.update({
-                        where: {
-                            orderId: order.id
-                        },
-                        data: {
-                            token: midtransTransaction.token
-                        }
-                    })
-                }
-
-                return { order }
-            })
-            
-            return res.status(201).send({
-                status: 'order success',
-                order
-            })
-        } catch (error) {
-            return res.status(400).send({
-                status: 'error',
-                msg: codeError,
-                error: `${error}`
-            })
-        }
-    }
-
     async updatePaymentProof(req: Request, res: Response) {
         try {            
             const { orderId } = req.body
             if(!req?.file) throw 'Please upload validated file'
             const imgLink = `${process.env.IMAGE_STORAGE_URL}paymentProof/${req.file.filename}`
 
-            const existOrder = await prisma.order.findUnique({
-                where: { id: +orderId }
-            })
-            if(!existOrder) throw 'Order is invalid'
-
             const updatedOrder = await prisma.order.update({
-                where: {id: existOrder.id},
+                where: {id: +orderId!},
                 data: {
                     paymentProofUrl: imgLink,
                     status: 'Waiting'
                 }
             })
-
+            if(!updatedOrder) throw 'Order is invalid'
             return res.status(200).send({
                 status: 'ok',
                 msg: imgLink
@@ -184,7 +28,6 @@ export class OrderController {
                 msg: `${error}`
             })
         }
-        
     }
 
     async getOrderById(req: Request, res: Response) {
@@ -219,21 +62,10 @@ export class OrderController {
     async getPendingOrder(req: Request, res: Response) {
         try {
             const userId = req.user?.id
-            const user = await prisma.user.findUnique({
-                where: {
-                    id: +userId!
-                }
-            })
-            if(!user) throw 'User is not valid'
-
             const pendingOrder = await prisma.order.findFirst({
-                where: {
-                    userId: user.id,
-                    status: 'PendingPayment'
-                }, 
+                where: { userId: userId, status: 'PendingPayment' }, 
                 include : {
-                    Payment: true,
-                    Address: true,
+                    Payment: true, Address: true,
                     orderItems: {
                         include: {
                             product: true
@@ -241,16 +73,9 @@ export class OrderController {
                     },
                 }
             })
-
-            let responseSend;
-            if(pendingOrder) {
-                responseSend = { status: 'ok', msg: 'FOUND', order: pendingOrder }
-            } else {
-                responseSend = { status: 'ok', msg: 'NOTFOUND' }
-            }
-
-            return res.status(200).send(responseSend)
-            
+            return res.status(200).send({
+                status: 'ok', msg: pendingOrder? 'FOUND' : 'NOT_FOUND', order: pendingOrder
+            })
         } catch (error) {
             return res.status(400).send({
                 status: 'error',
@@ -258,181 +83,7 @@ export class OrderController {
             })
         }
     }
-
-    // get midtrans transaction status, from 'orderId', 
-    //      if status "expire" or "cancel" update order status with 'cancelled', and return all order items quantity to store quantity
-    //      if status "settlement" update order status with 'Proccessed' and update payment isConfirmed to true & confirmedAt to date.now()
-    async getMidtransStatus(req:Request, res: Response) {   
-        try {
-            const { orderId } = req.params 
-            
-            //check order exist
-            const existOrder = await prisma.order.findUnique({
-                where: { id: +orderId }
-            })
-            if(!existOrder) throw 'Order id is invalid'
-
-            //get midtransStatus, if customer didnt pick one of midtrans service will return 404
-            const midtransStatus = await midtrans.snap.transaction.status(`ORDER_A${orderId}`)        
-
-            //convert status to converStatus, which for grouping purpose
-            const status = midtransStatus?.transaction_status
-            const convertStatus = status === 'cancel' || status === 'null' ? 'expire' : status;
-
-            //this condition to prevent unecessary multiple running proccessed
-            if((convertStatus === 'expire' && existOrder.status !== 'Cancelled') || (convertStatus === 'settlement' && existOrder.status !== 'Proccessed')) {
-                switch (convertStatus) {
-                    // if expire, status transaction will be 'cancelled' and any ordered items quantity will revert back to stock store
-                    case 'expire':
-                        console.log('proccess of cancelling order');
-                        
-                        await prisma.$transaction(async (tx) => {
-                            const updatedOrder = await tx.order.update({
-                                where: { id: +orderId },
-                                include: { orderItems: true },
-                                data: {
-                                    status: 'Cancelled',
-                                }
-                            })
-
-                            // code for update store quantity with cancelled order Items
-                            const cancelledOrderItems = updatedOrder.orderItems.map((item) => {
-                                return { productId: item.productId, quantity: item.quantity }
-                            })
-                            
-                            // update all quantity stock back to store
-                            for (const item of cancelledOrderItems) {
-                                const existStock = await tx.stock.findFirst({
-                                    where: {
-                                        AND: {
-                                            productId: item.productId,
-                                            storeId: updatedOrder.storeId
-                                        }
-                                    }
-                                })
-                                if(!existStock) throw 'Something wrong when addedd product quantity to store'
-
-                                await tx.stock.update({
-                                    where: { id: existStock.id },
-                                    data: { quantity: existStock.quantity + item.quantity }
-                                })
-                            } 
-                        })
-                        
-                        break;
-                    
-                    case 'settlement':
-                        // update status of order to processed
-                        const updateOrder = await prisma.order.update({
-                            where: {
-                                id: +orderId
-                            },
-                            data: {
-                                status: 'Proccessed',
-                                Payment: {
-                                    update: {
-                                        isConfirmed: true,
-                                        confirmedAt: new Date(Date.now())
-                                    }
-                                }
-                            }
-                        })
-                    default:
-                        break;
-                }
-            }
-            
-            return res.status(200).send({
-                status: 'ok',
-                midtrans: midtransStatus.transaction_status
-            })
-        } catch (error) {            
-            return res.status(200).send({
-                status: 'NOT_FOUND',
-                midtrans: null, 
-                msg:'You need to select your transaction service first',
-            })
-        }
-
-
-    }
-
-    async cancelOrder(req:Request, res: Response) {
-        try {
-            const { orderId } = req.body
-            const userId = req.user?.id
-            console.log(userId, orderId);
-            
-            const existOrder = await prisma.order.findFirst({
-                where: {
-                    AND: {
-                        id: +orderId,
-                        userId: +userId!
-
-                    }
-                },
-                include: {
-                    Payment: true,
-                    Store:true,
-                }
-            })
-            
-            if(!existOrder) throw 'Order is Invalid'
-            if(existOrder.status !== 'PendingPayment') throw 'You cannot cancel payment anymore'
-            const isExpired = Date.parse(String(existOrder.Payment?.expiredDate)) < Date.now()
-            if(existOrder.Payment?.paymentMethod === 'Gateway' && !isExpired) {
-                //cancel midtrans
-                const midtransStatus = await midtrans.snap.transaction.cancel(`ORDER_A${existOrder.id}`)
-            }
-            
-            if(existOrder.paymentProofUrl !== null) throw 'You already have uploaded payment proof'
-
-            await prisma.$transaction(async (tx) => {
-                const updatedOrder = await tx.order.update({
-                    where: { id: +orderId },
-                    include: { orderItems: true },
-                    data: {
-                        status: 'Cancelled',
-                    }
-                })
-
-                // code for update store quantity with cancelled order Items
-                const cancelledOrderItems = updatedOrder.orderItems.map((item) => {
-                    return { productId: item.productId, quantity: item.quantity }
-                })
-                
-                // update all quantity stock back to store
-                for (const item of cancelledOrderItems) {
-                    const existStock = await tx.stock.findFirst({
-                        where: {
-                            AND: {
-                                productId: item.productId,
-                                storeId: updatedOrder.storeId
-                            }
-                        }
-                    })
-                    if(!existStock) throw 'Something wrong when addedd product quantity to store'
-
-                    await tx.stock.update({
-                        where: { id: existStock.id },
-                        data: { quantity: existStock.quantity + item.quantity }
-                    })
-                } 
-            })
-
-            return res.status(200).send({
-                status: 'ok',
-                msg: 'Cancel payment success'
-            })
-        } catch (error) {
-            return res.status(400).send({
-                status: 'error',
-                msg: 'NOT_FOUND',
-                error: `${error}`
-            })
-        }
-    }
-
+    
     async getUserOrder(req:Request, res: Response) {
         try {
             const userId = req.user?.id
@@ -448,7 +99,7 @@ export class OrderController {
                 }
             })
             if(!userOrder) throw "User doesnt have any order"
-
+            
             return res.status(200).send({
                 status: 'ok',
                 msg: 'Success get data',
@@ -461,47 +112,7 @@ export class OrderController {
             })
         }
     }
-
-    async getStoreOrder(req:Request, res: Response) {
-        try {
-            //change this when verification user implemented, get storeId from user store
-            const userId = req.user?.id
-            const admin = await prisma.user.findFirst({
-                where: {
-                    AND:{
-                        id: +userId!,
-                        role: 'STORE_ADMIN'
-                    }
-                }
-            })
-            if(!admin) return res.status(401).send({status: 'error', msg: 'Unauthoritized user'}) 
-
-            const storeOrder = await prisma.order.findMany({
-                where: {
-                    storeId: admin?.storeId!
-                },
-                include: {
-                    Payment: true
-                },
-                orderBy: {
-                    createdAt: 'desc'
-                }
-            })
-            if(!storeOrder) return res.status(200).send({status: 'ok', msg: 'there is no order in this store'})
-
-            return res.status(200).send({
-                status: 'ok',
-                msg: 'Success get data',
-                order: storeOrder
-            })
-        } catch (error) {
-            return res.status(400).send({
-                status: 'error',
-                msg: `${error}`
-            })
-        }
-    }
-
+    
     async patchCompletedOrder(req:Request, res: Response) {
         try {
             const { orderId } = req.body
@@ -515,12 +126,12 @@ export class OrderController {
                 }
             })
             if(!existOrder) throw "User doesnt have any order"
-
+            
             const updatedOrder = await prisma.order.update({
                 where: {  id: existOrder.id },
                 data: { status: 'Completed' }
             })
-
+            
             return res.status(200).send({
                 status: 'ok',
                 msg: 'Success update order',
@@ -532,4 +143,49 @@ export class OrderController {
             })
         }
     }
+
+    async userCancelOrder(req:Request, res: Response) {
+        try {
+            const { orderId } = req.body
+            const userId = req.user?.id
+            
+            const existOrder = await prisma.order.findFirst({
+                where: {
+                    AND: {
+                        id: +orderId,
+                        userId: +userId!
+                    }
+                },
+                include: {
+                    Payment: true,
+                    Store:true,
+                }
+            })
+            
+            if(!existOrder) throw 'Order is Invalid'
+            const isExpired = Date.parse(String(existOrder.Payment?.expiredDate)) < Date.now()
+            if(existOrder.Payment?.paymentMethod === 'Gateway' && !isExpired) {
+                //cancel midtrans
+                try {
+                    const midtransStatus = await midtrans.snap.transaction.cancel(`ORDER_A${existOrder.id}`)
+                } catch (error) {
+                    return res.status(200).send({status: 'ok', msg: 'NOT_FOUND'})
+                }
+            }
+            if(existOrder.paymentProofUrl !== null) throw 'You already have uploaded payment proof'
+
+            await cancelOrder(orderId)
+
+            return res.status(200).send({
+                status: 'ok',
+                msg: 'FOUND'
+            })
+        } catch (error) {
+            return res.status(400).send({
+                status: 'error',
+                msg: `${error}`,
+                
+            })
+        }
+    }   
 }

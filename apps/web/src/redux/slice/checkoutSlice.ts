@@ -20,7 +20,9 @@ export const checkoutSlice = createSlice({
             const removedId = action.payload
             return [...state.filter((id) => id !== removedId)]
         },
-        resetCheckout: (state) => []
+        resetCheckout: (state) => {
+            return []
+        }
     },
 
 })

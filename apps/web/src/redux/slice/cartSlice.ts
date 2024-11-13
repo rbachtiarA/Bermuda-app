@@ -34,7 +34,7 @@ export const cartSlice = createSlice({
             const { productId } = action.payload
             return [...state.filter((cartItem) => cartItem.productId !== productId)]
         },
-        resetCart: () => {
+        resetCart: (state) => {
             return []
         }, 
     },

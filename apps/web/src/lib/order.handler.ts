@@ -12,11 +12,14 @@ export const postOrder = async (
     shippingCost: number, 
     addressId: number,
     storeId: number,
-    methodPayment: 'Transfer' | 'Gateway') => {
+    discountAmount: number,
+    methodPayment: 'Transfer' | 'Gateway',
+    discountId?: number
+) => {
         const token = await getToken()
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}order/neworder`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}create`, {
             method:'POST',
-            body: JSON.stringify({totalAmount, shippingCost, addressId, methodPayment, storeId}),
+            body: JSON.stringify({totalAmount, shippingCost, addressId, methodPayment, storeId, discountId, discountAmount}),
             headers: {
                 "Content-type":"application/json",
                 'Authorization': `Bearer ${token}`
@@ -31,7 +34,7 @@ export const postOrder = async (
 
 export const getMidtransToken = async (orderId: number) => {
     const token = await getToken()
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}order/order/${orderId}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}order/id/${orderId}`, {
         headers: {
             "Content-type":"application/json",
             'Authorization': `Bearer ${token}`
@@ -45,7 +48,13 @@ export const getMidtransToken = async (orderId: number) => {
 }
 
 export const getMidtransStatus = async (orderId: number) => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}order/gateway/status/${orderId}`, {cache: "no-cache"})
+    const token = await getToken()
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}midtrans/status/${orderId}`, {
+        headers: {
+            "Content-type":"application/json",
+            'Authorization': `Bearer ${token}`
+        },
+        cache: "no-cache"})
     const { status, midtrans }:{status: 'ok' | 'NOT_FOUND' ,midtrans: 'pending' | 'expire' | 'settlement' | null, error:string} = await res.json()
     
     // status = NOT_FOUND || ok, midtrans = 'pending' | 'expire' | 'settlement' | null    
@@ -79,18 +88,6 @@ export const getUserOrders = async () => {
     const { status, msg, order } = await res.json()
     return { status, msg, order }
 }
-export const getStoreOrders = async (userId: number) => {
-    const token = await getToken()
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}order/store`, {
-        headers: {
-            
-            "Content-type":"application/json",
-            'Authorization': `Bearer ${token}`
-        },
-        next: { revalidate: 1 } })
-    const { status, msg, order } = await res.json()
-    return { status, msg, order }
-}
 export const cancelOrder = async (orderId: number) => {
     const token = await getToken()
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}order/cancel`, {
@@ -102,8 +99,7 @@ export const cancelOrder = async (orderId: number) => {
         }
     })
 
-    const { status, msg, error } = await res.json()
-    
+    const { status, msg, error } = await res.json()    
     return { status, msg, error }
 }
 

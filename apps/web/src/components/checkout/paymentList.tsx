@@ -1,14 +1,16 @@
 'use client'
 import currencyRupiah from "@/lib/rupiahCurrency";
-import { Button, Card, CardBody, CardFooter, CardHeader, Divider } from "@nextui-org/react";
+import { Button, Card, CardBody, CardFooter, CardHeader, Divider, Spinner } from "@nextui-org/react";
+import DiscountButton from "./discountButton";
+import { IDiscount } from "@/type/discount";
 export default function PaymentTotalList(
     {
-        itemTotalPayment, travelPayment, isPaymentInvalid, isLoading, isError,
-        updateMethodPayment, onBuy} 
+        discount, discountCut, itemTotalPayment, travelPayment, isPaymentInvalid, isLoading, isError, 
+        updateMethodPayment, onBuy, onDiscount} 
     : 
     { 
-        itemTotalPayment:number | null, travelPayment: number | null, isLoading: boolean, methodPayment: 'Transfer' | 'Gateway' | null, isPaymentInvalid: boolean,
-        isError:string | null,updateMethodPayment: (paymentMethod:string) => void, onBuy: () => void
+        discount: IDiscount | null, discountCut: number, itemTotalPayment:number, travelPayment: number | null, isLoading: boolean, methodPayment: 'Transfer' | 'Gateway' | null, isPaymentInvalid: boolean,
+        isError:string | null,updateMethodPayment: (paymentMethod:string) => void, onBuy: () => void, onDiscount: (discount: IDiscount| null) => void
     }) {
     
     const paymentMethodOptions = () => {
@@ -33,25 +35,31 @@ export default function PaymentTotalList(
                     <p>{itemTotalPayment? currencyRupiah(itemTotalPayment): '-'}</p>
                 </div>
                 <div className="flex justify-between gap-4">
+                    <p>Diskon Barang</p>
+                    <p>{discountCut? `- ${currencyRupiah(discountCut)}` : '-'}</p>
+                </div>
+                <div className="flex justify-between gap-4">
                     <p>Harga Jasa Pengiriman</p>
                     <p>{travelPayment? currencyRupiah(travelPayment) : '-'}</p>
                 </div>
                 <Divider />
                 <div className="flex gap-4 justify-between font-bold my-2">
                     <p>Total Transaksi Pembayaran</p>
-                    <p>{currencyRupiah((itemTotalPayment? itemTotalPayment : 0) + (travelPayment? travelPayment : 0))}</p>
+                    <p>{currencyRupiah((itemTotalPayment? itemTotalPayment : 0) + (travelPayment? travelPayment : 0) - (discountCut? discountCut : 0))}</p>
                 </div>
                 <Divider />
             </CardBody>
-            <CardFooter className="flex flex-col">
+            <CardFooter className="flex flex-col gap-1">
+                    <div className="w-full">
+                        <DiscountButton itemTotalPayment={itemTotalPayment} discount={discount} onSelectDiscount={onDiscount}/> 
+                    </div>
                     <div className="w-full flex flex-col gap-2">
                         <h2 className="font-semibold">Metode Pembayaran</h2>
                         {paymentMethodOptions()}
                         <Divider />    
                     </div>
-                        <Button color="primary" className="my-2" onPress={onBuy} fullWidth isDisabled={isPaymentInvalid || isLoading}>{isLoading? 'Loading' :'Bayar Sekarang' }</Button>
+                        <Button color="primary" className="my-2" onPress={onBuy} fullWidth isDisabled={isPaymentInvalid || isLoading}>{isLoading? <Spinner color="default"/> :'Bayar Sekarang' }</Button>
                         {isError !== null && <p className="text-sm text-warning-500 text-wrap md:max-w-[270px]">{isError}</p>}
-                        {isLoading && <p>LOADING</p>}
             </CardFooter>
         </Card>
     )
