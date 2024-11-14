@@ -126,7 +126,10 @@ export class UserController {
       const { email, password } = req.body;
       const existingUser = await prisma.user.findUnique({
         where: { email: email },
-        include: { cart: { select: { CartItem: { include: { product: { include: { stock: true }} } } } } }
+        include: { 
+          cart: { select: { CartItem: { include: { product: { include: { stock: true }} } } } },
+          address: true
+        }
       })
       if (!existingUser) throw 'Akun tidak ditemukan';
       if (!existingUser.isVerified) throw "author not verify !"
@@ -145,7 +148,7 @@ export class UserController {
         msg: "Berhasil masuk",
         token,
         cart: existingUser.cart,
-        user: {id: existingUser.id, role: existingUser.role},
+        user: {id: existingUser.id, role: existingUser.role, name: existingUser.name, email:existingUser.email, avatarUrl: existingUser.avatarUrl, address: existingUser.address},
       })
     } catch (err) {
       res.status(400).send({
