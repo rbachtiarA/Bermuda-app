@@ -9,7 +9,7 @@ import { DatePicker, DateRangePicker, Pagination } from '@nextui-org/react'
 import SelectStatusFilter from '../filter/selectStatusFilter'
 import DateFilter from '../filter/dateFilter'
 import OrderNameFilter from '../filter/orderNameFilter'
-import { toast, ToastContainer } from 'react-toastify'
+import { toast } from 'react-toastify'
 
 export default function AdminOrderList({}) {
     const user = useAppSelector((state) => state.user)
@@ -111,7 +111,6 @@ export default function AdminOrderList({}) {
             <div className='flex justify-end'>
                 <Pagination showControls total={pages} initialPage={page} page={page} onChange={setPage}/>
             </div>
-            <ToastContainer position='top-center' />
         </div>
     )
 }

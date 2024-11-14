@@ -12,7 +12,7 @@ export default function TitleBreadcrumbs({ title }: {title:string}) {
     <div className=''>
         <Breadcrumbs size='md'>
             {pathName.split('/').map((val, idx) => (
-                <BreadcrumbItem key={`${val}${idx}`} onPress={() => router.push(pathName.split('/').slice(0, idx+1).join('/')??'/')} >{idx === 0? 'Home ' : `${pathName.split('/')[idx].slice(0,1).toUpperCase()+pathName.split('/')[idx].slice(1)} `}</BreadcrumbItem>
+                <BreadcrumbItem key={`${val}${idx}`} onPress={() => router.push(pathName.split('/').slice(0, idx+1).length === 0? pathName.split('/').slice(0, idx+1).join('/') :'/')} >{idx === 0? 'Home ' : `${pathName.split('/')[idx].slice(0,1).toUpperCase()+pathName.split('/')[idx].slice(1)} `}</BreadcrumbItem>
             ))}
         </Breadcrumbs>
     </div>
