@@ -14,6 +14,7 @@ import Link from 'next/link';
 import { resetCart } from '@/redux/slice/cartSlice';
 import { resetCheckout } from '@/redux/slice/checkoutSlice';
 import { capitalizeWord } from '@/lib/user.handler';
+import CartNavbar from './cartNavbar';
 
 export default function DropdownNav() {
   const router = useRouter();
@@ -71,6 +72,13 @@ export default function DropdownNav() {
           <p className="font-semibold bg-blue">
             {name || 'Akun Belum Masuk'}
           </p>
+        </DropdownItem>
+        <DropdownItem 
+          key="cart"
+          className="hidden md:block gap-2 border-b"
+          textValue={`User Cart`}
+        >
+          <CartNavbar />
         </DropdownItem>
         <DropdownItem
           key="Account"
