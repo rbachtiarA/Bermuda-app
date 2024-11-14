@@ -20,7 +20,7 @@ export default function ProductList() {
         getData()
     }, [])
     return (
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+        <div className="grid gap-2 overflow-auto " style={{gridTemplateColumns: `repeat(${data.length},200px)`}}>
             {data.map((stock) => (
                 <ProductCard key={stock.id} stock={stock} />
             ))}
