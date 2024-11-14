@@ -1,5 +1,3 @@
-import { ICategory } from "@/type/category";
-
 const base_url = "http://localhost:8000/api"
 export const getCategories = async () => {
     const res = await fetch(`${base_url}/categories`, {
