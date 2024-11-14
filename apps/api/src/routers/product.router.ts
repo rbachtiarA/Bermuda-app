@@ -12,7 +12,7 @@ export class ProductRouter {
   }
 
   private initializeRoutes(): void {
-    this.router.get('/', this.productController.getProducts);
+    this.router.get('/', this.productController.ProdutSearch);
   }
 
   getRouter(): Router {

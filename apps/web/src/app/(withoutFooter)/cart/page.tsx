@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 export default function page() {
     return (
         <section className='grid md:grid-cols-[1fr_8fr_1fr] w-full'>
-            <div className='md:col-start-2'>
+            <div className='md:col-start-2 p-2'>
                 <TitleBreadcrumbs title='CART' />
             </div>
             {/* <h2 className='w-full text-xl font-bold text-center'>CART</h2> */}

@@ -9,7 +9,6 @@ import PaymentItems from "./paymentDetails/paymentItems"
 import PaymentUploadProof from "./paymentDetails/paymentUploadProof"
 import PaymentRedirectMidtrans from "./paymentDetails/paymentRedirectMidtrans"
 import PaymentCountdown from "./paymentDetails/paymentCountdown"
-import { ToastContainer } from "react-toastify"
 import PaymentSuccess from "./paymentSuccess"
 import PaymentCancel from "./paymentCancel"
 import PaymentEmpty from "./paymentEmpty"
@@ -83,7 +82,6 @@ export default function PaymentCard() {
                 data?.status === "Cancelled" &&
                 <PaymentCancel data={data}/>
             }
-            <ToastContainer position="top-center"/>
         </div>
     )
 }

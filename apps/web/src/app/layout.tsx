@@ -3,10 +3,6 @@ import { Roboto } from 'next/font/google';
 import './globals.css';
 import "react-toastify/dist/ReactToastify.css";
 
-import AddressBar from '@/components/address/addressBar';
-import SiteNavbar from '@/components/navbar/siteNavbar';
-import Footer from '@/components/footer/footer';
-import BottomNavbar from '@/components/bottomNavbar/bottomNavbar';
 import { AppProvider } from './AppProvider';
 const roboto = Roboto({ subsets: ['latin'], weight: ['400', '700'] });
 
