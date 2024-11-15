@@ -62,7 +62,7 @@ export class UserController {
       const templateSource = fs.readFileSync(templatePath, 'utf-8')
       const compiledTemplate = handlebars.compile(templateSource);
       const html = compiledTemplate({
-        link: `${process.env.BASE_URL}/verify/${token}`
+        link: `${process.env.BASE_URL_FE}verify/${token}`
       })
 
       await transporter.sendMail({
@@ -207,7 +207,7 @@ export class UserController {
   async editAvatar (req: Request, res: Response) {
     try {
       if (!req.file) throw "no file uploaded"
-      const link = `http://localhost:8000/api/public/avatar/${req.file?.filename}`
+      const link = `${process.env.BASE_URL_BE}public/avatar/${req.file?.filename}`
       console.log(link)
       await prisma.user.update({
         data: { avatarUrl: link },

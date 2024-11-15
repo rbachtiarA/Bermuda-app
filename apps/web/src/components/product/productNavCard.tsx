@@ -21,7 +21,7 @@ export default function ProductNavCard({product}:{product: IProduct}) {
                 <CardHeader className="justify-center w-full">
                     {/* <Skeleton className="w-[150px] h-[150px] rounded-md"/> */}
                     <Image
-                        src="http://localhost:8000/api/public/product/product-chitato-bbq.jpg"
+                        src={`${process.env.NEXT_PUBLIC_BASE_API_URL}public/product/product-chitato-bbq.jpg`}
                     />
                 </CardHeader>
                 <CardBody>

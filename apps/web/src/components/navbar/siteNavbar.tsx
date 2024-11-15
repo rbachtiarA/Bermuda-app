@@ -37,6 +37,7 @@ export default function SiteNavbar() {
   const [debounceSearch] = useDebounce(search, 2000)
   const [dropdownSearch, setDropdownSearch] = useState(false)
   const [dropdownHamburger, setDropdownHamburger] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const onLogout = async () => {
     await deleteToken();
     dispatch(resetCart())
@@ -52,7 +53,11 @@ export default function SiteNavbar() {
 
     fetchToken();
   }, []);
-
+  
+  useEffect(() => {
+    if(search.length >= 3)
+    setIsLoading(true)
+  }, [search])
   useEffect(() => {
     const getProductsSearch = async () => {
         const { products } = await getProducts(debounceSearch)
@@ -63,6 +68,7 @@ export default function SiteNavbar() {
     } else if(debounceSearch.length === 0) {
       setSearchData([])
     }
+    setIsLoading(false)
   },[debounceSearch])
 
   return (
@@ -111,9 +117,14 @@ export default function SiteNavbar() {
       
       <div className={`fixed top-[64px] md:top-[97px] z-[12] bg-foreground-500/50 h-screen w-full ${dropdownSearch? 'max-h-screen': 'max-h-0'}`}>
         <div className={`flex flex-col bg-foreground-100 w-full ${dropdownSearch? 'max-h-[400px]': 'max-h-0'} overflow-auto transition-all ease-in-out px-2`}>
-          <div className='flex w-full justify-end p-2'>
+          <div className='flex w-full justify-between p-2'>
+            <span className='text-foreground-400'>Atleast input 3 characters</span>
             <span onClick={() => setDropdownSearch(false)} className='hover:cursor-pointer'>X</span>
           </div>
+            {
+              isLoading &&
+              <Spinner size='sm'/>
+            }
           <div className='flex flex-col md:flex-row gap-2 pb-2'>
             {searchData.map((product) => (
                 <ProductNavCard key={product.id} product={product} />
