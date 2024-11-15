@@ -30,7 +30,11 @@ export default function AdminOrderList({}) {
             filteredData = filteredData.filter((order) => String(order.id) === orderNameFilter) 
         }
         if(!!dateMinFilter) {
-            filteredData = filteredData.filter((order) => (new Date(order.createdAt).getTime() > dateMinFilter && (new Date(order.createdAt).getTime() <= dateMinFilter+ (60*60*24*1000) )))
+            const timeZoneOffsetMilliSeconds = new Date().getTimezoneOffset() * 60 * 1000
+            const oneDayInMilliseconds = 24*60*60*1000
+            filteredData = filteredData.filter((order) => (
+                (new Date(order.createdAt).getTime() - timeZoneOffsetMilliSeconds ) > dateMinFilter && 
+                (new Date(order.createdAt).getTime() - timeZoneOffsetMilliSeconds <= dateMinFilter + oneDayInMilliseconds )))
         }
 
         setPages(Math.ceil(filteredData.length/10))
