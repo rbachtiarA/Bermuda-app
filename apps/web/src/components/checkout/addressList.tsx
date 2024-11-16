@@ -35,9 +35,17 @@ export default function AddressessList({ selectedAddress, updateTravelPayment, u
                 <h2 className="text-lg font-semibold">Alamat Pengiriman</h2>
             </CardHeader>
             <CardBody>
-                <p className="">{selectedAddress?.addressLine}, {selectedAddress?.city}, {selectedAddress?.state}, {selectedAddress?.postalCode}</p>
+                {
+                    !selectedAddress && 
+                    <p className="text-danger">Alamat tidak ada, bikin alamat pengiriman agar paket bisa dikirim</p>
+                }
+                {
+                    selectedAddress &&
+                        <p className="">{selectedAddress?.addressLine}, {selectedAddress?.city}, {selectedAddress?.state}, {selectedAddress?.postalCode}</p>
+                }
             </CardBody>
             <CardFooter className="flex justify-end w-full">
+                <Button color="secondary" size="sm" variant="light">Buat Alamat Baru</Button>
                 <Button color="secondary" size="sm" variant="light">Ganti Alamat</Button>
             </CardFooter>
         </Card>

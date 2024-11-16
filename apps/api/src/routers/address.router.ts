@@ -1,20 +1,20 @@
+import { AddressController } from '@/controllers/address.controller';
 import { DiscountController } from '@/controllers/discount.controller';
 import { verifyToken } from '@/middleware/token';
 import { Router } from 'express';
 
-export class DiscountRouter {
+export class AddressRouter {
   private router: Router;
-  private discountController: DiscountController;
+  private addressController: AddressController;
 
   constructor() {
-    this.discountController = new DiscountController();
+    this.addressController = new AddressController();
     this.router = Router();
     this.initializeRoutes();
   }
 
   private initializeRoutes(): void {
-    this.router.get('/store/:storeId', verifyToken, this.discountController.getAvailableDiscountOnCheckout)
-    this.router.get('/address', this.discountController.updateProvince)
+    this.router.get('/update', this.addressController.updateProvince)
   }
 
   getRouter(): Router {

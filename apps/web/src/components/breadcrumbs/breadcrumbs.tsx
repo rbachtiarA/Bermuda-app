@@ -10,9 +10,9 @@ export default function TitleBreadcrumbs({ title }: {title:string}) {
     
   return (
     <div className=''>
-        <Breadcrumbs size='md'>
+        <Breadcrumbs size='lg'>
             {pathName.split('/').map((val, idx) => (
-                <BreadcrumbItem key={`${val}${idx}`} onPress={() => router.push(pathName.split('/').slice(0, idx+1).length === 0? pathName.split('/').slice(0, idx+1).join('/') :'/')} >{idx === 0? 'Home ' : `${pathName.split('/')[idx].slice(0,1).toUpperCase()+pathName.split('/')[idx].slice(1)} `}</BreadcrumbItem>
+                <BreadcrumbItem className='font-bold' size='lg' key={`${val}${idx}`} onPress={() => router.push(pathName.split('/').slice(0, idx+1).length === 0? pathName.split('/').slice(0, idx+1).join('/') :'/')} >{idx === 0? 'Home ' : `${pathName.split('/')[idx].slice(0,1).toUpperCase()+pathName.split('/')[idx].slice(1)} `}</BreadcrumbItem>
             ))}
         </Breadcrumbs>
     </div>

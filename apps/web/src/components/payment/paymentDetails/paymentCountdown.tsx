@@ -21,6 +21,6 @@ export default function PaymentCountdown({expDate}: {expDate:string}) {
     }, [timeLeft])
 
   return (
-    <div>{timeLeft} seconds left</div>
+    <div>Time limit :   {Math.floor((timeLeft||0)/60)}:{(timeLeft||0)%60} left</div>
   )
 }

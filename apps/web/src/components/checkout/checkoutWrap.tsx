@@ -8,7 +8,6 @@ import { IAddress } from "@/type/address"
 import { getMidtransToken, getOrderPendingPayment, postOrder } from "@/lib/order.handler"
 import { useRouter } from "next/navigation"
 import { resetCheckout } from "@/redux/slice/checkoutSlice"
-import { getAvailableDiscountOnCheckout } from "@/lib/discount.handler"
 import { IDiscount } from "@/type/discount"
 
 export default function CheckoutWrapper() {
@@ -49,7 +48,6 @@ export default function CheckoutWrapper() {
         setIsLoading(true)
         const pendingOrder = await getOrderPendingPayment()
         if(pendingOrder) {
-            console.log('You need to proccess your payment previous order to make new order');
             setIsError('You need to proccess your payment previous order to make new order')
         } else {
             const {status, order, msg} = await postOrder(itemTotalPayment!+travelPayment!-discountCut!, travelPayment!, selectedAddress?.id!, store.id!, discountCut ,methodPayment!, discount?.id )
@@ -97,7 +95,7 @@ export default function CheckoutWrapper() {
 
     const isPaymentInvalid = useMemo(
         () => {
-            return !travelPayment || !itemTotalPayment || !methodPayment
+            return !travelPayment || !itemTotalPayment || !methodPayment || !selectedAddress
         }, [travelPayment, itemTotalPayment, methodPayment])
     
     return (

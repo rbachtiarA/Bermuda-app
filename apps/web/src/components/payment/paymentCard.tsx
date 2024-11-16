@@ -5,7 +5,6 @@ import { IOrder } from "@/type/order"
 import { Card, CardBody, CardFooter, CardHeader } from "@nextui-org/react"
 import { useEffect, useState } from "react"
 import PaymentDetails from "./paymentDetails/paymentDetails"
-import PaymentItems from "./paymentDetails/paymentItems"
 import PaymentUploadProof from "./paymentDetails/paymentUploadProof"
 import PaymentRedirectMidtrans from "./paymentDetails/paymentRedirectMidtrans"
 import PaymentCountdown from "./paymentDetails/paymentCountdown"
@@ -44,11 +43,10 @@ export default function PaymentCard() {
                 </CardHeader>
                 <CardBody>
                     <div>
-                        <h3>Shipping Address</h3>
+                        <h3 className="font-semibold">Shipping Address</h3>
                         <p>{data?.Address.addressLine}, {data?.Address.city}, {data?.Address.state}, {data?.Address.postalCode}</p>
                     </div>
-                    <PaymentDetails orderId={data?.id!} status={data?.status} totalAmount={data?.totalAmount!} paymentMethod={data.Payment.paymentMethod} />
-                    <PaymentItems items={data?.orderItems!}/>
+                    <PaymentDetails DiscountAmount={data.discountAmount} shippingCost={data.shippingCost} items={data.orderItems} orderId={data?.id!} status={data?.status} totalAmount={data?.totalAmount!} paymentMethod={data.Payment.paymentMethod} />
 
                     {
                         data.status === "PendingPayment" &&
