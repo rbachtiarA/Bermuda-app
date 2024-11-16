@@ -7,7 +7,7 @@ export default function SearchNav({search, setSearch, setDropdown}: {setDropdown
   return (
       // <NavbarContent as="div" className="items-center" justify="end">
         <Input
-          onClick={() => setDropdown(true)}
+          onFocus={() => setDropdown(true)}
           onBlur={() => setDropdown(false)}
           value={search}
           onChange={(e) => setSearch(e.target.value)}

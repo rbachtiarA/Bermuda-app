@@ -7,7 +7,6 @@ import OrderTable from '../orderTable'
 import { Pagination } from '@nextui-org/react'
 
 export default function OrderList({}) {
-    const user = useAppSelector((state) => state.user)
     const [data, setData] = useState<IOrder[]>([])
     const [filterData, setFilterData] = useState<IOrder[]>([])
     const [page, setPage] = useState<number>(1)
@@ -20,7 +19,7 @@ export default function OrderList({}) {
     }
 
     const onReceive = async (orderId: number) => {
-        const { status } = await completeOrder(orderId, user.id)
+        const { status } = await completeOrder(orderId)
         if(status === 'ok') {
             const orderIndex = data.findIndex((item) => item.id === orderId)
             data[orderIndex].status = 'Completed'

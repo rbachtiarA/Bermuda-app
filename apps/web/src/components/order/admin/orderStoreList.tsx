@@ -30,7 +30,11 @@ export default function AdminOrderList({}) {
             filteredData = filteredData.filter((order) => String(order.id) === orderNameFilter) 
         }
         if(!!dateMinFilter) {
-            filteredData = filteredData.filter((order) => (new Date(order.createdAt).getTime() > dateMinFilter && (new Date(order.createdAt).getTime() <= dateMinFilter+ (60*60*24*1000) )))
+            const timeZoneOffsetMilliSeconds = new Date().getTimezoneOffset() * 60 * 1000
+            const oneDayInMilliseconds = 24*60*60*1000
+            filteredData = filteredData.filter((order) => (
+                (new Date(order.createdAt).getTime() - timeZoneOffsetMilliSeconds ) > dateMinFilter && 
+                (new Date(order.createdAt).getTime() - timeZoneOffsetMilliSeconds <= dateMinFilter + oneDayInMilliseconds )))
         }
 
         setPages(Math.ceil(filteredData.length/10))
@@ -97,7 +101,7 @@ export default function AdminOrderList({}) {
         getData()
     }, [])
     return (
-        <div className='md:col-start-2 overflow-auto p-4 flex flex-col gap-2'>
+        <div className='md:col-start-2 overflow-auto py-4 flex flex-col gap-2'>
             <div className='flex flex-col md:flex-row gap-2 w-full flex-wrap'>
                 <div className='flex gap-2 w-full'>
                     <OrderNameFilter orderNameFilter={orderNameFilter} setOrderNameFilter={setOrderNameFilter}/>

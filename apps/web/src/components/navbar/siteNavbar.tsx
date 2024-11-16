@@ -21,13 +21,12 @@ import { useDebounce } from 'use-debounce';
 import HamburgerNavbar from './hamburgerNavbar';
 import { IProduct } from '@/type/product';
 import { getProducts } from '@/lib/product.handler';
-import ProductNavCard from '../product/productNavCard';
-import { useAppDispatch, useAppSelector } from '@/redux/hook';
-import { useRouter } from 'next/navigation';
+import { useAppDispatch } from '@/redux/hook';
 import { resetCart } from '@/redux/slice/cartSlice';
 import { resetCheckout } from '@/redux/slice/checkoutSlice';
-import NavbarMobileMenu from './navbarMobile/navbarMobileMenu';
 import { logoutAction } from '@/redux/slice/userSlice';
+import { getClientLocation } from '@/lib/address';
+import NavbarMobileHamburger from './navbarMobile/navbarMobileHamburger';
 
 export default function SiteNavbar() {
   const dispatch = useAppDispatch()
@@ -37,6 +36,7 @@ export default function SiteNavbar() {
   const [debounceSearch] = useDebounce(search, 2000)
   const [dropdownSearch, setDropdownSearch] = useState(false)
   const [dropdownHamburger, setDropdownHamburger] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const onLogout = async () => {
     await deleteToken();
     dispatch(resetCart())
@@ -44,14 +44,20 @@ export default function SiteNavbar() {
     dispatch(logoutAction())
     setToken('')
   }
+  
   useEffect(() => {
     const fetchToken = async () => {
       const fetchedToken = await getToken();
       setToken(fetchedToken ?? null);
     };
-
+    getClientLocation()
     fetchToken();
   }, []);
+  
+  useEffect(() => {
+    if(search.length >= 3)
+    setIsLoading(true)
+  }, [search])
 
   useEffect(() => {
     const getProductsSearch = async () => {
@@ -63,6 +69,7 @@ export default function SiteNavbar() {
     } else if(debounceSearch.length === 0) {
       setSearchData([])
     }
+    setIsLoading(false)
   },[debounceSearch])
 
   return (
@@ -101,6 +108,7 @@ export default function SiteNavbar() {
             )}
           </NavbarContent>
       </Navbar>
+      {/* Mobile Nav */}
       <Navbar isBordered shouldHideOnScroll={!dropdownSearch} className='md:hidden z-[13]'>
         <NavbarContent className='grid grid-cols-[8fr_1fr_1fr] w-full'>
           <SearchNav search={search} setSearch={setSearch} setDropdown={setDropdownSearch}/>
@@ -109,29 +117,16 @@ export default function SiteNavbar() {
         </NavbarContent>
       </Navbar>
       
-      <div className={`fixed top-[64px] md:top-[97px] z-[12] bg-foreground-500/50 h-screen w-full ${dropdownSearch? 'max-h-screen': 'max-h-0'}`}>
-        <div className={`flex flex-col bg-foreground-100 w-full ${dropdownSearch? 'max-h-[400px]': 'max-h-0'} overflow-auto transition-all ease-in-out px-2`}>
-          <div className='flex w-full justify-end p-2'>
-            <span onClick={() => setDropdownSearch(false)} className='hover:cursor-pointer'>X</span>
-          </div>
-          <div className='flex flex-col md:flex-row gap-2 pb-2'>
-            {searchData.map((product) => (
-                <ProductNavCard key={product.id} product={product} />
-            ))}
-          </div>
-        </div>  
-      </div>
-      <div className={`fixed top-[64px] md:top-[95px] z-[11] bg-foreground-500/50 w-full h-screen ${dropdownHamburger? 'max-h-screen': 'max-h-0'}`}>
-        <div className={`bg-foreground-100 h-screen w-full ${dropdownHamburger? 'max-h-screen': 'max-h-0'} overflow-auto transition-all ease-in-out`}>
-            <div className='w-full flex justify-between my-2 px-4 text-xl'>
-              <h2 className='font-bold'>Menu</h2>
-              <span onClick={() => setDropdownHamburger(false)} className='hover:cursor-pointer'>X</span>
-            </div>
-            <Divider />
-            <NavbarMobileMenu onLogout={onLogout} token={token}/>
-        </div>  
-      </div>
-      
+      <NavbarMobileHamburger 
+        dropdownHamburger={dropdownHamburger}
+        dropdownSearch={dropdownSearch}
+        isLoading={isLoading}
+        onLogout={onLogout}
+        searchData={searchData}
+        setDropdownHamburger={setDropdownHamburger}
+        setDropdownSearch={setDropdownSearch}
+        token={token}
+      />      
     </>
   );
 }

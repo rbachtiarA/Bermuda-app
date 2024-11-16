@@ -1,3 +1,5 @@
+import TitleBreadcrumbs from '@/components/breadcrumbs/breadcrumbs'
+import BreadcrumbsDashboard from '@/components/breadcrumbs/breadcrumbsDashboard'
 import AdminProtection from '@/components/routerProtection/adminProtection'
 import SideBar from '@/components/sideBar'
 import SideBarHamburger from '@/components/sideBarHamburger'
@@ -14,9 +16,10 @@ export default function layout({children}:{children: React.ReactNode}) {
           </div>
           <div className='md:hidden w-full p-1 flex flex-col gap-1'>
             <SideBarHamburger />
+            <BreadcrumbsDashboard title='Dashboard'/>
             <Divider />
           </div>
-          {children}
+            {children}
       </div>
     </AdminProtection>
   )

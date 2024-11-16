@@ -91,9 +91,7 @@ export class AdminController {
                 status: 'ok',
                 msg: 'success update order'
             })
-        } catch (error) {
-            console.log(`${error}`);
-            
+        } catch (error) {           
             return res.status(401).send({
                 status: 'error',
                 msg: `${error}`
