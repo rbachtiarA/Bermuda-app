@@ -14,6 +14,7 @@ import Link from 'next/link';
 import { resetCart } from '@/redux/slice/cartSlice';
 import { resetCheckout } from '@/redux/slice/checkoutSlice';
 import { capitalizeWord } from '@/lib/user.handler';
+import { logoutAction } from '@/redux/slice/userSlice';
 import CartNavbar from './cartNavbar';
 
 export default function DropdownNav() {
@@ -24,6 +25,7 @@ export default function DropdownNav() {
   const [token, setToken] = useState<string | null>(null);
   const role = user.role;
   const name = capitalizeWord(user.name);
+  const dispatch = useAppDispatch()
 
 
   const fetchToken = async () => {
@@ -33,6 +35,7 @@ export default function DropdownNav() {
 
   const onLogout = async () => {
     await deleteToken();
+    dispatch(logoutAction())
     dispatch(resetCart())
     dispatch(resetCheckout())
     window.location.href = "/"

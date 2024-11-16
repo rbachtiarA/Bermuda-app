@@ -28,7 +28,7 @@ export const postCartItems = async (userId:number , productId:number, quantity:n
             'Authorization': `Bearer ${token}`
         }
     })
-
+    console.log(res)
     const { cartItem }: {cartItem: ICartItem} = await res.json()
         
     return { ok: res.ok, cartItem }

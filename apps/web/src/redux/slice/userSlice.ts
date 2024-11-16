@@ -7,7 +7,10 @@ const initialState: IUserState = {
   email: '',
   role: '',
   avatarUrl: '',
-  address: '',
+  address: null,
+  location: undefined,
+  isLoggedIn: false,
+  selectedAddress: undefined
 };
 
 export const userSlice = createSlice({
@@ -23,6 +26,7 @@ export const userSlice = createSlice({
       state.role = role;
       state.avatarUrl = avatarUrl;
       state.address = address;
+      state.isLoggedIn = true;
     },
     logoutAction: (state) => {
       state.id = 0;
@@ -30,10 +34,17 @@ export const userSlice = createSlice({
       state.email = '';
       state.role = '';
       state.avatarUrl = '';
-      state.address = '';
+      state.address = null;
+      state.isLoggedIn = false;
     },
+    setLocation: (state, action: PayloadAction<{ latitude: number; longitude: number }>) => {
+      state.location = action.payload;
+    },
+    selectAddress: (state, action: PayloadAction<IUserState["selectedAddress"]>) => {
+      state.selectedAddress = action.payload;
+    }
   },
 });
 
-export const { loginAction, logoutAction } = userSlice.actions;
+export const { loginAction, logoutAction, setLocation, selectAddress } = userSlice.actions;
 export default userSlice.reducer;
