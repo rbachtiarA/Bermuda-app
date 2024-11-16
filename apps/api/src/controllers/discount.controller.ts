@@ -25,7 +25,6 @@ export class DiscountController {
         }
       })
       const productIds = checkoutItems?.CartItem.map((item) => item.product.id)
-      console.log(productIds);
       const discount = await prisma.discount.findMany({
         where: {
           OR: [
@@ -48,10 +47,7 @@ export class DiscountController {
         },
       })      
       
-      if(!checkoutItems) throw 'Something wrong when check your cart'
-
-      console.log(checkoutItems);
-      
+      if(!checkoutItems) throw 'Something wrong when check your cart'      
       return res.status(200).send({
         status: 'ok',
         discount

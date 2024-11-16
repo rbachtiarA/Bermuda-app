@@ -3,10 +3,11 @@ import { BreadcrumbItem, Breadcrumbs } from '@nextui-org/react';
 import { usePathname, useRouter } from 'next/navigation'
 import React from 'react'
 
-export default function TitleBreadcrumbs({ title }: {title:string}) {
+export default function BreadcrumbsDashboard({ title }: {title:string}) {
     const pathName = usePathname()
     const router = useRouter()
     const splitPath = pathName.split('/')
+    console.log(splitPath.join('/'));
     
   return (
     <div className=''>
