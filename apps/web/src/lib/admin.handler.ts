@@ -62,3 +62,17 @@ export const shippedOrder = async (orderId: number) => {
     
     return { status, msg }
 }
+
+export const checkAdmin = async () => {
+    const token = await getToken()
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}admin/isAdmin`, {
+        method:'GET',
+        headers: {
+            "Content-type":"application/json",
+            'Authorization': `Bearer ${token}`
+        }
+    })
+
+    const { status } = await res.json()
+    return { status }
+}

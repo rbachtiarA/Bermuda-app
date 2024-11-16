@@ -1,12 +1,16 @@
 'use client';
 import { Navbar, NavbarContent, Input } from '@nextui-org/react';
 import { SearchIcon } from './searchIcon';
+import { Dispatch, SetStateAction } from 'react';
 
-export default function SearchNav() {
+export default function SearchNav({search, setSearch, setDropdown}: {setDropdown: Dispatch<SetStateAction<boolean>>,search:string, setSearch: Dispatch<SetStateAction<string>>}) {
   return (
-    <Navbar isBordered>
-      <NavbarContent as="div" className="items-center" justify="end">
+      // <NavbarContent as="div" className="items-center" justify="end">
         <Input
+          onFocus={() => setDropdown(true)}
+          onBlur={() => setDropdown(false)}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
           classNames={{
             base: 'w-full h-10',       //'max-w-full max-w-[10rem] lg:max-w-[555px] h-10',
             mainWrapper: 'h-full',
@@ -19,7 +23,6 @@ export default function SearchNav() {
           endContent={<SearchIcon size={18} />}
           type="search"
         />
-      </NavbarContent>
-    </Navbar>
+      // </NavbarContent>
   );
 }

@@ -22,7 +22,7 @@ export default function BottomNavbar () {
                     <LinkButtonBottomNavbar label='Order' href="/userorder" imgsrc="/icon-order.svg" imgalt="order" />
                 </li>
                 <li className="w-full">
-                    <LinkButtonBottomNavbar label='Cart' href="/cart" imgsrc="/icon-shopping-cart.svg" imgalt="cart" component={<NotificationBottomNavbar data={cart}/>}/>
+                    <LinkButtonBottomNavbar label='Cart' href="/cart" imgsrc="/icon-shopping-cart.svg" imgalt="cart" component={<NotificationBottomNavbar value={cart.length}/>}/>
                 </li>
                 <li className="w-full">
                     <LinkButtonBottomNavbar label='product' href="/product" imgsrc="/icon-shopping-cart.svg" imgalt="product"/>

@@ -14,16 +14,13 @@ export class CartController {
         const { storeId } = req.params
         const userId = req.user?.id
         const userCart = await prisma.user.findUnique({
+          where: { id: +userId! },
           select: {
             cart: {
               select: {
                 id: true
               }
             }
-          }
-          ,
-          where: {
-            id: +userId!
           }
         })
         if(!userCart) throw 'User is not exist'
@@ -38,8 +35,6 @@ export class CartController {
                 }
               }
             },
-            
-
           },
           where: {cartId: userCart.cart?.id}
           })

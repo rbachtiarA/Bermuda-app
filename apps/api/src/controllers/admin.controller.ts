@@ -1,31 +1,37 @@
+import cancelOrder from "@/helpers/cancelOrder"
 import prisma from "@/prisma"
+import { Order, Payment } from "@prisma/client"
 import { Request, Response } from "express"
 
 const getExistingOrder = async (orderId: number) => {
     return await prisma.order.findFirst({
         where: {
-            id: orderId,
+            id: +orderId,
         }
     })
 }
+const updateOrder = async (orderId: number, data: Partial<Order>) => {
+    return await prisma.order.update({
+        where: { id: orderId },
+        data
+    })
+}
 export class AdminController {
-    
+    async getIsAdmin(req:Request, res:Response) {
+        return res.status(200).send({ status: 'ok' })
+    }
+
     async updateDeniedPayment(req: Request, res: Response) {
         try {
             const { orderId } = req.body
-            const userId = req.user?.id
             const existOrder = await getExistingOrder(orderId)
             if(!existOrder) throw 'Order is invalid'
 
-            const updatedOrder = await prisma.order.update({
-                where: {
-                    id: existOrder.id
-                },
-                data: {
-                    paymentProofUrl: null,
-                    status: 'PendingPayment'
-                }
+            await updateOrder(orderId, {
+                paymentProofUrl: null,
+                status: 'PendingPayment'
             })
+            
             return res.status(200).send({
                 status: 'ok',
                 msg: 'success update order'
@@ -38,14 +44,12 @@ export class AdminController {
         }
     }
     async updateAcceptedPayment(req: Request, res: Response) {
-
         try {
             const { orderId } = req.body
-            const userId = req.user?.id
             const existOrder = await getExistingOrder(orderId)
             if(!existOrder) throw 'Order is invalid'
 
-            const updatedOrder = await prisma.order.update({
+            await prisma.order.update({
                 where: {
                     id: existOrder.id
                 },
@@ -74,59 +78,20 @@ export class AdminController {
 
         try {
             const { orderId } = req.body
-            const userId = req.user?.id
             const existOrder = await getExistingOrder(orderId)
             if(!existOrder) throw 'Order is invalid'
 
-            const updatedOrder = await prisma.order.update({
-                where: {
-                    id: existOrder.id
-                },
-                data: {
-                    status: 'Cancelled',
-                }
+            await updateOrder(orderId, {
+                status: 'Cancelled'
             })
 
-            await prisma.$transaction(async (tx) => {
-                const updatedOrder = await tx.order.update({
-                    where: { id: +orderId },
-                    include: { orderItems: true },
-                    data: {
-                        status: 'Cancelled',
-                    }
-                })
+            await cancelOrder(orderId)
 
-                // code for update store quantity with cancelled order Items
-                const cancelledOrderItems = updatedOrder.orderItems.map((item) => {
-                    return { productId: item.productId, quantity: item.quantity }
-                })
-                
-                // update all quantity stock back to store
-                for (const item of cancelledOrderItems) {
-                    const existStock = await tx.stock.findFirst({
-                        where: {
-                            AND: {
-                                productId: item.productId,
-                                storeId: updatedOrder.storeId
-                            }
-                        }
-                    })
-                    if(!existStock) throw 'Something wrong when addedd product quantity to store'
-
-                    await tx.stock.update({
-                        where: { id: existStock.id },
-                        data: { quantity: existStock.quantity + item.quantity }
-                    })
-                } 
-            })
-            
             return res.status(200).send({
                 status: 'ok',
                 msg: 'success update order'
             })
-        } catch (error) {
-            console.log(`${error}`);
-            
+        } catch (error) {           
             return res.status(401).send({
                 status: 'error',
                 msg: `${error}`
@@ -139,17 +104,13 @@ export class AdminController {
             const { orderId } = req.body
             const userId = req.user?.id
             const existOrder = await getExistingOrder(orderId)
-            console.log(existOrder)
             if(!existOrder) throw 'Order is invalid'
 
-            const updatedOrder = await prisma.order.update({
-                where: {
-                    id: existOrder.id
-                },
-                data: {
-                    status: 'Shipped',
-                }
+            await updateOrder(orderId, {
+                status:'Shipped',
+                shippedAt: new Date()
             })
+            
             return res.status(200).send({
                 status: 'ok',
                 msg: 'success update order'

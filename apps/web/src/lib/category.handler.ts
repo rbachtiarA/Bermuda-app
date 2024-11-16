@@ -1,8 +1,5 @@
-import { ICategory } from "@/type/category";
-
-const base_url = "http://localhost:8000/api"
 export const getCategories = async () => {
-    const res = await fetch(`${base_url}/categories`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}categories`, {
         method: 'GET', 
         headers: {
             "Content-Type": "appliication/json"

@@ -20,6 +20,7 @@ export class ProductController {
   async ProdutSearch(req: Request, res: Response) {
     try {
       const { search } = req.query;
+      
       let filter: Prisma.ProductWhereInput = {};
       if (search) {
         filter.name = {
@@ -28,18 +29,17 @@ export class ProductController {
         };
       }
 
-      const searchResult = await prisma.product.findMany({
+      const products = await prisma.product.findMany({
         where: filter,
         include: {
-          categories: true,
-          stores: true,
-          discounts: true,
+          // categories: true,
+          // discounts: true,
           stock: true,
         },
       });
       res.status(200).send({
         status: 'ok',
-        searchResult,
+        products,
       });
     } catch (err) {
       res.status(400).send({

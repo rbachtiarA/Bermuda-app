@@ -1,8 +1,7 @@
 import { IRegEmail } from "@/type/user";
-const base_url = "http://localhost:8000/api"
 
 export const  regUser = async (data: IRegEmail) => {
-    const res = await fetch(`${base_url}/users/register`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}users/register`, {
         method: "POST",
         body: JSON.stringify(data),
         headers: {
@@ -14,7 +13,7 @@ export const  regUser = async (data: IRegEmail) => {
 }
 
 export const verifyUser = async (data: { password: string; name: string }, token: string ) => {
-    const res = await fetch(`${base_url}/users/data-register/${token}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}users/data-register/${token}`, {
         method: "PATCH",
         body: JSON.stringify(data),
         headers: {
@@ -27,7 +26,7 @@ export const verifyUser = async (data: { password: string; name: string }, token
 
 export const loginUser = async (data: { email: string; password: string}) => {
     console.log('Data yang dikirim ke API:', data);
-    const res = await fetch(`${base_url}/users/login`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}users/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -35,7 +34,8 @@ export const loginUser = async (data: { email: string; password: string}) => {
         body: JSON.stringify(data)
     })
     const result = await res.json();
-    console.log('Response dari API:', result);
+    
+    console.log('Response dari API:', result, res.ok);
     return { result, ok: res.ok}
 }
 

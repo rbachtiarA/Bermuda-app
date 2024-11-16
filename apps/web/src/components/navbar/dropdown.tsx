@@ -11,11 +11,15 @@ import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import { deleteToken, getToken } from '@/lib/server';
 import Link from 'next/link';
+import { resetCart } from '@/redux/slice/cartSlice';
+import { resetCheckout } from '@/redux/slice/checkoutSlice';
 import { capitalizeWord } from '@/lib/user.handler';
 import { logoutAction } from '@/redux/slice/userSlice';
+import CartNavbar from './cartNavbar';
 
 export default function DropdownNav() {
   const router = useRouter();
+  const dispatch = useAppDispatch()
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const user = useAppSelector((state) => state.user);
   const [token, setToken] = useState<string | null>(null);
@@ -32,6 +36,8 @@ export default function DropdownNav() {
   const onLogout = async () => {
     await deleteToken();
     dispatch(logoutAction())
+    dispatch(resetCart())
+    dispatch(resetCheckout())
     window.location.href = "/"
   };
   
@@ -69,6 +75,13 @@ export default function DropdownNav() {
           <p className="font-semibold bg-blue">
             {name || 'Akun Belum Masuk'}
           </p>
+        </DropdownItem>
+        <DropdownItem 
+          key="cart"
+          className="hidden md:block gap-2 border-b"
+          textValue={`User Cart`}
+        >
+          <CartNavbar />
         </DropdownItem>
         <DropdownItem
           key="Account"

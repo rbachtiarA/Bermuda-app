@@ -3,4 +3,17 @@ export const getUserAddressess = async (userId: number) => {
     const { status, data } = await res.json()
 
     return data
-} 
+}
+
+export const getClientLocation = async () => {
+    if(navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition)
+    } else {
+        console.log('doesnt support');
+        
+    }
+ }
+
+ const showPosition = (position: any) => {
+    console.log(position);
+ }

@@ -62,7 +62,7 @@ export class UserController {
       const templateSource = fs.readFileSync(templatePath, 'utf-8')
       const compiledTemplate = handlebars.compile(templateSource);
       const html = compiledTemplate({
-        link: `${process.env.BASE_URL}/verify/${token}`
+        link: `${process.env.BASE_URL_FE}verify/${token}`
       })
 
       await transporter.sendMail({
@@ -104,8 +104,8 @@ export class UserController {
          password: hashPassword,
          name: name,
          referralCode: referralCode,
-         checkout: {create:{}},
-         cart: {create:{}}
+         cart: { create: {} },
+         checkout: { create: {} }
         }
       })
 
@@ -128,7 +128,8 @@ export class UserController {
       const { email, password } = req.body;
       const existingUser = await prisma.user.findUnique({
         where: { email: email },
-        include: {
+        include: { 
+          cart: { select: { CartItem: { include: { product: { include: { stock: true }} } } } },
           address: true
         }
       })
@@ -143,12 +144,13 @@ export class UserController {
 
       const payload = { id: existingUser.id, role: existingUser.role }
       const token = sign(payload, process.env.SECRET_JWT!, { expiresIn: '2w'})
-
+      
       res.status(200).send({
         status: 'ok',
         msg: "Berhasil masuk",
         token,
-        user: {id: existingUser.id, role: existingUser.role, name: existingUser.name, email: existingUser.email, avatarUrl: existingUser.avatarUrl, addresss: existingUser.address},
+        cart: existingUser.cart,
+        user: {id: existingUser.id, role: existingUser.role, name: existingUser.name, email:existingUser.email, avatarUrl: existingUser.avatarUrl, address: existingUser.address},
       })
     } catch (err) {
       res.status(400).send({
@@ -207,7 +209,7 @@ export class UserController {
   async editAvatar (req: Request, res: Response) {
     try {
       if (!req.file) throw "no file uploaded"
-      const link = `http://localhost:8000/api/public/avatar/${req.file?.filename}`
+      const link = `${process.env.BASE_URL_BE}public/avatar/${req.file?.filename}`
       console.log(link)
       await prisma.user.update({
         data: { avatarUrl: link },

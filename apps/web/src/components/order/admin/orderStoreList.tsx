@@ -1,5 +1,5 @@
 'use client'
-import { getStoreOrders} from '@/lib/order.handler'
+import { getStoreOrders} from '@/lib/store.handler'
 import { acceptPaymentOrder, canceledOrder, denyPaymentOrder, shippedOrder} from '@/lib/admin.handler'
 import { useAppSelector } from '@/redux/hook'
 import { IOrder } from '@/type/order'
@@ -9,6 +9,7 @@ import { DatePicker, DateRangePicker, Pagination } from '@nextui-org/react'
 import SelectStatusFilter from '../filter/selectStatusFilter'
 import DateFilter from '../filter/dateFilter'
 import OrderNameFilter from '../filter/orderNameFilter'
+import { toast } from 'react-toastify'
 
 export default function AdminOrderList({}) {
     const user = useAppSelector((state) => state.user)
@@ -29,7 +30,11 @@ export default function AdminOrderList({}) {
             filteredData = filteredData.filter((order) => String(order.id) === orderNameFilter) 
         }
         if(!!dateMinFilter) {
-            filteredData = filteredData.filter((order) => (new Date(order.createdAt).getTime() > dateMinFilter && (new Date(order.createdAt).getTime() <= dateMinFilter+ (60*60*24*1000) )))
+            const timeZoneOffsetMilliSeconds = new Date().getTimezoneOffset() * 60 * 1000
+            const oneDayInMilliseconds = 24*60*60*1000
+            filteredData = filteredData.filter((order) => (
+                (new Date(order.createdAt).getTime() - timeZoneOffsetMilliSeconds ) > dateMinFilter && 
+                (new Date(order.createdAt).getTime() - timeZoneOffsetMilliSeconds <= dateMinFilter + oneDayInMilliseconds )))
         }
 
         setPages(Math.ceil(filteredData.length/10))
@@ -43,6 +48,8 @@ export default function AdminOrderList({}) {
             const orderIndex = data.findIndex((item) => item.id === orderId)
             data[orderIndex].status = 'PendingPayment'
             setData([...data])  
+        } else {
+            toast.error('something is Wrong, please contact technical services')
         }
     }
 
@@ -54,6 +61,8 @@ export default function AdminOrderList({}) {
             data[updatedOrderIndex].Payment.confirmedAt = (new Date(Date.now())).toLocaleString()
             data[updatedOrderIndex].Payment.isConfirmed = true
             setData([...data])
+        } else {
+            toast.error('something is Wrong, please contact technical services')
         }
     }
     const onCancelOrder = async (orderId: number) => {
@@ -63,7 +72,9 @@ export default function AdminOrderList({}) {
             const tempData = data
             tempData[updatedOrderIndex].status = 'Cancelled'
             setData([...tempData])
-        } 
+        } else {
+            toast.error('something is Wrong, please contact technical services')
+        }
     }
     const onShipOrder = async (orderId: number) => {
         const { status } = await shippedOrder(orderId)
@@ -72,12 +83,14 @@ export default function AdminOrderList({}) {
             const tempData = data
             tempData[updatedOrderIndex].status = 'Shipped'
             setData([...tempData])
-        } 
+        } else {
+            toast.error('something is Wrong, please contact technical services')
+        }
     }
 
     useEffect(() => {
         const getData = async () => {
-            const res = await getStoreOrders(5)
+            const res = await getStoreOrders()
             const order = res.order || []
             
             if(order.length !== 0) {
@@ -88,7 +101,7 @@ export default function AdminOrderList({}) {
         getData()
     }, [])
     return (
-        <div className='md:col-start-2 overflow-auto p-4 flex flex-col gap-2'>
+        <div className='md:col-start-2 overflow-auto py-4 flex flex-col gap-2'>
             <div className='flex flex-col md:flex-row gap-2 w-full flex-wrap'>
                 <div className='flex gap-2 w-full'>
                     <OrderNameFilter orderNameFilter={orderNameFilter} setOrderNameFilter={setOrderNameFilter}/>
