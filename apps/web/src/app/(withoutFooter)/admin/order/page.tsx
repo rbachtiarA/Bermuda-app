@@ -3,7 +3,7 @@ export default function page() {
   return (
     <div className="mt-2 w-full">
         {/* <h2 className="text-center font-bold text-lg">STORE ORDER MANAGEMENT</h2> */}
-          <div className="grid md:grid-cols-[1fr_5fr_1fr]">
+          <div className="grid md:grid-cols-[1fr_6fr_1fr]">
             <AdminOrderList />
           </div>
     </div>
