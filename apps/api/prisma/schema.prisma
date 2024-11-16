@@ -117,6 +117,9 @@ model Address {
   id          Int     @id @default(autoincrement())
   user        User    @relation(fields: [userId], references: [id])
   userId      Int
+  label       String
+  recipient   String
+  phoneNumber String
   addressLine String
   city        String
   state       String

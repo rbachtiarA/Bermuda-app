@@ -12,9 +12,11 @@ export default function ProductCard({stock}:{stock: IStocks}) {
     
     const onClickedAddToCart = async (quantity: number) => {
         // dispatch(addedToCart({id: 1, productId: product.id, quantity: 1, totalPrice: product.price}))
-        const res = await postCartItems(user.id, product.id, quantity)        
+        const res = await postCartItems(user.id, product.id, quantity) 
+        console.log(res)       
         res.cartItem.quantity = quantity
         dispatch(addedToCart(res.cartItem))
+
     }
 
     return (

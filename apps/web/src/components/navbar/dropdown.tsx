@@ -8,10 +8,11 @@ import {
   Avatar,
 } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
-import { useAppSelector } from '@/redux/hook';
+import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import { deleteToken, getToken } from '@/lib/server';
 import Link from 'next/link';
 import { capitalizeWord } from '@/lib/user.handler';
+import { logoutAction } from '@/redux/slice/userSlice';
 
 export default function DropdownNav() {
   const router = useRouter();
@@ -20,6 +21,7 @@ export default function DropdownNav() {
   const [token, setToken] = useState<string | null>(null);
   const role = user.role;
   const name = capitalizeWord(user.name);
+  const dispatch = useAppDispatch()
 
 
   const fetchToken = async () => {
@@ -29,6 +31,7 @@ export default function DropdownNav() {
 
   const onLogout = async () => {
     await deleteToken();
+    dispatch(logoutAction())
     window.location.href = "/"
   };
   

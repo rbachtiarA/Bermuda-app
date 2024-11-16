@@ -6,8 +6,8 @@ import { NextPage } from 'next';
 const HomePage: NextPage = () => {
   return (
     <Wrapper>
-      <div className="container mx-auto mt-8">
-        <div className="w-full h-full p-4">
+      <div className="container mx-auto mt-4">
+        <div className="w-full h-full px-[15px]">
           <PromoCarousel />
         </div>
         <h1 className="text-2xl font-bold pt-8 px-4">

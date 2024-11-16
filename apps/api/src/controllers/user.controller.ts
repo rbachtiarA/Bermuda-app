@@ -51,7 +51,7 @@ export class UserController {
           name: "",
           password: "",
           isVerified: false,
-          referralCode: ""
+          referralCode: null
         }
       });
 
@@ -104,6 +104,8 @@ export class UserController {
          password: hashPassword,
          name: name,
          referralCode: referralCode,
+         checkout: {create:{}},
+         cart: {create:{}}
         }
       })
 
@@ -125,7 +127,10 @@ export class UserController {
     try {
       const { email, password } = req.body;
       const existingUser = await prisma.user.findUnique({
-        where: { email: email }
+        where: { email: email },
+        include: {
+          address: true
+        }
       })
       if (!existingUser) throw 'Akun tidak ditemukan';
       if (!existingUser.isVerified) throw "author not verify !"
@@ -143,7 +148,7 @@ export class UserController {
         status: 'ok',
         msg: "Berhasil masuk",
         token,
-        user: {id: existingUser.id, role: existingUser.role},
+        user: {id: existingUser.id, role: existingUser.role, name: existingUser.name, email: existingUser.email, avatarUrl: existingUser.avatarUrl, addresss: existingUser.address},
       })
     } catch (err) {
       res.status(400).send({

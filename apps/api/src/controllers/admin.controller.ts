@@ -1,13 +1,10 @@
 import prisma from "@/prisma"
 import { Request, Response } from "express"
 
-const getExistingOrder = async (orderId: number, userId: number) => {
+const getExistingOrder = async (orderId: number) => {
     return await prisma.order.findFirst({
         where: {
-            AND: {
-                id: +orderId,
-                userId: +userId
-            }
+            id: orderId,
         }
     })
 }
@@ -17,7 +14,7 @@ export class AdminController {
         try {
             const { orderId } = req.body
             const userId = req.user?.id
-            const existOrder = await getExistingOrder(orderId, userId!)
+            const existOrder = await getExistingOrder(orderId)
             if(!existOrder) throw 'Order is invalid'
 
             const updatedOrder = await prisma.order.update({
@@ -45,7 +42,7 @@ export class AdminController {
         try {
             const { orderId } = req.body
             const userId = req.user?.id
-            const existOrder = await getExistingOrder(orderId, userId!)
+            const existOrder = await getExistingOrder(orderId)
             if(!existOrder) throw 'Order is invalid'
 
             const updatedOrder = await prisma.order.update({
@@ -78,7 +75,7 @@ export class AdminController {
         try {
             const { orderId } = req.body
             const userId = req.user?.id
-            const existOrder = await getExistingOrder(orderId, userId!)
+            const existOrder = await getExistingOrder(orderId)
             if(!existOrder) throw 'Order is invalid'
 
             const updatedOrder = await prisma.order.update({
@@ -141,7 +138,8 @@ export class AdminController {
         try {
             const { orderId } = req.body
             const userId = req.user?.id
-            const existOrder = await getExistingOrder(orderId, userId!)
+            const existOrder = await getExistingOrder(orderId)
+            console.log(existOrder)
             if(!existOrder) throw 'Order is invalid'
 
             const updatedOrder = await prisma.order.update({
