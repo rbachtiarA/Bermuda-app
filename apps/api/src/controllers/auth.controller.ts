@@ -57,8 +57,8 @@ export class AuthController {
                   avatarUrl: avatarUrl,
                   isVerified: true,
                   referralCode: referralCode,
+                  checkout: { create: {} },
                   cart: { create: {} },
-                  checkout: { create: {} }
                 },
                 
               });
@@ -112,31 +112,31 @@ export class AuthController {
     })(req, res, next);
   };
 
-  async getUserAuth(req:Request, res: Response) {
+  async getUserAuth(req: Request, res: Response) {
     try {
-      const token = req.headers.authorization?.split(' ')[1]
-      if (!token) return res.status(401).json({ msg: 'No token provided'});
+      const token = req.headers.authorization?.split(' ')[1];
+      if (!token) return res.status(401).json({ msg: 'No token provided' });
 
-      const decoded = verify(token, process.env.SECRET_JWT!) as { id: number }
+      const decoded = verify(token, process.env.SECRET_JWT!) as { id: number };
       const user = await prisma.user.findUnique({
         where: { id: decoded.id },
-        select: { 
+        select: {
           id: true,
           name: true,
           email: true,
           role: true,
           avatarUrl: true,
-          address: true
-        }
-      })
+          address: true,
+        },
+      });
 
       if (!user) {
-        return res.status(404).json({ msg: 'User not found' })
+        return res.status(404).json({ msg: 'User not found' });
       }
 
-      res.json({ user })
+      res.json({ user });
     } catch (err) {
-      res.status(500).json({ msg: 'Internal Server Error'})
+      res.status(500).json({ msg: 'Internal Server Error' });
     }
   }
 }

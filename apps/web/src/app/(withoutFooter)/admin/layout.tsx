@@ -4,7 +4,7 @@ import SideBar from '@/components/sideBar'
 import { Divider } from '@nextui-org/react'
 import React from 'react'
 
-export default function layout({children}:{children: React.ReactNode}) {
+export default function layout({ children }: { children: React.ReactNode }) {
   return (
     <AdminProtection>
       <div className='flex flex-col md:flex-row w-full h-full'>
@@ -19,5 +19,5 @@ export default function layout({children}:{children: React.ReactNode}) {
           {children}
       </div>
     </AdminProtection>
-  )
+  );
 }

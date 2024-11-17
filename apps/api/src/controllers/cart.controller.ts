@@ -48,8 +48,8 @@ export class CartController {
 
   async postCartsItem(req: Request, res: Response) {
     try {
-      const { productId, quantity } = req.body
-      const userId = req.user?.id
+      const { productId, quantity, userId } = req.body
+      // const userId = req.user?.id
 
       //check is user exist, then give cart Id
       const user = await prisma.user.findUnique({
