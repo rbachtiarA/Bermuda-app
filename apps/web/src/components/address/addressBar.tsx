@@ -1,5 +1,6 @@
 'use client';
 
+import { FaInbox, FaPhone } from 'react-icons/fa';
 import { useState } from 'react';
 import {
   Dropdown,
@@ -8,6 +9,7 @@ import {
   DropdownTrigger,
 } from '@nextui-org/react';
 import { LocationIcon, PhoneIcon } from './addressIcon';
+import { AddressSelector } from './addressSelector';
 
 export default function AddressBar() {
   const [location, setLocation] = useState('JABODETABEK');
@@ -17,13 +19,7 @@ export default function AddressBar() {
       <div className="container mx-auto flex justify-between items-center px-4">
         <div className="flex items-center gap-2 font-medium">
           <LocationIcon className="w-4 h-4 text-current" />
-          <span>{location}</span>
-          <span className="text-xs">
-            {' '}
-            <a href="/login" className="text-blue-500 hover:underline">
-              Masuk untuk ubah lokasi
-            </a>
-          </span>
+          <AddressSelector />
         </div>
 
         <div className="flex gap-4">
@@ -49,11 +45,7 @@ export default function AddressBar() {
               <DropdownItem>
                 <a href="mailto:alfacare@sat.co.id">
                   <div className="flex items-center gap-2">
-                    <img
-                      src="/images/Ic Inbox.svg"
-                      alt="Email"
-                      className="w-4 h-4"
-                    />
+                    <FaInbox size={18} />
                     alfacare@sat.co.id
                   </div>
                 </a>
@@ -61,11 +53,7 @@ export default function AddressBar() {
               <DropdownItem>
                 <a href="tel:1500959">
                   <div className="flex items-center gap-2">
-                    <img
-                      src="/images/Ic Customer Service.svg"
-                      alt="Phone"
-                      className="w-4 h-4"
-                    />
+                    <FaPhone size={18} />
                     1500-959
                   </div>
                 </a>

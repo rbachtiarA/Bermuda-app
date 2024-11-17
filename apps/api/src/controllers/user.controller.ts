@@ -46,7 +46,7 @@ export class UserController {
           name: '',
           password: '',
           isVerified: false,
-          referralCode: null,
+          referralCode: '',
         },
       });
 
