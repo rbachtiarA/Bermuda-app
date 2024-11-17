@@ -18,13 +18,12 @@ import CartNavbar from './cartNavbar';
 
 export default function DropdownNav() {
   const router = useRouter();
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const user = useAppSelector((state) => state.user);
   const [token, setToken] = useState<string | null>(null);
   const role = user.role;
   const name = capitalizeWord(user.name);
-
 
   const fetchToken = async () => {
     const res = await getToken();
@@ -33,15 +32,15 @@ export default function DropdownNav() {
 
   const onLogout = async () => {
     await deleteToken();
-    dispatch(resetCart())
-    dispatch(resetCheckout())
-    window.location.href = "/"
+    dispatch(resetCart());
+    dispatch(resetCheckout());
+    window.location.href = '/';
   };
-  
+
   useEffect(() => {
     fetchToken();
   }, []);
-  
+
   return (
     <Dropdown placement="bottom-end" isOpen={isOpen} onOpenChange={setIsOpen}>
       <DropdownTrigger
@@ -51,11 +50,11 @@ export default function DropdownNav() {
         <Avatar
           isBordered
           showFallback
-          radius='full'
+          radius="full"
           src={user.avatarUrl}
           alt="User Avatar"
           size="md"
-          color='primary'
+          color="primary"
         />
       </DropdownTrigger>
       <DropdownMenu
@@ -69,11 +68,9 @@ export default function DropdownNav() {
           className="h-14 gap-2 border-b"
           textValue={`Signed in as ${user.email || 'no-email@example.com'}`}
         >
-          <p className="font-semibold bg-blue">
-            {name || 'Akun Belum Masuk'}
-          </p>
+          <p className="font-semibold bg-blue">{name || 'Akun Belum Masuk'}</p>
         </DropdownItem>
-        <DropdownItem 
+        <DropdownItem
           key="cart"
           className="hidden md:block gap-2 border-b"
           textValue={`User Cart`}
@@ -83,12 +80,10 @@ export default function DropdownNav() {
         <DropdownItem
           key="Account"
           className="p-2"
-          textValue={role === 'SUPER_ADMIN' ? 'Super Admin Account' : 'Akun Saya'}
+          textValue={role === 'SUPER_ADMIN' ? 'Dashboard' : 'Akun Saya'}
         >
-          <Link
-            href={role === 'SUPER_ADMIN' ? '/super-admin-account' : '/account-dashboard'}
-          >
-            {role === 'SUPER_ADMIN' ? 'Super Admin Account' : 'Akun Saya'}
+          <Link href={role === 'SUPER_ADMIN' ? '/admin' : '/account'}>
+            {role === 'SUPER_ADMIN' ? 'Dashboard' : 'Akun Saya'}
           </Link>
         </DropdownItem>
 

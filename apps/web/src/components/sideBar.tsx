@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import { useAppSelector } from '@/redux/hook';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -27,15 +27,7 @@ export default function SideBar() {
             <ul className="list-none text-sm">
               <li className="py-4">
                 <Link
-                  href="/super-admin-account/store-admin"
-                  className="no-underline text-gray-700 relative"
-                >
-                  Store Admin Management
-                </Link>
-              </li>
-              <li className="py-4">
-                <Link
-                  href="/super-admin-account/user-management"
+                  href="/admin/user-management"
                   className="no-underline text-gray-700 relative"
                 >
                   User Management
@@ -43,7 +35,15 @@ export default function SideBar() {
               </li>
               <li className="py-4">
                 <Link
-                  href="/super-admin-account/store-management"
+                  href="/admin/store-admin-management"
+                  className="no-underline text-gray-700 relative"
+                >
+                  Store Admin Management
+                </Link>
+              </li>
+              <li className="py-4">
+                <Link
+                  href="/admin/store-management"
                   className="no-underline text-gray-700 relative"
                 >
                   Store Management
@@ -51,15 +51,15 @@ export default function SideBar() {
               </li>
               <li className="py-4">
                 <Link
-                  href="/super-admin-account/product-management"
+                  href="/admin/product-category-management"
                   className="no-underline text-gray-700 relative"
                 >
-                  Product Management
+                  Product Category Management
                 </Link>
               </li>
               <li className="py-4">
                 <Link
-                  href="/super-admin-account/stock-management"
+                  href="/admin/stock-management"
                   className="no-underline text-gray-700 relative"
                 >
                   Stock Management
@@ -67,7 +67,7 @@ export default function SideBar() {
               </li>
               <li className="py-4">
                 <Link
-                  href="/super-admin-account/discount-management"
+                  href="/admin/discount-management"
                   className="no-underline text-gray-700 relative"
                 >
                   Discount Management
@@ -83,7 +83,7 @@ export default function SideBar() {
               </li>
               <li className="py-4">
                 <Link
-                  href="/super-admin-account/report-analysis"
+                  href="/admin/report-analysis"
                   className="no-underline text-gray-700 relative"
                 >
                   Report & Analysis
@@ -101,7 +101,7 @@ export default function SideBar() {
             <ul className="list-none text-sm">
               <li className="py-4">
                 <Link
-                  href="/super-admin-account"
+                  href="/admin"
                   aria-current="page"
                   className="no-underline text-gray-700 relative"
                 >
