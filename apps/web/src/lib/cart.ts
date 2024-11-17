@@ -31,7 +31,7 @@ export const postCartItems = async (userId:number , productId:number, quantity:n
 
     const { cartItem }: {cartItem: ICartItem} = await res.json()
         
-    return { ok: res.ok, cartItem }
+    return { status: res.status, cartItem }
 }
 
 export const updateCartItem = async (productId:number, quantity:number) => {
