@@ -1,9 +1,10 @@
-import SideBar from '@/components/sideBar';
+import OrderList from "@/components/order/user/orderUserList";
 
-export default function Account() {
+export default function page() {
   return (
-    <div>
-      <SideBar />
+    <div className="">
+        <h2 className="text-center font-bold text-xl">USER DASHBOARD</h2>
+        
     </div>
-  );
+  )
 }

@@ -47,7 +47,7 @@ export default function NavbarMobileAdminDropdown({title}: {title: string}) {
       </DropdownTrigger>
       <DropdownMenu aria-label="Static Actions" >
         <DropdownItem key="store_management" textValue="Store Management">
-            <span className="hover:cursor-pointer" onClick={() => router.push('/admin/storeAdmin')}>Store Admin Management</span>
+            <span className="hover:cursor-pointer" onClick={() => router.push('/admin/store-admin-management')}>Store Admin Management</span>
         </DropdownItem>
         <DropdownItem key="user_management" textValue="User Management">
             <span className="hover:cursor-pointer" onClick={() => router.push("/admin/user")}>User Management</span>

@@ -80,7 +80,7 @@ export default function ProfilePage() {
                 <Textarea
                   label="Alamat"
                   name="address"
-                  value={profileData.address}
+                  value={profileData.address.toString()}
                   onChange={handleInputChange}
                   placeholder="Masukkan alamat Anda"
                   rows={4}
