@@ -117,7 +117,7 @@ export default function SiteNavbar() {
       {/* Mobile Nav */}
       <Navbar
         isBordered
-        shouldHideOnScroll={!dropdownSearch}
+        shouldHideOnScroll={!dropdownSearch && !dropdownHamburger}
         className="md:hidden z-[13]"
       >
         <NavbarContent className="grid grid-cols-[8fr_1fr_1fr] w-full">

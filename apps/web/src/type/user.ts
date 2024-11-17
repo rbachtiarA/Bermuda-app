@@ -14,7 +14,7 @@ export interface IUserState {
   role: string;
   avatarUrl: string;
   address:
-    | {
+      {
         label: string;
         recipient: string;
         phoneNumber: string;

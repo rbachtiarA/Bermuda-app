@@ -73,10 +73,19 @@ export default function DropdownNav() {
         </DropdownItem>
         <DropdownItem
           key="cart"
-          className="hidden md:block gap-2 border-b"
+          className="hidden md:block gap-2"
           textValue={`User Cart`}
+          onPress={() => router.push('/cart')}
         >
           <CartNavbar />
+        </DropdownItem>
+        <DropdownItem 
+          key="payment"
+          className="hidden md:block gap-2 border-b"
+          textValue={`Payment`}
+          onPress={() => router.push('/account/payment')}
+        >
+          <p>Payment</p>
         </DropdownItem>
         <DropdownItem
           key="Account"

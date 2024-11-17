@@ -1,7 +1,7 @@
 'use client'
 import { useAppDispatch, useAppSelector } from "@/redux/hook"
 import CartCard from "./cartCard"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo } from "react"
 import { getAllCartItems, postCheckoutItems } from "@/lib/cart"
 import { updatedCartFromDatabase } from "@/redux/slice/cartSlice"
 import CartCheckout from "./cartCheckout"
@@ -25,7 +25,7 @@ export default function CartList() {
     })
 
     const itemSoldOut = cart.filter((item) => {
-            return item.product?.stock![0] === undefined || item.product?.stock![0].quantity! === 0
+        return item.product?.stock![0] === undefined || item.product?.stock![0].quantity! === 0
     }) 
 
     const onSelectAll = () => {

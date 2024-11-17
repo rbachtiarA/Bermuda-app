@@ -60,6 +60,7 @@ export class AuthController {
                   checkout: { create: {} },
                   cart: { create: {} },
                 },
+                
               });
             }
 
