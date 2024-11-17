@@ -57,7 +57,10 @@ export class AuthController {
                   avatarUrl: avatarUrl,
                   isVerified: true,
                   referralCode: referralCode,
+                  cart: { create: {} },
+                  checkout: { create: {} }
                 },
+                
               });
             }
 
