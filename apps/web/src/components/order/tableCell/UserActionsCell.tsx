@@ -20,7 +20,7 @@ export default function UserActionsCell({
         onOpen()
     }
 	const openOrder = () => {
-		router.push(`user/order/${order.id}`)
+		router.push(`/user/order/${order.id}`)
 	}
   return (
     <div className="flex gap-2">
