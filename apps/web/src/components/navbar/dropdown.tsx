@@ -25,7 +25,6 @@ export default function DropdownNav() {
   const [token, setToken] = useState<string | null>(null);
   const role = user.role;
   const name = capitalizeWord(user.name);
-  const dispatch = useAppDispatch()
 
 
   const fetchToken = async () => {

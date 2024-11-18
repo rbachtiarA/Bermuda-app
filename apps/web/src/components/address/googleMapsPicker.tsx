@@ -1,6 +1,7 @@
-import { ILocation } from "@/type/address"
+import { ICreateAddress, ILocation } from "@/type/address"
 import { Button, Input } from "@nextui-org/react"
 import { GoogleMap, Marker, StandaloneSearchBox, useJsApiLoader } from "@react-google-maps/api"
+import { FormikProps } from "formik"
 import { useCallback, useEffect, useRef, useState } from "react"
 
 interface GoogleMapPickerProps {
@@ -60,20 +61,21 @@ export const GoogleMapPicker: React.FC<GoogleMapPickerProps> = ({onConfirm}) => 
             const response = await geocoder.geocode({ location: marker, language: 'id' });
             const results: google.maps.GeocoderResult[] = response.results
             if (results && results.length > 0) {
-                const city = results[0]?.address_components.find((component) =>
-                component.types.includes('locality')
-                )?.long_name || results[0]?.address_components.find((component) =>
-                    component.types.includes('administrative_area_level_2')
-                )?.long_name || '';
+                const fullAddress = results[0]?.formatted_address || '';
                 const state = results[0]?.address_components.find((component) =>
                     component.types.includes('administrative_area_level_1')
                 )?.long_name;
+                const postalCode = results[0]?.address_components.find((component) =>
+                    component.types.includes('postal_code')
+                )?.long_name;
+
     
                 onConfirm({
                     lat: marker.lat,
                     lng: marker.lng,
-                    city: city || '',
-                    state: state || ''
+                    addressLine: fullAddress || '',
+                    state: state || '',
+                    postalCode: postalCode || '',
                 })
             } else {
                 console.error('No results found')
