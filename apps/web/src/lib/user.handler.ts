@@ -1,5 +1,21 @@
 import { IRegEmail } from "@/type/user";
 
+export const getUserProfile = async (userId: string) => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}users/${userId}`);
+  
+      if (!response.ok) {
+        throw new Error(`Failed to fetch user profile: ${response.statusText}`);
+      }
+  
+      return await response.json();
+    } catch (error) {
+      console.error('Failed to fetch user profile:', error);
+      throw error;
+    }
+  };
+  
+
 export const  regUser = async (data: IRegEmail) => {
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}users/register`, {
         method: "POST",

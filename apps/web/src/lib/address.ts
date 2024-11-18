@@ -1,5 +1,7 @@
 import { ICreateAddress, IFetchCity, ILocation } from '@/type/address';
 import { getToken } from './server';
+import { useAppDispatch } from '@/redux/hook';
+import { setLocation } from '@/redux/slice/userSlice';
 
 export const getUserAddressess = async (userId: number) => {
   const res = await fetch(
@@ -68,18 +70,3 @@ export const getShippingCost = async (addressId: number, storeId: number) => {
   const { status, msg } = await res.json();
   return { status, msg };
 };
-
-//     if (!response.ok) {
-//       const errorData = await response.json();
-//       console.error("Error Response Data:", errorData);
-//       throw new Error(errorData.message || "Failed to create address");
-//     }
-
-//     const data = await response.json();
-//     console.log("Response Data:", data);
-//     return data;
-//   } catch (error: any) {
-//     console.error("Error creating address:", error.message);
-//     throw error;
-//   }
-// };

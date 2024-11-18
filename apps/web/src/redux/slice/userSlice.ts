@@ -27,6 +27,7 @@ export const userSlice = createSlice({
       state.avatarUrl = avatarUrl;
       state.address = address;
       state.isLoggedIn = true;
+      state.selectedAddress = address?.[0];
     },
     logoutAction: (state) => {
       state.id = 0;
@@ -36,6 +37,7 @@ export const userSlice = createSlice({
       state.avatarUrl = '';
       state.address = null;
       state.isLoggedIn = false;
+      state.selectedAddress = undefined;
     },
     setLocation: (state, action: PayloadAction<{ latitude: number; longitude: number }>) => {
       state.location = action.payload;

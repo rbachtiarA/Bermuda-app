@@ -57,6 +57,8 @@ export const AddressSelector: React.FC = () => {
         isDismissable={false}
         isKeyboardDismissDisabled={true}
         size='lg'
+        scrollBehavior='outside'
+        className='overflow-auto'
       >
         <ModalContent>
           {(onClose) => (
