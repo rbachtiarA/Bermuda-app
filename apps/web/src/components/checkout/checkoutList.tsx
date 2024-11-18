@@ -23,7 +23,9 @@ export default function CheckoutList({ updateItemTotalPayment }: { updateItemTot
     }, [])
     return (
         <Card>
-            <CardHeader className="font-semibold">Barang Checkout</CardHeader>
+            <CardHeader className="font-semibold">
+                <h2>{`Item(s) checkout`}</h2>
+            </CardHeader>
             <CardBody className="grid grid-rows-[auto] gap-2">
 
                 {checkoutItems.map((item) => (

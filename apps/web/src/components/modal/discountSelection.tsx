@@ -11,7 +11,7 @@ export default function DiscountSelectionModal({dataDiscount, isOpen, itemTotalP
             {(onClose) => (
                 <>
                     <ModalHeader className="flex flex-col gap-1">
-                        <h2>Diskon / Voucher</h2>
+                        <h2>Discount / Voucher</h2>
                     </ModalHeader>
                         <ModalBody className="">
                             {dataDiscount.map((discount) => (

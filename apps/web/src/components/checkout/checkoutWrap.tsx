@@ -13,6 +13,8 @@ import { getShippingCost } from "@/lib/address"
 import { getNearestStore } from "@/lib/store.handler"
 import { updateStore } from "@/redux/slice/storeSlice"
 import { error } from "console"
+import { toast } from "react-toastify"
+import StoreCheckoutDetails from "./storeCheckoutDetails"
 
 export default function CheckoutWrapper() {
     const user = useAppSelector(state => state.user)
@@ -106,14 +108,19 @@ export default function CheckoutWrapper() {
         const getNearStore = async () => {
             if(selectedAddress) {
                 const { status, msg } = await getNearestStore(selectedAddress.latitude!, selectedAddress.longitude!)
-                console.log(msg);
-                
-                if(status === 'ok') dispatch(updateStore({id: msg.id, name: msg.name}))
+            
+                if(status === 'ok' && msg.id !== store.id) {
+                    dispatch(updateStore({id: msg.id, name: msg.name}))
+                    toast.info(`change store to ${msg.name}, cause of address change`, {autoClose: 4000, style: {fontSize: '14px'}})
+                    setDiscount(null)
+                }
             }
-        }
+        }                
         getNearStore()
         getDataShippingCost()
     }, [selectedAddress])
+
+    
 
     const isPaymentInvalid = useMemo(
         () => {
@@ -123,6 +130,7 @@ export default function CheckoutWrapper() {
     return (
         <div className="grid md:grid-cols-[2fr_1fr] md:w-auto gap-2 w-full p-2">
             <div className="grid gap-2">
+                <StoreCheckoutDetails storeName={store.name}/>
                 <AddressessList selectedAddress={selectedAddress} updateSelectedAddress={updateSelectedAddress}/>
                 <CheckoutList updateItemTotalPayment={updateItemTotalPayment}/>
             </div>
