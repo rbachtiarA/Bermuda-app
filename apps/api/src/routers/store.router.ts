@@ -16,10 +16,10 @@ export class StoreRouter {
   private initializeRoutes(): void {
     this.router.get('/stocks/:storeId', this.storeController.getStoreStocks);
     this.router.get('/order', verifyToken, checkAdmin, this.storeController.getStoreOrders);
-    this.router.get('/nearest', verifyToken, checkAdmin, this.storeController.getClosestStore);
+    this.router.get('/nearest', this.storeController.getClosestStore);
   }
 
   getRouter(): Router {
-    return this.router;
+    return this.router;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
   }
 }

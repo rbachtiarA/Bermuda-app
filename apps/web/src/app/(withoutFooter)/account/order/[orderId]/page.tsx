@@ -7,8 +7,8 @@ export default async function page({params}: { params: { orderId: string } }) {
     const order = data.msg as IOrder
     
     return (
-        <div className="grid md:grid-cols-3 my-2">
-            <OrderCard order={order} className="md:col-start-2 flex flex-col gap-2"/>
+        <div className="grid md:grid-cols-[1fr_3fr_1fr]">
+            <OrderCard order={order} className="md:col-start-2 flex flex-col gap-2 my-2"/>
         </div>
     )
 }

@@ -10,6 +10,8 @@ import { useRouter } from "next/navigation"
 import { resetCheckout } from "@/redux/slice/checkoutSlice"
 import { IDiscount } from "@/type/discount"
 import { getShippingCost } from "@/lib/address"
+import { getNearestStore } from "@/lib/store.handler"
+import { updateStore } from "@/redux/slice/storeSlice"
 
 export default function CheckoutWrapper() {
     const user = useAppSelector(state => state.user)
@@ -93,14 +95,24 @@ export default function CheckoutWrapper() {
 
     useEffect(() => {
         const getDataShippingCost = async () => {
+            setShippingCost(null)
             if(selectedAddress) {
                 const { status, msg } = await getShippingCost(selectedAddress?.id, store.id)
                 if(status === 'ok') setShippingCost(msg)
             }
         }
 
+        const getNearStore = async () => {
+            if(selectedAddress) {
+                const { status, msg } = await getNearestStore(selectedAddress.latitude!, selectedAddress.longitude!)
+                console.log(msg);
+                
+                if(status === 'ok') dispatch(updateStore({id: msg.id, name: msg.name}))
+            }
+        }
+        getNearStore()
         getDataShippingCost()
-    }, [selectedAddress, store.id])
+    }, [selectedAddress])
 
     const isPaymentInvalid = useMemo(
         () => {
