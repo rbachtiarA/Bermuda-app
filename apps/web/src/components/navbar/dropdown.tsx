@@ -34,6 +34,7 @@ export default function DropdownNav() {
     await deleteToken();
     dispatch(resetCart());
     dispatch(resetCheckout());
+    dispatch(logoutAction());
     window.location.href = '/';
   };
 
@@ -87,7 +88,7 @@ export default function DropdownNav() {
           <p>Payment</p>
         </DropdownItem>
         <DropdownItem
-          onPress={() => router.push(role === 'SUPER_ADMIN' ? '/admin' : '/account')}
+          onPress={() => router.push(role === 'SUPER_ADMIN' ? '/admin' : `/account/${user.id}`)}
           key="Account"
           className="p-2"
           textValue={role === 'SUPER_ADMIN' ? 'Dashboard' : 'Akun Saya'}

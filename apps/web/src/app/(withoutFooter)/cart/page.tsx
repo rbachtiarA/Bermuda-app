@@ -13,7 +13,6 @@ export default function page() {
             <div className='md:col-start-2 p-2'>
                 <TitleBreadcrumbs title='CART' />
             </div>
-            {/* <h2 className='w-full text-xl font-bold text-center'>CART</h2> */}
             <div className='md:grid md:row-start-2 md:col-start-2'>
                 <CardList />
             </div>

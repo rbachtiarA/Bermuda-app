@@ -25,6 +25,7 @@ import { CreateOrderRouter } from './routers/createOrder.router';
 import { MidtransRouter } from './routers/midtrans.router';
 import { AddressRouter } from './routers/address.router';
 import { StoreAdminRouter } from './routers/storeAdmin.router';
+import { SuperAdminRouter } from './routers/superAdmin.router';
 
 export default class App {
   private app: Express;
@@ -93,7 +94,9 @@ export default class App {
     const createOrderRouter = new CreateOrderRouter();
     const midtransRouter = new MidtransRouter();
     const addressRouter = new AddressRouter();
+    const superAdminRouter = new SuperAdminRouter();
     this.app.get('/api', (req: Request, res: Response) => {
+      res.send(`Hello, Purwadhika Student API!`);
       res.send(`Hello, Purwadhika Student API!`);
     });
 
@@ -110,6 +113,7 @@ export default class App {
     this.app.use('/api/create', createOrderRouter.getRouter());
     this.app.use('/api/midtrans', midtransRouter.getRouter());
     this.app.use('/api/address', addressRouter.getRouter());
+    this.app.use('/api/super-admin', superAdminRouter.getRouter());
   }
 
   public start(): void {
