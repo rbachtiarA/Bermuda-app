@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Roboto } from 'next/font/google';
-import "react-toastify/dist/ReactToastify.css";
+import 'react-toastify/dist/ReactToastify.css';
 import AddressBar from '@/components/address/addressBar';
 import SiteNavbar from '@/components/navbar/siteNavbar';
 import BottomNavbar from '@/components/bottomNavbar/bottomNavbar';
@@ -19,15 +19,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main className='flex flex-col min-h-screen'>
-      <AddressBar />
-      <SiteNavbar />
-      <section className='flex-1'>
+    <main className="flex flex-col min-h-screen">
+      <section className="flex-1">
         {children}
       </section>
       <Footer />
-      <BottomNavbar />
     </main>
-      
   );
 }

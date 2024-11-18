@@ -18,7 +18,7 @@ export class AuthController {
         {
           clientID: process.env.GOOGLE_CLIENT_ID!,
           clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-          callbackURL: `${process.env.BASE_URL_API}/api/auth/google/callback`,
+          callbackURL: `${process.env.BASE_URL_API}auth/google/callback`,
         },
         async (accessToken, refreshToken, profile, done) => {
           try {
@@ -60,6 +60,7 @@ export class AuthController {
                   checkout: { create: {} },
                   cart: { create: {} },
                 },
+                
               });
             }
 

@@ -36,6 +36,8 @@
   },
   "dependencies": {
     "@types/axios": "^0.14.0",
-    "axios": "^1.7.2"
+    "axios": "^1.7.2",
+    "cliui": "^8.0.1",
+    "string-width": "^7.2.0"
   }
 }

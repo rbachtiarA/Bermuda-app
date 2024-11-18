@@ -27,7 +27,6 @@ export const postOrder = async (
         })
         
         const { status, order, msg, error } = await res.json()
-        console.log({status, msg, error});
         
         return {status, order, msg }
     }
@@ -88,6 +87,20 @@ export const getUserOrders = async () => {
     const { status, msg, order } = await res.json()
     return { status, msg, order }
 }
+export const getOrderById = async (orderId: number) => {
+    const token = await getToken()
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}order/id/${orderId}`, {
+        headers: {
+            "Content-type":"application/json",
+            'Authorization': `Bearer ${token}`
+    },
+     next: { revalidate: 1 } })
+    const { status, msg } = await res.json()
+    return { status, msg }
+}
+
+
+
 export const cancelOrder = async (orderId: number) => {
     const token = await getToken()
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}order/cancel`, {

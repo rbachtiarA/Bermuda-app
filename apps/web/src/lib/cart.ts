@@ -31,7 +31,7 @@ export const postCartItems = async (userId:number , productId:number, quantity:n
     console.log(res)
     const { cartItem }: {cartItem: ICartItem} = await res.json()
         
-    return { ok: res.ok, cartItem }
+    return { status: res.status, cartItem }
 }
 
 export const updateCartItem = async (productId:number, quantity:number) => {
@@ -82,7 +82,6 @@ export const getCheckoutItems = async (userId: number) => {
         },
         next: { revalidate: 1 } })
     const { status, data } = await res.json()
-    console.log(res);
     
     return data.CartItem
 }

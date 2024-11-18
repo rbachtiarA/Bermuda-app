@@ -1,3 +1,12 @@
+export interface IUser {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  avatarUrl: string;
+  isVerified: boolean;
+}
+
 export interface IRegEmail {
   email: string;
 }
@@ -14,7 +23,7 @@ export interface IUserState {
   role: string;
   avatarUrl: string;
   address:
-    | {
+      {
         label: string;
         recipient: string;
         phoneNumber: string;

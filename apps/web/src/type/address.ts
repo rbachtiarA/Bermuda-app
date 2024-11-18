@@ -1,12 +1,16 @@
 export interface IAddress {
     id: number,
     userId: number,
+    label: string,
+    recipient: string,
+    phoneNumber: string
     addressLine: string,
-    city: string,
+    city?: string,
+    cityId?: number,
     state: string,
     postalCode: string,
-    latitude: number,
-    longitude: number,
+    latitude?: number,
+    longitude?: number,
     isPrimary: boolean
 }
 

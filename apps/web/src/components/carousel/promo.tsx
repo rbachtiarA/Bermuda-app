@@ -26,8 +26,7 @@ export default function PromoCarousel() {
           alt={`Slide ${index + 1}`}
           height={260}
           width={519}
-          objectFit='cover'
-          className="rounded-lg"
+          className="rounded-lg object-cover"
         />
       </SwiperSlide>
       ))}

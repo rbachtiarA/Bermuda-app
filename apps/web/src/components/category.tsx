@@ -10,9 +10,9 @@ const CategoryDropdown: React.FC = () => {
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const data = await getCategories();
-        setCategories(data);
-        console.log('haloooo', data);
+        const { result, ok } = await getCategories();
+        setCategories(result.allCategory);
+        console.log('haloooo', result);
       } catch (error) {
         console.error('Error fetching categories:', error);
       }
@@ -32,7 +32,7 @@ const CategoryDropdown: React.FC = () => {
       {isDropdownOpen && (
         <div className="order-1 absolute left-0 w-48 mt-2 origin-top-left bg-white border border-gray-200 rounded-md shadow-lg">
           <ul className="py-1">
-            {categories.map((category) => (
+            {categories?.map((category) => (
               <li
                 key={category.id}
                 className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"

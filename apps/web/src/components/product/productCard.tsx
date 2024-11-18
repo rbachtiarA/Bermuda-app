@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hook"
 import { addedToCart } from "@/redux/slice/cartSlice"
 import { IStocks } from "@/type/product"
 import { Button, Card, CardBody, CardFooter, CardHeader, Image, Skeleton } from "@nextui-org/react"
+import { useRouter } from "next/navigation"
 import { toast } from "react-toastify"
 
 export default function ProductCard({stock}:{stock: IStocks}) {
@@ -12,9 +13,9 @@ export default function ProductCard({stock}:{stock: IStocks}) {
     const cart = useAppSelector(state => state.cart)
     const user = useAppSelector(state => state.user)
     const product = stock.product
+    const router = useRouter()
     
     const onClickedAddToCart = async (quantity: number) => {
-        // dispatch(addedToCart({id: 1, productId: product.id, quantity: 1, totalPrice: product.price}))
         const existProduct = cart.find((item) => item.productId === product.id)
         if(existProduct) {
             if(existProduct.quantity >= stock.quantity) {
@@ -22,10 +23,16 @@ export default function ProductCard({stock}:{stock: IStocks}) {
                 return;
             }
         }
-        const res = await postCartItems(user.id, product.id, quantity)        
-        res.cartItem.quantity = quantity
-        dispatch(addedToCart(res.cartItem))
-        toast.success(`Berhasil memasukkan ke keranjang`)
+        const res = await postCartItems(user.id, product.id, quantity)
+        if(res.status === 200) {
+            res.cartItem.quantity = quantity
+            dispatch(addedToCart(res.cartItem))
+            toast.success(`Berhasil memasukkan ke keranjang`)
+        } else if (res.status === 404) {
+            router.push('/login')
+        } else {
+            toast.error(`Something is error`)
+        }
     }
 
     return (
@@ -35,7 +42,7 @@ export default function ProductCard({stock}:{stock: IStocks}) {
                     {/* <Skeleton className="w-[150px] h-[150px] rounded-md"/> */}
                     <Image 
                         isZoomed
-                        src={`${process.env.NEXT_PUBLIC_BASE_API_URL}public/product/product-chitato-bbq.jpg`}
+                        src={product.imageUrl || `${process.env.NEXT_PUBLIC_BASE_API_URL}public/product/product-chitato-bbq.jpg`}
                     />
                 </CardHeader>
                 <CardBody>

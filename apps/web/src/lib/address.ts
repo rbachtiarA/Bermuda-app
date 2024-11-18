@@ -1,7 +1,7 @@
 import { ICreateAddress, IFetchCity, ILocation } from '@/type/address';
 import { getToken } from './server';
-import { FormikHelpers } from 'formik';
-import { stringify } from 'flatted';
+import { useAppDispatch } from '@/redux/hook';
+import { setLocation } from '@/redux/slice/userSlice';
 
 export const getUserAddressess = async (userId: number) => {
   const res = await fetch(
@@ -63,18 +63,8 @@ export const createAddressHandler = async (value: ICreateAddress) => {
   return { status, msg }
 }
 
-
-//     if (!response.ok) {
-//       const errorData = await response.json();
-//       console.error("Error Response Data:", errorData);
-//       throw new Error(errorData.message || "Failed to create address");
-//     }
-
-//     const data = await response.json();
-//     console.log("Response Data:", data);
-//     return data;
-//   } catch (error: any) {
-//     console.error("Error creating address:", error.message);
-//     throw error;
-//   }
-// };
+export const getShippingCost = async (addressId: number, storeId: number) => {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}address/shippingCost?addressId=${addressId}&storeId=${storeId}`, { cache: 'no-cache' })
+  const { status, msg } = await res.json()
+  return { status, msg }  
+}
