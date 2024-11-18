@@ -40,7 +40,13 @@ export class OrderController {
                     userId: +userId!
                 },
                 include: {
-                    Payment: true
+                    Payment: true,
+                    Address: true,
+                    orderItems: {
+                        include: {
+                            product: true
+                        }
+                    }
                 }
             })
 

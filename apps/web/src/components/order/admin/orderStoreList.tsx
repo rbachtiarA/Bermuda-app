@@ -101,7 +101,7 @@ export default function AdminOrderList({}) {
         getData()
     }, [])
     return (
-        <div className='md:col-start-2 overflow-auto py-4 flex flex-col gap-2'>
+        <div className='md:col-start-2 overflow-auto py-4 flex flex-col gap-2 p-4'>
             <div className='flex flex-col md:flex-row gap-2 w-full flex-wrap'>
                 <div className='flex gap-2 w-full'>
                     <OrderNameFilter orderNameFilter={orderNameFilter} setOrderNameFilter={setOrderNameFilter}/>

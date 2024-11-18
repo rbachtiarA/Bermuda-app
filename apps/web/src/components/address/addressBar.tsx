@@ -37,7 +37,7 @@ export default function AddressBar() {
                 <a href="/howtobuy">Cara Belanja</a>
               </DropdownItem>
               <DropdownItem>
-                <a href="/apoint">A-Poin</a>
+                <a href="/apoint">B-Poin</a>
               </DropdownItem>
               <DropdownItem>
                 <a href="/shipping-cost">Gratis Ongkir</a>
@@ -46,7 +46,7 @@ export default function AddressBar() {
                 <a href="mailto:alfacare@sat.co.id">
                   <div className="flex items-center gap-2">
                     <FaInbox size={18} />
-                    alfacare@sat.co.id
+                    cs.bertiga.store@gmail.com
                   </div>
                 </a>
               </DropdownItem>
@@ -54,7 +54,7 @@ export default function AddressBar() {
                 <a href="tel:1500959">
                   <div className="flex items-center gap-2">
                     <FaPhone size={18} />
-                    1500-959
+                    1100-420
                   </div>
                 </a>
               </DropdownItem>
@@ -69,7 +69,7 @@ export default function AddressBar() {
             </DropdownTrigger>
             <DropdownMenu>
               <DropdownItem>
-                <a href="/about">Tentang Alfagift</a>
+                <a href="/about">Tentang Bermuda</a>
               </DropdownItem>
               <DropdownItem>
                 <a href="/terms">Syarat & Ketentuan</a>
@@ -79,7 +79,7 @@ export default function AddressBar() {
               </DropdownItem>
               <DropdownItem>
                 <a
-                  href="https://gli.id/career"
+                  href="/"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -88,7 +88,7 @@ export default function AddressBar() {
               </DropdownItem>
               <DropdownItem>
                 <a
-                  href="https://gli.id/article"
+                  href="/"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -105,31 +105,25 @@ export default function AddressBar() {
                 Download Bermuda Store
               </button>
             </DropdownTrigger>
-            <DropdownMenu>
-              <div className="flex items-center p-3">
-                <img
-                  src="/images/downloadpage_qr_code.png"
-                  alt="QR Code"
-                  className="w-16 h-16"
-                />
-                <div className="ml-4 text-xs">
-                  <p className="mb-2">Scan QR atau download dari:</p>
-                  <a href="https://play.google.com/store/apps/details?id=com.alfamart.alfagift">
-                    <img
-                      src="https://static-content.alfagift.id/static/play-store-btn.png"
-                      alt="Play Store"
-                      className="mb-2 w-28"
-                    />
-                  </a>
-                  <a href="https://apps.apple.com/id/app/id1013717463">
-                    <img
-                      src="https://static-content.alfagift.id/static/app-store-btn.png"
-                      alt="App Store"
-                      className="w-28"
-                    />
-                  </a>
-                </div>
-              </div>
+            <DropdownMenu className='w-[145px]'>
+              <DropdownItem>
+                    {/* <p className="mb-2">Scan QR atau download dari:</p> */}
+                    <a href="https://play.google.com/">
+                      <img
+                        src="https://static-content.alfagift.id/static/play-store-btn.png"
+                        alt="Play Store"
+                      />
+                    </a>
+              </DropdownItem>
+              <DropdownItem>
+                <a href="https://apps.apple.com/">
+                  <img
+                    src="https://static-content.alfagift.id/static/app-store-btn.png"
+                    alt="App Store"
+                  />
+                </a>
+                          
+              </DropdownItem>
             </DropdownMenu>
           </Dropdown>
         </div>
