@@ -2,6 +2,7 @@ import cancelOrder from "@/helpers/cancelOrder";
 import prisma from "@/prisma";
 import { Request, Response } from "express";
 import midtrans from '../services/midtrans.js'
+import confirmedOrder from "@/helpers/confirmedOrder";
 export class MidtransController {
     // get midtrans transaction status, from 'orderId', 
     //      if order is expired, update order status with 'cancelled', and return all order items quantity to store quantity
@@ -28,7 +29,7 @@ export class MidtransController {
                     //status will be 'settlement' | 'pending'
                     midtransStatus = midtransOrder?.transaction_status
                     if(midtransStatus === 'settlement') {
-                        await prisma.order.update({
+                        const updatedOrder = await prisma.order.update({
                             where: {
                                 id: +orderId
                             },
@@ -40,8 +41,13 @@ export class MidtransController {
                                         confirmedAt: new Date(Date.now())
                                     }
                                 }
+                            },
+                            include: {
+                                orderItems: true
                             }
                         })
+
+                        await confirmedOrder(updatedOrder.id)
                     }
                 } catch (error) {
                     return res.status(200).send({

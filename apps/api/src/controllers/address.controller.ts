@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import prisma from '@/prisma';
 import { rajaonkir } from '@/templates/rajaonkir';
+import { rajaongkirShippingCost } from '@/services/rajaongkir';
+import { IShippingCost } from '@/type/rajaongkir';
 
 export class AddressController {
   async updateProvince(req: Request, res: Response) {
@@ -12,7 +14,7 @@ export class AddressController {
       return {
         id: Number(item.city_id),
         provinceId: Number(item.province_id),
-        name: `${item.type === 'Kota' ? 'Kota ' : ' '}${item.city_name}`,
+        name: `${item.type === 'Kota' ? 'Kota ' : ''}${item.city_name}`,
       };
     });
 
@@ -112,5 +114,39 @@ export class AddressController {
         message: 'Terjadi kesalahan saat menyimpan alamat',
       });
     }
+  }
+
+  async getShippingCost(req: Request, res: Response) {
+    
+    try {
+        const { addressId, storeId } = req.query
+        if(!addressId || !storeId) throw 'query invalid'
+        const destinationCity = await prisma.address.findUnique({
+          where: {  id: +addressId }
+        })
+    
+        const originCity = await prisma.store.findUnique({
+          where: {id: +storeId }
+        })
+    
+        if(!originCity || !destinationCity) throw 'Destination / Origins invalid'
+
+        const shippingCost = await rajaongkirShippingCost(originCity.cityId, destinationCity.cityId!)
+        if(shippingCost.rajaongkir.status.code === 400) throw 'Invalid Key Rajaongkir'
+           
+        const arrayOfShippingCost: IShippingCost[] = shippingCost.rajaongkir.results[0].costs
+        const mapOfValueShippingCost = arrayOfShippingCost.map((shippingCost) => shippingCost.cost[0].value)
+        const minimalShippingCost = Math.min(...mapOfValueShippingCost)
+        return res.status(200).send({
+          status: 'ok',
+          msg: minimalShippingCost
+        })
+    } catch (error) {
+        return res.status(400).send({
+          status: 'error',
+          msg: `${error}`
+        })
+    }
+
   }
 }

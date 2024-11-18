@@ -1,4 +1,5 @@
 import cancelOrder from "@/helpers/cancelOrder"
+import confirmedOrder from "@/helpers/confirmedOrder"
 import prisma from "@/prisma"
 import { Order, Payment } from "@prisma/client"
 import { Request, Response } from "express"
@@ -63,6 +64,9 @@ export class AdminController {
                     }
                 }
             })
+            
+            await confirmedOrder(orderId)
+            
             return res.status(200).send({
                 status: 'ok',
                 msg: 'success update order'
@@ -80,10 +84,6 @@ export class AdminController {
             const { orderId } = req.body
             const existOrder = await getExistingOrder(orderId)
             if(!existOrder) throw 'Order is invalid'
-
-            await updateOrder(orderId, {
-                status: 'Cancelled'
-            })
 
             await cancelOrder(orderId)
 

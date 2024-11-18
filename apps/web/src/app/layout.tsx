@@ -4,6 +4,8 @@ import './globals.css';
 import "react-toastify/dist/ReactToastify.css";
 
 import { AppProvider } from './AppProvider';
+import AddressBar from '@/components/address/addressBar';
+import SiteNavbar from '@/components/navbar/siteNavbar';
 const roboto = Roboto({ subsets: ['latin'], weight: ['400', '700'] });
 
 export const metadata: Metadata = {
@@ -21,13 +23,13 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${roboto.className} relative`}>
           <AppProvider>
-              {/* <AddressBar />
-              <SiteNavbar /> */}
-              {/* <main className='flex-1'> */}
-                {children}
-              {/* </main> */}
-              {/* <Footer />
-              <BottomNavbar /> */}
+              <div className='sticky top-0 z-[14]'>
+                <AddressBar />
+                <SiteNavbar />
+              </div>
+              
+              {children}
+              {/* <BottomNavbar /> */}
           </AppProvider>            
       </body>
     </html>

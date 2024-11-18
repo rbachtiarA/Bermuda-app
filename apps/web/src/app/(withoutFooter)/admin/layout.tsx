@@ -2,7 +2,8 @@ import BreadcrumbsDashboard from '@/components/breadcrumbs/breadcrumbsDashboard'
 import AdminProtection from '@/components/routerProtection/adminProtection'
 import SideBar from '@/components/sideBar'
 import { Divider } from '@nextui-org/react'
-import React from 'react'
+import React, { Suspense } from 'react'
+import LoadingAdminDashboard from './loading'
 
 export default function layout({ children }: { children: React.ReactNode }) {
   return (
@@ -16,7 +17,9 @@ export default function layout({ children }: { children: React.ReactNode }) {
             <BreadcrumbsDashboard title='Dashboard'/>
             <Divider />
           </div>
-          {children}
+          <Suspense fallback={<LoadingAdminDashboard />}>
+            {children}
+          </Suspense>
       </div>
     </AdminProtection>
   );
