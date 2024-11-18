@@ -1,4 +1,3 @@
-import { ProductController } from '@/controllers/product.controller';
 import { StoreController } from '@/controllers/store.controller';
 import { checkAdmin, verifyToken } from '@/middleware/token';
 import { Router } from 'express';
@@ -14,7 +13,12 @@ export class StoreRouter {
   }
 
   private initializeRoutes(): void {
-    this.router.get('/', verifyToken, checkAdmin, this.storeController.getStoresList);
+    this.router.get(
+      '/',
+      verifyToken,
+      checkAdmin,
+      this.storeController.getStoresList,
+    );
     this.router.get('/stocks/:storeId', this.storeController.getStoreStocks);
     this.router.get(
       '/order',

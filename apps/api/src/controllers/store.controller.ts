@@ -109,4 +109,19 @@ export class StoreController {
       });
     }
   }
+
+  async getStoresList(req: Request, res: Response) {
+    try {
+      const stores = await prisma.store.findMany({});
+      return res.status(200).send({
+        status: 'ok',
+        msg: stores,
+      });
+    } catch (error) {
+      return res.status(400).send({
+        status: 'error',
+        msg: `${error}`,
+      });
+    }
+  }
 }
