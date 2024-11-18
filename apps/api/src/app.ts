@@ -25,6 +25,7 @@ import { CreateOrderRouter } from './routers/createOrder.router';
 import { MidtransRouter } from './routers/midtrans.router';
 import { AddressRouter } from './routers/address.router';
 import { StoreAdminRouter } from './routers/storeAdmin.router';
+import { StockRouter } from './routers/stock.router';
 import { SuperAdminRouter } from './routers/superAdmin.router';
 
 export default class App {
@@ -84,6 +85,7 @@ export default class App {
     const userRouter = new UserRouter();
     const storeAdminRouter = new StoreAdminRouter();
     const productRouter = new ProductRouter();
+    const stockRouter = new StockRouter();
     const cartRouter = new CartRouter();
     const categoryRouter = new CategoryRouter();
     const authRouter = new AuthRouter();
@@ -103,6 +105,7 @@ export default class App {
     this.app.use('/api/users', userRouter.getRouter());
     this.app.use('/api/storeadmin', storeAdminRouter.getRouter());
     this.app.use('/api/product', productRouter.getRouter());
+    this.app.use('/api/stock', stockRouter.getRouter());
     this.app.use('/api/cart', cartRouter.getRouter());
     this.app.use('/api/store', storeRouter.getRouter());
     this.app.use('/api/order', orderRouter.getRouter());

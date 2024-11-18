@@ -1,5 +1,4 @@
 import prisma from '@/prisma';
-import { genSalt, hash } from 'bcrypt';
 import { Request, Response } from 'express';
 import { sign } from 'jsonwebtoken';
 import path from 'path';
@@ -23,8 +22,8 @@ export class StoreAdminController {
         role: 'STORE_ADMIN',
         isVerified: true,
         referralCode: null,
-        cart: {create: {}},
-        checkout: {create: {}}
+        cart: { create: {} },
+        checkout: { create: {} },
       },
     });
 

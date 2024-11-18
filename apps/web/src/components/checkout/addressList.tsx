@@ -32,12 +32,12 @@ export default function AddressessList({ selectedAddress, updateSelectedAddress 
         <>
             <Card className="flex flex-col p-2">
                 <CardHeader>
-                    <h2 className="text-lg font-semibold">Alamat Pengiriman</h2>
+                    <h2 className="text-lg font-semibold">Shipping Address</h2>
                 </CardHeader>
                 <CardBody>
                     {
                         !selectedAddress && 
-                        <p className="text-danger">Alamat tidak ada, bikin alamat pengiriman agar paket bisa dikirim</p>
+                        <p className="text-danger">Address not found, Create address details for us to deliver goods</p>
                     }
                     {
                         selectedAddress &&
@@ -45,8 +45,8 @@ export default function AddressessList({ selectedAddress, updateSelectedAddress 
                     }
                 </CardBody>
                 <CardFooter className="flex justify-end w-full">
-                    <Button onPress={newAddressModal.onOpen} color="secondary" size="sm" variant="light">Buat Alamat Baru</Button>
-                    <Button onPress={changeAddressModal.onOpen} color="secondary" size="sm" variant="light">Ganti Alamat</Button>
+                    <Button onPress={newAddressModal.onOpen} color="secondary" size="sm" variant="light">Create new address</Button>
+                    <Button onPress={changeAddressModal.onOpen} color="secondary" size="sm" variant="light">Change address</Button>
                 </CardFooter>
             </Card>
             <AddressCheckoutSelectorModal addressess={addressess} isOpen={changeAddressModal.isOpen} onOpenChange={changeAddressModal.onOpenChange} onConfirm={updateSelectedAddress}/>

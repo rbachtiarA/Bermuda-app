@@ -77,3 +77,18 @@ export const deleteCategory = async (
   const result = await res.json();
   return { result, ok: res.ok };
 };
+
+export const getProCategory = async () => {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_API_URL}procategory/categories`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+  );
+
+  const result = await res.json();
+  return { result, ok: res.ok };
+};

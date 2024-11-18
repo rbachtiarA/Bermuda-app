@@ -78,20 +78,12 @@ export default function AddressBar() {
                 <a href="/privacy">Kebijakan Privasi</a>
               </DropdownItem>
               <DropdownItem>
-                <a
-                  href="/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <a href="/" target="_blank" rel="noopener noreferrer">
                   Karir
                 </a>
               </DropdownItem>
               <DropdownItem>
-                <a
-                  href="/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <a href="/" target="_blank" rel="noopener noreferrer">
                   Blog
                 </a>
               </DropdownItem>
@@ -105,26 +97,25 @@ export default function AddressBar() {
                 Download Bermuda Store
               </button>
             </DropdownTrigger>
-            <DropdownMenu className=''>
+            <DropdownMenu className="">
               <DropdownItem>
-                    {/* <p className="mb-2">Scan QR atau download dari:</p> */}
-                    <a href="https://play.google.com/">
-                      <img
-                        src="https://static-content.alfagift.id/static/play-store-btn.png"
-                        alt="Play Store"
-                        className='w-[145px] h-auto'
-                      />
-                    </a>
+                {/* <p className="mb-2">Scan QR atau download dari:</p> */}
+                <a href="https://play.google.com/">
+                  <img
+                    src="https://static-content.alfagift.id/static/play-store-btn.png"
+                    alt="Play Store"
+                    className="w-[145px] h-auto"
+                  />
+                </a>
               </DropdownItem>
               <DropdownItem>
                 <a href="https://apps.apple.com/">
                   <img
                     src="https://static-content.alfagift.id/static/app-store-btn.png"
                     alt="App Store"
-                    className='w-[145px] h-auto'
+                    className="w-[145px] h-auto"
                   />
                 </a>
-                          
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>

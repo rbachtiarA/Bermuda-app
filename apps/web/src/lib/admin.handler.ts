@@ -1,3 +1,4 @@
+import { IOrder } from "@/type/order"
 import { getToken } from "./server"
 
 export const denyPaymentOrder = async (orderId: number) => {
@@ -75,4 +76,20 @@ export const checkAdmin = async () => {
 
     const { status } = await res.json()
     return { status }
+}
+
+export const getAdminOrderById = async (orderId: number) => {
+    const token = await getToken()
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}admin/order/${orderId}`, {
+        method:'GET',
+        headers: {
+            "Content-type":"application/json",
+            'Authorization': `Bearer ${token}`
+        }
+    })
+
+    const { status, msg }: {status: string, msg: IOrder} = await res.json()
+    console.log(status, msg, 'hello');
+    
+    return { status, msg }
 }
