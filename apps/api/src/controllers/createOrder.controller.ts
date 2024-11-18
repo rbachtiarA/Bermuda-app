@@ -33,6 +33,8 @@ export class CreateOrderController {
         const orderItem = checkoutItem?.CartItem.map((item) => {
             return { productId: item.productId, quantity: item.quantity, price: item.product.price, discountValue: 0 }
         })
+        console.log(orderItem);
+        
         if(!orderItem) throw 'Order is Invalid'
 
         
@@ -54,7 +56,10 @@ export class CreateOrderController {
                         product: true
                     }
                 })
-                if(!existStock) throw 'Some product stock is invalid'
+                if(!existStock) {
+                    codeError = {code: 'ITEM_INSUFFICIENT', details: `store doesnt have stock`}
+                    throw 'Some product stock is invalid'
+                }
                 if(existStock!.quantity - item.quantity < 0) {
                     codeError = {code: 'ITEM_INSUFFICIENT', details: `${existStock.product.name} is insuffficient`}
                     throw 'Insufficient product stock'

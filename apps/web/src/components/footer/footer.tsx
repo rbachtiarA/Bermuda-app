@@ -72,21 +72,22 @@ export default function Footer() {
           <FooterList title="Ikuti Kami">
             <div className="flex items-center">
               <Image
-                src="/Ic Social Media Facebook round.png"
+                src="/iconImage/Ic Social Media Facebook Round.png"
                 alt="Facebook"
+                unoptimized
                 height={45}
                 width={45}
                 className="pr-3 my-1.5"
               />
               <Image
-                src="/Ic Social Media Instagram Circle.png"
+                src="/iconImage/Ic Social Media Instagram Circle.png"
                 alt="Instagram"
                 height={45}
                 width={45}
                 className="pr-3 my-1.5"
               />
               <Image
-                src="/Ic Twitter.png"
+                src="/iconImage/Ic Twitter.png"
                 alt="Twitter"
                 height={45}
                 width={45}

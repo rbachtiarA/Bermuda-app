@@ -1,13 +1,22 @@
 import cancelOrder from "@/helpers/cancelOrder"
 import confirmedOrder from "@/helpers/confirmedOrder"
 import prisma from "@/prisma"
-import { Order, Payment } from "@prisma/client"
+import { Order } from "@prisma/client"
 import { Request, Response } from "express"
 
 const getExistingOrder = async (orderId: number) => {
     return await prisma.order.findFirst({
         where: {
             id: +orderId,
+        },
+        include: {
+            Payment: true,
+            Address: true,
+            orderItems: {
+                include: {
+                    product: true
+                }
+            }
         }
     })
 }
@@ -119,6 +128,25 @@ export class AdminController {
             return res.status(401).send({
                 status: 'error',
                 msg: `${error}`
+            })
+        }
+    }
+
+    async getOrderById(req: Request, res: Response) {
+        try {
+            const { orderId } = req.params
+            const order = await getExistingOrder(Number(orderId))
+
+            if(!order) throw 'Cant find order'
+            return res.status(200).send({
+                status: 'ok',
+                msg: order
+            })
+
+        } catch (error) {
+            return res.status(401).send({
+                status: 'error',
+                msg: error
             })
         }
     }

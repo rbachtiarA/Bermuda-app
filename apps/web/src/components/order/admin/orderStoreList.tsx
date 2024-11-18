@@ -5,23 +5,28 @@ import { useAppSelector } from '@/redux/hook'
 import { IOrder } from '@/type/order'
 import React, { useMemo, useEffect, useState } from 'react'
 import OrderTable from '../orderTable'
-import { DatePicker, DateRangePicker, Pagination } from '@nextui-org/react'
+import { Pagination } from '@nextui-org/react'
 import SelectStatusFilter from '../filter/selectStatusFilter'
 import DateFilter from '../filter/dateFilter'
 import OrderNameFilter from '../filter/orderNameFilter'
 import { toast } from 'react-toastify'
+import StoreFilter from '../filter/storeFilter'
 
 export default function AdminOrderList({}) {
     const user = useAppSelector((state) => state.user)
     const [data, setData] = useState<IOrder[]>([])
     const [statusFilter, setStatusFilter] = useState<IOrder['status'] | ''>('')
     const [orderNameFilter, setOrderNameFilter] = useState('')
+    const [selectedStoreId, setSelectedStoreId] = useState('')
     const [dateMinFilter, setDateMinFilter] = useState<number|null>(null)
     const [page, setPage] = useState<number>(1)
     const [pages, setPages] = useState<number>(1)
     
     const filterOrder = useMemo(() => {
         let filteredData = data
+        if(!!selectedStoreId) {
+            filteredData = filteredData.filter((order) => order.storeId === Number(selectedStoreId))
+        }
         if(statusFilter) {
             filteredData = filteredData.filter((order) => order.status === statusFilter)
         }
@@ -40,7 +45,7 @@ export default function AdminOrderList({}) {
         setPages(Math.ceil(filteredData.length/10))
         return filteredData
 
-    }, [data, statusFilter, dateMinFilter, orderNameFilter])
+    }, [data, statusFilter, dateMinFilter, orderNameFilter, selectedStoreId])
     
     const onDenyPayment = async (orderId: number) => {
         const { status } = await denyPaymentOrder(orderId)
@@ -103,6 +108,10 @@ export default function AdminOrderList({}) {
     return (
         <div className='md:col-start-2 overflow-auto py-4 flex flex-col gap-2 p-4'>
             <div className='flex flex-col md:flex-row gap-2 w-full flex-wrap'>
+                {
+                    user.role === 'SUPER_ADMIN' &&
+                    <StoreFilter selectedStoreId={selectedStoreId} setSelectedStoreId={setSelectedStoreId}/>
+                }
                 <div className='flex gap-2 w-full'>
                     <OrderNameFilter orderNameFilter={orderNameFilter} setOrderNameFilter={setOrderNameFilter}/>
                     <SelectStatusFilter statusFilter={statusFilter} setStatusFilter={setStatusFilter}/>
