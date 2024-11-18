@@ -95,6 +95,8 @@ export const NewAddressModal: React.FC<NewAddressModalProps> = ({
       isDismissable={false}
       isKeyboardDismissDisabled={true}
       size="lg"
+      scrollBehavior="outside"
+      className="overflow-auto"
     >
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">Tambah Alamat</ModalHeader>
@@ -170,7 +172,10 @@ export const NewAddressModal: React.FC<NewAddressModalProps> = ({
                   <div>
                     {showMap ? (
                       <GoogleMapPicker
-                        onConfirm={(location) => { setFieldValue('latitude', location.lat); setFieldValue('longitude', location.lng); setFieldValue('addressLine', location.addressLine);
+                        onConfirm={(location) => {
+                          setFieldValue('latitude', location.lat);
+                          setFieldValue('longitude', location.lng);
+                          setFieldValue('addressLine', location.addressLine);
                           setFieldValue('state', location.state);
                           setFieldValue('postalCode', location.postalCode);
                           setMarkerAddress(location.addressLine);
