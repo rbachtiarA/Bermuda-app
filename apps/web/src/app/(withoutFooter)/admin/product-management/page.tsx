@@ -166,6 +166,40 @@ const ProductList = () => {
     }
   };
 
+  const handleClick = async (id: number) => {
+    if (window.confirm('Are you sure you want to delete this stock?')) {
+      try {
+        // Kirim permintaan untuk menghapus stok
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BASE_API_URL}product/${id}`,
+          {
+            method: 'DELETE', // Menggunakan metode DELETE
+          },
+        );
+
+        if (!response.ok) {
+          throw new Error('Failed to delete the stock');
+        }
+        fetchProducts(); // Refresh the product list
+        toggleModal(); // Close modal
+        setNewProduct({
+          id: '',
+          name: '',
+          description: '',
+          price: 0,
+          imageUrl: '',
+          slug: '',
+          categories: [],
+        });
+        setImageFile(null); // Reset file input
+
+        // Jika penghapusan berhasil, arahkan kembali ke halaman sebelumnya atau ke halaman lain
+      } catch (error: any) {
+        console.error('Error creating product');
+      }
+    }
+  };
+
   // Handle form submission for adding a product
   const handleSubmit = async (e: FormEvent) => {
     try {
@@ -362,6 +396,12 @@ const ProductList = () => {
                 className="px-6 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500"
               >
                 Cancel
+              </button>
+              <button
+                onClick={() => handleClick(Number(newProduct.id))}
+                className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-green-600"
+              >
+                Delete
               </button>
               <button
                 onClick={handleSubmit}

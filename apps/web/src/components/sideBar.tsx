@@ -60,6 +60,14 @@ export default function SideBar() {
                 </li>
                 <li className="py-4">
                   <Link
+                    href="/admin/product-management"
+                    className="no-underline text-gray-700 relative"
+                  >
+                    Product Management
+                  </Link>
+                </li>
+                <li className="py-4">
+                  <Link
                     href="/admin/stock-management"
                     className="no-underline text-gray-700 relative"
                   >

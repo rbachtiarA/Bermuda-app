@@ -22,7 +22,27 @@ export const getStoreOrders = async () => {
       next: { revalidate: 1 },
     },
   );
-  const { status, msg, order } = await res.json();
+  const { status, msg, result } = await res.json();
 
-  return { status, msg, order };
+  return { status, msg, result };
+};
+
+export const getAllStore = async () => {
+  const token = await getToken();
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_API_URL}store/stores`,
+    {
+      headers: {
+        'Content-type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      next: { revalidate: 1 },
+    },
+  );
+  // const { stores } = await res.json();
+  // console.log(stores, '<<>><><><>>');
+
+  const { status, msg, stores } = await res.json();
+
+  return { status, msg, stores };
 };

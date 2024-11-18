@@ -180,19 +180,44 @@ export class ProductController {
     }
   }
 
-  async getProductSlug(req: Request, res: Response) {
+  async deleteProduct(req: Request, res: Response) {
     try {
-      const events = await prisma.product.findFirst({
-        where: { slug: req.params.slug },
+      const { id } = req.params; // Get the product ID from the request parameters
+
+      // Ensure the ID is a valid number
+      if (isNaN(Number(id))) {
+        return res.status(400).send({
+          status: 'error',
+          msg: 'Invalid product ID',
+        });
+      }
+
+      // Delete the product by its ID
+      const deletedProduct = await prisma.product.delete({
+        where: {
+          id: Number(id),
+        },
       });
+
+      if (!deletedProduct) {
+        return res.status(404).send({
+          status: 'error',
+          msg: 'Product not found',
+        });
+      }
+
+      // Send a response indicating the product was deleted successfully
       res.status(200).send({
         status: 'ok',
-        events,
+        msg: 'Product deleted successfully',
+        deletedProduct,
       });
     } catch (err) {
-      res.status(400).send({
+      console.log(err);
+      res.status(500).send({
         status: 'error',
-        msg: err,
+        msg: 'An error occurred while deleting the product',
+        error: err,
       });
     }
   }
