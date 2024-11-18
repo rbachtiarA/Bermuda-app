@@ -65,10 +65,11 @@ model Product {
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
   cartItems     CartItem[]
-  stock         Stock[]
+  // stock         Stock[]
   orderItems    OrderItem[]
   stockReports  StockReport[]
   discounts     Discount[]        @relation("ProductDiscounts")
+  Stock         Stock[]
 }
 
 model ProductCategory {

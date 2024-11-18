@@ -48,28 +48,34 @@ export default function NavbarMobileMenu({
             )}
             {user.role === 'SUPER_ADMIN' && (
               <>
-                <Link href="/user" color="foreground">
+                <Link href="/admin/user-management" color="foreground">
                   User Management
                 </Link>
-                <Link href="/userorder" color="foreground">
+                <Link href="/admin/store-admin-management" color="foreground">
                   Store Admin Management
                 </Link>
-                <Link href="/payment" color="foreground">
+                <Link href="/admin/store-management" color="foreground">
                   Store Management
                 </Link>
-                <Link href="/payment" color="foreground">
+                <Link
+                  href="/admin/product-category-management"
+                  color="foreground"
+                >
+                  Product Category Management
+                </Link>
+                <Link href="/admin/product-management" color="foreground">
                   Product Management
                 </Link>
-                <Link href="/payment" color="foreground">
+                <Link href="/admin/stock-management" color="foreground">
                   Stock Management
                 </Link>
-                <Link href="/payment" color="foreground">
+                <Link href="/admin/discount-management" color="foreground">
                   Discount Management
                 </Link>
-                <Link href="/payment" color="foreground">
+                <Link href="/admin/order-management" color="foreground">
                   Order Management
                 </Link>
-                <Link href="/payment" color="foreground">
+                <Link href="/admin/report-analysis" color="foreground">
                   Report & Analysis
                 </Link>
               </>
