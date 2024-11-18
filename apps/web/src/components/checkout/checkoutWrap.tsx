@@ -12,6 +12,7 @@ import { IDiscount } from "@/type/discount"
 import { getShippingCost } from "@/lib/address"
 import { getNearestStore } from "@/lib/store.handler"
 import { updateStore } from "@/redux/slice/storeSlice"
+import { error } from "console"
 
 export default function CheckoutWrapper() {
     const user = useAppSelector(state => state.user)

@@ -1,6 +1,6 @@
 import currencyRupiah from "@/lib/rupiahCurrency";
 import { IOrder } from "@/type/order";
-import { Card, CardBody, CardHeader, Divider } from "@nextui-org/react";
+import { Card, CardBody, CardHeader, Divider, Image } from "@nextui-org/react";
 import PaymentList from "../payment/paymentDetails/paymentList";
 
 export default function OrderCard({order, ...props}: {order: IOrder, className?:string}) {
@@ -25,9 +25,12 @@ export default function OrderCard({order, ...props}: {order: IOrder, className?:
                     <Divider />
                 <CardBody>
                     {order.orderItems.map((item) => (
-                        <div key={item.id} className="flex justify-between">
-                            <p>{item.product.name}</p>
-                            <p>{item.quantity} x {currencyRupiah(item.price)}</p>
+                        <div key={item.id} className="flex gap-2">
+                            <Image src={item.product.imageUrl || `${process.env.NEXT_PUBLIC_BASE_API_URL}public/product/default-product-image.png`} className="w-[100px] h-auto"/>
+                            <div className="flex flex-col justify-around">
+                                <p className="font-semibold">{item.product.name}</p>
+                                <p>{item.quantity} x {currencyRupiah(item.price)}</p>
+                            </div>
                         </div>
                     ))}
                 </CardBody>
@@ -41,9 +44,12 @@ export default function OrderCard({order, ...props}: {order: IOrder, className?:
                 </CardHeader>
                 <Divider />
                 <CardBody>
-                    <div>
-                        <p>Address:</p>
-                        <p>{order.Address.addressLine}</p>
+                    <div className="flex flex-col gap-2">
+                        <p className="font-semibold">Recipient : {order.Address.recipient}</p>
+                        <div>
+                            <p className="font-semibold">Address:</p>
+                            <p>{order.Address.addressLine}</p>
+                        </div>
                     </div>
                 </CardBody>
 
@@ -54,7 +60,7 @@ export default function OrderCard({order, ...props}: {order: IOrder, className?:
                     <h2>Payments Details</h2>
                 </CardHeader>
                 <Divider />
-                <CardBody className="list-none">
+                <CardBody className="list-none flex flex-col gap-2">
                         <PaymentList label="Method Payment :" value={order.Payment.paymentMethod} />
                         <Divider />
                         <PaymentList label="Total Item Amount:" value={currencyRupiah(order.totalAmount)}/>

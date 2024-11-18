@@ -21,7 +21,7 @@ export default function CartCheckout({ totalPayment, checkout, onCheckout }: { t
     </div>
 
     const nextCardMobile = 
-    <div className='sticky bottom-0 block md:hidden'>
+    <div className='fixed w-full bottom-0 block md:hidden'>
         <Card className='w-full rounded-none md:rounded-md' >
             <CardBody>
                 <div className='grid grid-cols-2'>
