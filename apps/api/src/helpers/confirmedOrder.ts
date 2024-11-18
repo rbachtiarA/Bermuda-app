@@ -1,24 +1,16 @@
 import prisma from "@/prisma"
 
-export default async function cancelOrder(orderId: number) {
+export default async function confirmedOrder(orderId: number) {
 
     await prisma.$transaction(async (tx) => {
         //const order status
         const existOrder = await tx.order.findUnique({
-            where: {id: +orderId}
+            where: {id: +orderId},
+            include: {orderItems: true}
         })
-
-        //change order status
-        const updatedOrder = await tx.order.update({
-            where: { id: +orderId },
-            include: { orderItems: true },
-            data: {
-                status: 'Cancelled',
-            }
-        })
-    
+        if(!existOrder) throw 'Order not exist'
         // code for update store quantity with cancelled order Items
-        const cancelledOrderItems = updatedOrder.orderItems.map((item) => {
+        const cancelledOrderItems = existOrder.orderItems.map((item) => {
             return { productId: item.productId, quantity: item.quantity }
         })
         
@@ -28,21 +20,16 @@ export default async function cancelOrder(orderId: number) {
                 where: {
                     AND: {
                         productId: item.productId,
-                        storeId: updatedOrder.storeId
+                        storeId: existOrder.storeId
                     }
                 }
             })
             if(!existStock) throw 'Something wrong when addedd product quantity to store'
-    
-            await tx.stock.update({
-                where: { id: existStock.id },
-                data: { quantity: { increment: item.quantity}  }
-            })
 
             if(existOrder?.status === 'Proccessed') {
                 await tx.stockHistory.create({
                     data: {
-                        changeType: 'INCREASE',
+                        changeType: 'DECREASE',
                         stockId: existStock.id,
                         quantity: item.quantity
                     }

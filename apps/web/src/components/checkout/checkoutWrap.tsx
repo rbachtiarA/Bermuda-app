@@ -1,5 +1,5 @@
 'use client'
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import AddressessList from "./addressList"
 import CheckoutList from "./checkoutList"
 import PaymentTotalList from "./paymentList"
@@ -9,6 +9,9 @@ import { getMidtransToken, getOrderPendingPayment, postOrder } from "@/lib/order
 import { useRouter } from "next/navigation"
 import { resetCheckout } from "@/redux/slice/checkoutSlice"
 import { IDiscount } from "@/type/discount"
+import { getShippingCost } from "@/lib/address"
+import { getNearestStore } from "@/lib/store.handler"
+import { updateStore } from "@/redux/slice/storeSlice"
 
 export default function CheckoutWrapper() {
     const user = useAppSelector(state => state.user)
@@ -16,7 +19,7 @@ export default function CheckoutWrapper() {
     const dispatch = useAppDispatch()
     const [itemTotalPayment, setItemTotalPayment] = useState<number>(0)
     const [discount, setDiscount] = useState<IDiscount|null>(null)
-    const [travelPayment, setTravelPayment] = useState<number | null>(null)
+    const [shippingCost, setShippingCost] = useState<number | null>(null)
     const [methodPayment, setMethodPayment] = useState<'Transfer' | 'Gateway' | null>(null)
     const [selectedAddress, setselectedAddress] = useState<IAddress | undefined>(undefined)
     const [isLoading, setIsLoading] = useState(false)
@@ -50,7 +53,7 @@ export default function CheckoutWrapper() {
         if(pendingOrder) {
             setIsError('You need to proccess your payment previous order to make new order')
         } else {
-            const {status, order, msg} = await postOrder(itemTotalPayment!+travelPayment!-discountCut!, travelPayment!, selectedAddress?.id!, store.id!, discountCut ,methodPayment!, discount?.id )
+            const {status, order, msg} = await postOrder(itemTotalPayment!+shippingCost!-discountCut!, shippingCost!, selectedAddress?.id!, store.id!, discountCut ,methodPayment!, discount?.id )
             if(status === 'error') {
                 if(msg.code === 'ITEM_INSUFFICIENT') {
                     setIsError(msg.details)
@@ -80,9 +83,6 @@ export default function CheckoutWrapper() {
     const updateItemTotalPayment = (totalPayment: number) => {
         setItemTotalPayment(totalPayment)
     }
-    const updateTravelPayment = (travelPayment: number) => {
-        setTravelPayment(travelPayment)
-    }
     
     const updateMethodPayment = (methodPayment: string) => {
         if(methodPayment === 'Transfer' || methodPayment === 'Gateway' ) {
@@ -93,15 +93,36 @@ export default function CheckoutWrapper() {
         
     }
 
+    useEffect(() => {
+        const getDataShippingCost = async () => {
+            setShippingCost(null)
+            if(selectedAddress) {
+                const { status, msg } = await getShippingCost(selectedAddress?.id, store.id)
+                if(status === 'ok') setShippingCost(msg)
+            }
+        }
+
+        const getNearStore = async () => {
+            if(selectedAddress) {
+                const { status, msg } = await getNearestStore(selectedAddress.latitude!, selectedAddress.longitude!)
+                console.log(msg);
+                
+                if(status === 'ok') dispatch(updateStore({id: msg.id, name: msg.name}))
+            }
+        }
+        getNearStore()
+        getDataShippingCost()
+    }, [selectedAddress])
+
     const isPaymentInvalid = useMemo(
         () => {
-            return !travelPayment || !itemTotalPayment || !methodPayment || !selectedAddress
-        }, [travelPayment, itemTotalPayment, methodPayment])
+            return !shippingCost || !itemTotalPayment || !methodPayment || !selectedAddress
+        }, [shippingCost, itemTotalPayment, methodPayment])
     
     return (
         <div className="grid md:grid-cols-[2fr_1fr] md:w-auto gap-2 w-full p-2">
             <div className="grid gap-2">
-                <AddressessList updateTravelPayment={updateTravelPayment} selectedAddress={selectedAddress} updateSelectedAddress={updateSelectedAddress}/>
+                <AddressessList selectedAddress={selectedAddress} updateSelectedAddress={updateSelectedAddress}/>
                 <CheckoutList updateItemTotalPayment={updateItemTotalPayment}/>
             </div>
             <div>
@@ -110,7 +131,7 @@ export default function CheckoutWrapper() {
                     discountCut={discountCut}
                     isError={isError}
                     itemTotalPayment={itemTotalPayment} 
-                    travelPayment={travelPayment} 
+                    travelPayment={shippingCost} 
                     isPaymentInvalid={isPaymentInvalid} 
                     methodPayment={methodPayment} 
                     isLoading={isLoading}

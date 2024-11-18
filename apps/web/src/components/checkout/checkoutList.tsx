@@ -3,7 +3,7 @@ import { getCheckoutItems } from "@/lib/cart"
 import currencyRupiah from "@/lib/rupiahCurrency"
 import { useAppSelector } from "@/redux/hook"
 import { ICartItem } from "@/type/cart"
-import { Card, CardBody, CardHeader, Skeleton } from "@nextui-org/react"
+import { Card, CardBody, CardHeader, Image, Skeleton } from "@nextui-org/react"
 import { useEffect, useMemo, useState } from "react"
 
 export default function CheckoutList({ updateItemTotalPayment }: { updateItemTotalPayment: (totalPayment: number) => void }) {
@@ -27,11 +27,16 @@ export default function CheckoutList({ updateItemTotalPayment }: { updateItemTot
             <CardBody className="grid grid-rows-[auto] gap-2">
 
                 {checkoutItems.map((item) => (
-                    <div key={item.id} className="flex gap-2">
-                        <Skeleton className="w-[80px] h-[80px] rounded-lg" />
-                        <div className="flex flex-col justify-evenly">
+                    <div key={item.id} className="flex gap-2 items-center w-full">
+                        {/* <Skeleton className="w-[80px] h-[80px] rounded-lg" /> */}
+                        <Image src={item.product?.imageUrl || `${process.env.NEXT_PUBLIC_BASE_API_URL}public/product/product-chitato-bbq.jpg`} 
+                        className="w-[80px] h-[80px] rounded-lg" />
+                        <div className="flex flex-col justify-evenly md:h-full w-full">
                             <p>{item.product?.name}</p>
-                            <p className="font-semibold">{item.quantity}<span>&nbsp;x&nbsp;</span>{currencyRupiah(item.product?.price!)}</p>
+                            <div className="flex justify-between">
+                                <p className="font-semibold">{item.quantity}<span>&nbsp;x&nbsp;</span>{currencyRupiah(item.product?.price!)}</p>
+                                <p className="hidden md:block font-semibold">{currencyRupiah(item.product?.price!*item.quantity)}</p>
+                            </div>
                         </div>
                     </div>
                 ))}

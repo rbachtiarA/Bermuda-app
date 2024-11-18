@@ -95,6 +95,8 @@ export const NewAddressModal: React.FC<NewAddressModalProps> = ({
       isDismissable={false}
       isKeyboardDismissDisabled={true}
       size="lg"
+      scrollBehavior='outside'
+      className='overflow-auto'
     >
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">Tambah Alamat</ModalHeader>

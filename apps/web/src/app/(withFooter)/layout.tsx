@@ -20,11 +20,10 @@ export default function RootLayout({
 }) {
   return (
     <main className="flex flex-col min-h-screen">
-      <AddressBar />
-      <SiteNavbar />
-      <section className="flex-1">{children}</section>
+      <section className="flex-1">
+        {children}
+      </section>
       <Footer />
-      {/* <BottomNavbar /> */}
     </main>
   );
 }
