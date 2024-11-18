@@ -42,7 +42,7 @@ export default function ProductCard({stock}:{stock: IStocks}) {
                     {/* <Skeleton className="w-[150px] h-[150px] rounded-md"/> */}
                     <Image 
                         isZoomed
-                        src={`${process.env.NEXT_PUBLIC_BASE_API_URL}public/product/product-chitato-bbq.jpg`}
+                        src={product.imageUrl || `${process.env.NEXT_PUBLIC_BASE_API_URL}public/product/product-chitato-bbq.jpg`}
                     />
                 </CardHeader>
                 <CardBody>

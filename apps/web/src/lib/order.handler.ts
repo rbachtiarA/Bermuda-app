@@ -27,7 +27,6 @@ export const postOrder = async (
         })
         
         const { status, order, msg, error } = await res.json()
-        console.log({status, msg, error});
         
         return {status, order, msg }
     }

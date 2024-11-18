@@ -48,7 +48,10 @@ export default function CartCard({cart, checkout, soldOut}: {cart: ICartItem, ch
                 <Checkbox size="lg" ref={checkRef} value={`${cart.productId}`} isDisabled={soldOut} isSelected={isChecked} onClick={onPressedCard} className="hidden md:block"/>
                 <div className="flex w-full gap-x-2 justify-center items-center">
                     <div className="">
-                        <Skeleton className="rounded-lg w-[50px] h-[50px] md:w-[150px] md:h-[150px]" />
+                        {/* <Skeleton className="rounded-lg w-[50px] h-[50px] md:w-[150px] md:h-[150px]" /> */}
+                        <Image src={product?.imageUrl || `${process.env.NEXT_PUBLIC_BASE_API_URL}public/product/product-chitato-bbq.jpg`} alt={`${product?.name}`} 
+                        width={50} height={50} sizes="100vw"
+                        className="rounded-lg w-[50px] h-[50px] md:w-[150px] md:h-[150px]" />
                     </div>
                     <div className="flex flex-col w-full h-full justify-between">
                         <div>

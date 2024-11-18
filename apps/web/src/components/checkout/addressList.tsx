@@ -2,14 +2,17 @@
 import { getUserAddressess } from "@/lib/address"
 import { useAppSelector } from "@/redux/hook"
 import { IAddress } from "@/type/address"
-import { Button, Card, CardBody, CardFooter, CardHeader } from "@nextui-org/react"
+import { Button, Card, CardBody, CardFooter, CardHeader, useDisclosure } from "@nextui-org/react"
 import { useEffect, useState } from "react"
+import AddressCheckoutSelectorModal from "../modal/addressCheckoutSelectorModal"
+import { NewAddressModal } from "../modal/newAddressModal"
 
 export default function AddressessList({ selectedAddress, updateSelectedAddress }: 
     { selectedAddress:IAddress | undefined, updateSelectedAddress:(address: IAddress | undefined) => void  }) {
     const user = useAppSelector(state => state.user)
     const [addressess, setAddressess] = useState<IAddress[]>([])
-    
+    const changeAddressModal = useDisclosure()
+    const newAddressModal = useDisclosure()
     //get address user from database
     const getData = async () => {
         const data: IAddress[] = await getUserAddressess(user.id)        
@@ -26,24 +29,28 @@ export default function AddressessList({ selectedAddress, updateSelectedAddress 
     }, [])
 
     return (
-        <Card className="flex flex-col p-2">
-            <CardHeader>
-                <h2 className="text-lg font-semibold">Alamat Pengiriman</h2>
-            </CardHeader>
-            <CardBody>
-                {
-                    !selectedAddress && 
-                    <p className="text-danger">Alamat tidak ada, bikin alamat pengiriman agar paket bisa dikirim</p>
-                }
-                {
-                    selectedAddress &&
-                        <p className="">{selectedAddress?.addressLine}, {selectedAddress?.city}, {selectedAddress?.state}, {selectedAddress?.postalCode}</p>
-                }
-            </CardBody>
-            <CardFooter className="flex justify-end w-full">
-                <Button color="secondary" size="sm" variant="light">Buat Alamat Baru</Button>
-                <Button color="secondary" size="sm" variant="light">Ganti Alamat</Button>
-            </CardFooter>
-        </Card>
+        <>
+            <Card className="flex flex-col p-2">
+                <CardHeader>
+                    <h2 className="text-lg font-semibold">Alamat Pengiriman</h2>
+                </CardHeader>
+                <CardBody>
+                    {
+                        !selectedAddress && 
+                        <p className="text-danger">Alamat tidak ada, bikin alamat pengiriman agar paket bisa dikirim</p>
+                    }
+                    {
+                        selectedAddress &&
+                            <p className="">{selectedAddress?.addressLine}, {selectedAddress?.city}, {selectedAddress?.state}, {selectedAddress?.postalCode}</p>
+                    }
+                </CardBody>
+                <CardFooter className="flex justify-end w-full">
+                    <Button onPress={newAddressModal.onOpen} color="secondary" size="sm" variant="light">Buat Alamat Baru</Button>
+                    <Button onPress={changeAddressModal.onOpen} color="secondary" size="sm" variant="light">Ganti Alamat</Button>
+                </CardFooter>
+            </Card>
+            <AddressCheckoutSelectorModal addressess={addressess} isOpen={changeAddressModal.isOpen} onOpenChange={changeAddressModal.onOpenChange} onConfirm={updateSelectedAddress}/>
+            <NewAddressModal isOpen={newAddressModal.isOpen} onOpenChange={newAddressModal.onOpenChange}/>
+        </>
     )
 }

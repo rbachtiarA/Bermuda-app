@@ -1,4 +1,5 @@
 import { getToken } from './server';
+import { IStore } from '@/type/store';
 
 export const PasswordlessPage = async (storeId: number) => {
   const res = await fetch(

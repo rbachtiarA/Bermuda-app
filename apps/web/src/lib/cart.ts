@@ -82,7 +82,6 @@ export const getCheckoutItems = async (userId: number) => {
         },
         next: { revalidate: 1 } })
     const { status, data } = await res.json()
-    console.log(res);
     
     return data.CartItem
 }

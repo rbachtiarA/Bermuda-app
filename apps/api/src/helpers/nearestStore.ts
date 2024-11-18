@@ -31,9 +31,11 @@ export default function nearestStore(lat: number, lon: number, stores: Store[]):
 
     const storesDistance = stores.map((store) => distance(lat, lon, store.latitude, store.longitude))
     const closestDistance = Math.min(...storesDistance)
+    console.log(storesDistance);
+    
     const nearestStoreIndex = storesDistance.findIndex((distance) => distance === closestDistance)
     if(nearestStoreIndex !== -1) {
-        return stores[0]
+        return stores[nearestStoreIndex]
     } else {
         return null
     }
