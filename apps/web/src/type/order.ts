@@ -16,7 +16,8 @@ export interface IOrder {
     shippingCost: number
     discountId?: number
     discountAmount: number
-    shippedAt: string | null 
+    shippedAt: string | null
+    storeId: number
 }
     
 
