@@ -17,13 +17,6 @@ import RenderCellCategory from '@/components/category/renderCategory';
 import BottomContent from '@/components/bottomContent';
 import { classNames } from '@/components/classNames';
 import TopCategory from '@/components/category/topCategory';
-import { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Product Category Management | Dashboard | Bermuda Store',
-  description:
-    'Belanja barang-barang kebutuhan rumah hanya di Bermuda store | Banyak Promo spesial bikin belanja makin hemat | Admin Management',
-};
 
 export default function ProductManagement() {
   const [filterValue, setFilterValue] = useState('');
