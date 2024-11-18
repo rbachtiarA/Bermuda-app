@@ -29,7 +29,7 @@ export default function CheckoutList({ updateItemTotalPayment }: { updateItemTot
                 {checkoutItems.map((item) => (
                     <div key={item.id} className="flex gap-2 items-center w-full">
                         {/* <Skeleton className="w-[80px] h-[80px] rounded-lg" /> */}
-                        <Image src={item.product?.imageUrl || `${process.env.NEXT_PUBLIC_BASE_API_URL}public/product/product-chitato-bbq.jpg`} 
+                        <Image src={item.product?.imageUrl || `${process.env.NEXT_PUBLIC_BASE_API_URL}public/product/default-product-image.png`} 
                         className="w-[80px] h-[80px] rounded-lg" />
                         <div className="flex flex-col justify-evenly md:h-full w-full">
                             <p>{item.product?.name}</p>
