@@ -35,13 +35,13 @@ export default function NavbarMobileMenu({
           <div className="w-full flex flex-col gap-2 py-2 px-4">
             {user.role === 'USER' && (
               <>
-                <Link href="/user" color="foreground">
+                <Link href="/account" color="foreground">
                   Akun Saya
                 </Link>
-                <Link href="/userorder" color="foreground">
+                <Link href="/account/order" color="foreground">
                   Pesanan Saya
                 </Link>
-                <Link href="/payment" color="foreground">
+                <Link href="/account/payment" color="foreground">
                   Lihat Pembayaran Aktif
                 </Link>
               </>
@@ -54,7 +54,7 @@ export default function NavbarMobileMenu({
                 <Link href="/admin/store-admin-management" color="foreground">
                   Store Admin Management
                 </Link>
-                <Link href="/admin/store-management" color="foreground">
+                <Link href="/admin/store" color="foreground">
                   Store Management
                 </Link>
                 <Link

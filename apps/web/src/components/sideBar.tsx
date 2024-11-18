@@ -1,12 +1,13 @@
 'use client';
 import { useAppSelector } from '@/redux/hook';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 
 export default function SideBar() {
   const [isDashboardOpen, setDashboardOpen] = useState(true);
   const [isAccountOpen, setAccountOpen] = useState(true);
-  const user = useAppSelector((state) => state.user);
+  const path = usePathname();
 
   const toggleDashboard = () => {
     setDashboardOpen(!isDashboardOpen);
@@ -16,7 +17,7 @@ export default function SideBar() {
     setAccountOpen(!isAccountOpen);
   };
   return (
-    <aside className="fixed left-0 h-screen">
+    <aside className="fixed left-0 h-screen w-[260px]">
       <div className="bg-foreground-100 shadow-md p-4 h-full">
         <div className="p-3 border-b border-gray-300">
           <div className="flex justify-between">
@@ -55,14 +56,6 @@ export default function SideBar() {
                   className="no-underline text-gray-700 relative"
                 >
                   Product Category Management
-                </Link>
-              </li>
-              <li className="py-4">
-                <Link
-                  href="/admin/product-management"
-                  className="no-underline text-gray-700 relative"
-                >
-                  Product Management
                 </Link>
               </li>
               <li className="py-4">

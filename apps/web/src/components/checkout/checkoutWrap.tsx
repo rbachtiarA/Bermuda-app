@@ -61,7 +61,7 @@ export default function CheckoutWrapper() {
                 const token = await getMidtransToken(order.order.id as number)
                 window.open(`https://app.sandbox.midtrans.com/snap/v4/redirection/${token}`, '_blank', 'noopener,noreferrer')
             }
-            if(order) router.push('/payment')               
+            if(order) router.push('/account/payment')               
             
         }
         //update checkoutItem user to null using api

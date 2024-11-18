@@ -25,7 +25,6 @@ export default function DropdownNav() {
   const [token, setToken] = useState<string | null>(null);
   const role = user.role;
   const name = capitalizeWord(user.name);
-
   const fetchToken = async () => {
     const res = await getToken();
     setToken(res || null);
@@ -73,10 +72,19 @@ export default function DropdownNav() {
         </DropdownItem>
         <DropdownItem
           key="cart"
-          className="hidden md:block gap-2 border-b"
+          className="hidden md:block gap-2"
           textValue={`User Cart`}
+          onPress={() => router.push('/cart')}
         >
           <CartNavbar />
+        </DropdownItem>
+        <DropdownItem 
+          key="payment"
+          className="hidden md:block gap-2 border-b"
+          textValue={`Payment`}
+          onPress={() => router.push('/account/payment')}
+        >
+          <p>Payment</p>
         </DropdownItem>
         <DropdownItem
           key="Account"

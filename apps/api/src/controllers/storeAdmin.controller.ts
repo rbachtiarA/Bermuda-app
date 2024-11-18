@@ -23,6 +23,8 @@ export class StoreAdminController {
         role: 'STORE_ADMIN',
         isVerified: true,
         referralCode: null,
+        cart: {create: {}},
+        checkout: {create: {}}
       },
     });
 
