@@ -1,8 +1,8 @@
 import OrderCard from "@/components/order/orderCard"
+import { getAdminOrderById } from "@/lib/admin.handler"
 import { getOrderById } from "@/lib/order.handler"
 import { IOrder } from "@/type/order"
 import { Metadata, ResolvingMetadata } from "next"
-import { redirect } from "next/navigation"
 
 type Props = {
     params: { orderId: string }
@@ -16,7 +16,7 @@ export async function generateMetadata(
     const orderId = params.orderId
    
     // fetch data
-    const data: {status: string, msg: IOrder}= await getOrderById(Number(orderId))
+    const data: {status: string, msg: IOrder}= await getAdminOrderById(Number(orderId))
     // optionally access and extend (rather than replace) parent metadata
     const previousImages = (await parent).openGraph?.images || []
    
@@ -29,8 +29,7 @@ export async function generateMetadata(
   }
 
 export default async function page({params}: { params: { orderId: string } }) {
-    const data = await getOrderById(Number(params.orderId))
-    if(data.status === 'error') redirect('/account/order')
+    const data = await getAdminOrderById(Number(params.orderId))
     const order = data.msg as IOrder
     
     return (

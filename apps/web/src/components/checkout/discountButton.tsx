@@ -28,14 +28,14 @@ export default function DiscountButton({discount, itemTotalPayment, onSelectDisc
             <CardBody>
                 {
                     !discount && 
-                    <p>{dataDiscount.length !== 0 ?`Anda mempunyai diskon / voucher yang dapat anda pilih`: `Tidak ada diskon/voucher yang tersedia`}</p>
+                    <p>{dataDiscount.length !== 0 ?`You have discount/voucher can be used`: `There is no available discount/voucher`}</p>
                 }
                 {
                     discount &&
                     <div>
                         <p>{discount.discountType}</p>
-                        <p>potongan : {currencyRupiah(discount.value)}</p>
-                        <p>pembelian minimum : {currencyRupiah(discount.minPurchase!)}</p>
+                        <p>Discount cut : {currencyRupiah(discount.value)}</p>
+                        <p>Minimum purchase : {currencyRupiah(discount.minPurchase!)}</p>
                     </div> 
                 }
             </CardBody>

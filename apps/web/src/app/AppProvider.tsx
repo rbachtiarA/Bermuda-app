@@ -23,7 +23,7 @@ export function AppProvider({children}: { children: React.ReactNode }) {
             loading={<Loading />}
           >
             {children}
-            <ToastContainer theme="colored" toastStyle={{fontSize: '12px'}} position="top-center" limit={1} autoClose={2000}/>
+            <ToastContainer theme="colored" toastStyle={{fontSize: '12px'}} position="top-center" autoClose={2000}/>
           </PersistGate>
         </Provider>
       </NextUIProvider>

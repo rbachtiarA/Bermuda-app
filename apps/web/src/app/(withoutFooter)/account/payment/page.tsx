@@ -1,5 +1,10 @@
 import PaymentCard from "@/components/payment/paymentCard";
-
+import { Metadata } from "next";
+export const metadata: Metadata = {
+    title: 'My Active Payment | Bermuda Store',
+    description:
+      'Belanja barang-barang kebutuhan rumah hanya di Bermuda store | Banyak Promo spesial bikin belanja makin hemat | Active Payment',
+  };
 export default function page() {
     
     return (
