@@ -24,8 +24,7 @@ export default function PaymentUploadProof({data, setData,onClickCancelOrder}: {
         const { status, msg } = await uploadPaymentProof(file, orderId)
         
         if(status === 'ok') {
-            setData({...data!, status:'Waiting', paymentProofUrl: msg})
-            console.log({...data!, status: 'Waiting', paymentProofUrl: msg})            
+            setData({...data!, status:'Waiting', paymentProofUrl: msg})            
         }
     }
 

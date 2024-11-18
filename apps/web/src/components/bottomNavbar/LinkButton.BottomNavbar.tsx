@@ -5,7 +5,7 @@ import Link from "next/link";
 export default function LinkButtonBottomNavbar({href,label, imgsrc, imgalt, component}: { href: string,label:string, imgsrc: string, imgalt: string, component?: React.ReactNode}) {
     return (
         <Link href={href}>
-            <button onClick={() => console.log('hello')} className="flex flex-col w-full items-center justify-center active:bg-slate-400">
+            <button className="flex flex-col w-full items-center justify-center active:bg-slate-400">
                 <div className="flex relative justify-center">
                     <Image src={imgsrc} alt={imgalt} width={0} height={0} style={{width: '28px', height: 'auto'}} />
                     {component}
