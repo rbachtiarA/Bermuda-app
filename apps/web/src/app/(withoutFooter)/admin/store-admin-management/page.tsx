@@ -18,13 +18,7 @@ import RenderCellStoreAdmin from '@/components/store-admin/renderCellStoreAdmin'
 import { getAllStoreAdmin } from '@/lib/storeAdmin';
 import BottomContent from '@/components/bottomContent';
 import { classNames } from '@/components/classNames';
-import { Metadata } from 'next';
 
-export const metadata: Metadata = {
-  title: 'Store Admin Management | Dashboard | Bermuda Store',
-  description:
-    'Belanja barang-barang kebutuhan rumah hanya di Bermuda store | Banyak Promo spesial bikin belanja makin hemat | Admin Management',
-};
 export default function StoreAdminManagement() {
   const [filterValue, setFilterValue] = useState('');
   const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
