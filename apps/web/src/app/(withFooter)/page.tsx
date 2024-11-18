@@ -1,5 +1,5 @@
 import PromoCarousel from '@/components/carousel/promo';
-import ProductList from '@/components/product/productList';
+import ProductList from '@/components/product/productListCarousel';
 import Wrapper from '@/components/wrapper';
 import { NextPage } from 'next';
 

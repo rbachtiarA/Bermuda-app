@@ -2,7 +2,7 @@ export const getProducts = async (
   search: string = '',
   currentPage: number = 1,
   pageSize: number = 10,
-  categories: string = 'all', // Menambahkan parameter categories
+  categories: string = 'all',
 ) => {
   console.log(currentPage, 'PAGEE');
 

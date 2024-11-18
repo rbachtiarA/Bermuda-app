@@ -67,10 +67,10 @@ model Product {
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
   cartItems     CartItem[]
+  stock         Stock[]
   orderItems    OrderItem[]
   stockReports  StockReport[]
   discounts     Discount[]        @relation("ProductDiscounts")
-  stock         Stock[]
 }
 
 model ProductCategory {
@@ -246,8 +246,8 @@ model City {
   name       String
   Province   Province? @relation(fields: [provinceId], references: [id])
   provinceId Int?
+  addresses  Address[]
   Store      Store[]
-  Address    Address[]
 }
 
 model Province {
