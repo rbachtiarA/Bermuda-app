@@ -122,7 +122,8 @@ model Address {
   recipient   String
   phoneNumber String
   addressLine String
-  city        String
+  city        City?   @relation(fields: [cityId], references: [id])
+  cityId      Int?
   state       String
   postalCode  String
   latitude    Float?
@@ -243,6 +244,7 @@ model City {
   name       String
   Province   Province? @relation(fields: [provinceId], references: [id])
   provinceId Int?
+  addresses  Address[]
 }
 
 model Province {
