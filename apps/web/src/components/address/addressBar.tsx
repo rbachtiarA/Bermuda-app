@@ -105,13 +105,14 @@ export default function AddressBar() {
                 Download Bermuda Store
               </button>
             </DropdownTrigger>
-            <DropdownMenu className='w-[145px]'>
+            <DropdownMenu className=''>
               <DropdownItem>
                     {/* <p className="mb-2">Scan QR atau download dari:</p> */}
                     <a href="https://play.google.com/">
                       <img
                         src="https://static-content.alfagift.id/static/play-store-btn.png"
                         alt="Play Store"
+                        className='w-[145px] h-auto'
                       />
                     </a>
               </DropdownItem>
@@ -120,6 +121,7 @@ export default function AddressBar() {
                   <img
                     src="https://static-content.alfagift.id/static/app-store-btn.png"
                     alt="App Store"
+                    className='w-[145px] h-auto'
                   />
                 </a>
                           

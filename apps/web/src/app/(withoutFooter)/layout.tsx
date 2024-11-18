@@ -20,11 +20,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main className="flex flex-col min-h-screen">
-      <AddressBar />
-      <SiteNavbar />
-      <section className="flex-1">{children}</section>
-      {/* <BottomNavbar /> */}
+    <main className="flex flex-col min-h-[100vh-97px]">
+      <section className="flex-1">
+        {children}
+      </section>
     </main>
   );
 }

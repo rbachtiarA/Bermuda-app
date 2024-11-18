@@ -88,13 +88,12 @@ export default function DropdownNav() {
           <p>Payment</p>
         </DropdownItem>
         <DropdownItem
+          onPress={() => router.push(role === 'SUPER_ADMIN' ? '/admin' : '/account')}
           key="Account"
           className="p-2"
           textValue={role === 'SUPER_ADMIN' ? 'Dashboard' : 'Akun Saya'}
         >
-          <Link href={role === 'SUPER_ADMIN' ? '/admin' : '/account'}>
-            {role === 'SUPER_ADMIN' ? 'Dashboard' : 'Akun Saya'}
-          </Link>
+          <p>{role === 'SUPER_ADMIN' ? 'Dashboard' : 'Akun Saya'}</p> 
         </DropdownItem>
 
         <DropdownItem
