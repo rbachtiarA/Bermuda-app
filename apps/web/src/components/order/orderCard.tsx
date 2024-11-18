@@ -4,7 +4,8 @@ import { Card, CardBody, CardHeader, Divider, Image } from "@nextui-org/react";
 import PaymentList from "../payment/paymentDetails/paymentList";
 
 export default function OrderCard({order, ...props}: {order: IOrder, className?:string}) {
-
+    console.log(order);
+    
     return (
         <div {...props}>
             <Card className="rounded-none md:rounded-md">
