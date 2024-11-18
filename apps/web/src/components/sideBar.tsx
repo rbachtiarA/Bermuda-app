@@ -7,8 +7,8 @@ import { useState } from 'react';
 export default function SideBar() {
   const [isDashboardOpen, setDashboardOpen] = useState(true);
   const [isAccountOpen, setAccountOpen] = useState(true);
-  const path = usePathname()
-  
+  const path = usePathname();
+
   const toggleDashboard = () => {
     setDashboardOpen(!isDashboardOpen);
   };
@@ -23,9 +23,8 @@ export default function SideBar() {
           <div className="flex justify-between">
             <p className="text-sm font-semibold py-2">Dashboard</p>
           </div>
-            {
-              path.split('/')[1] === 'admin' && 
-              <div className="pl-2">
+          {path.split('/')[1] === 'admin' && (
+            <div className="pl-2">
               <ul className="list-none text-sm">
                 <li className="py-4">
                   <Link
@@ -57,6 +56,14 @@ export default function SideBar() {
                     className="no-underline text-gray-700 relative"
                   >
                     Product Category Management
+                  </Link>
+                </li>
+                <li className="py-4">
+                  <Link
+                    href="/admin/product-management"
+                    className="no-underline text-gray-700 relative"
+                  >
+                    Product Management
                   </Link>
                 </li>
                 <li className="py-4">
@@ -93,10 +100,9 @@ export default function SideBar() {
                 </li>
               </ul>
             </div>
-            }
-            {
-              path.split('/')[1] === 'account' &&
-              <div className="pl-2">
+          )}
+          {path.split('/')[1] === 'account' && (
+            <div className="pl-2">
               <ul className="list-none text-sm">
                 <li className="py-4">
                   <Link
@@ -116,8 +122,7 @@ export default function SideBar() {
                 </li>
               </ul>
             </div>
-            }
-            
+          )}
         </div>
 
         <div className="p-3">

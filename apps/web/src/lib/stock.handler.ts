@@ -1,30 +1,27 @@
-import { ICategoryCreate } from '@/type/category';
+import { IStockCreate } from '@/type/stock';
 
-export const getCategories = async () => {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_API_URL}category/categories`,
-    {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'appliication/json',
-      },
-      next: { revalidate: 1 },
+export const getStocks = async () => {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}stock`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'appliication/json',
     },
-  );
+    next: { revalidate: 1 },
+  });
 
   if (!res.ok) {
-    throw new Error('Faled to fetch categories');
+    throw new Error('Faled to fetch stocks');
   }
   const result = await res.json();
   return { result, ok: res.ok };
 };
 
-export const createCategory = async (
-  data: ICategoryCreate,
+export const createStock = async (
+  data: IStockCreate,
   token: string | undefined,
 ) => {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_API_URL}category/create`,
+    `${process.env.NEXT_PUBLIC_BASE_API_URL}stock/create`,
     {
       method: 'POST',
       body: JSON.stringify(data),
@@ -39,16 +36,16 @@ export const createCategory = async (
   return { result, ok: res.ok };
 };
 
-export const updateCategory = async (
-  data: { id: number; name: string },
+export const updateStock = async (
+  data: { id: number; productId: number; storeId: number; quantity: number },
   token: string | undefined,
 ) => {
-  const { id, name } = data;
+  const { id } = data;
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_API_URL}category/update/${id}`,
+    `${process.env.NEXT_PUBLIC_BASE_API_URL}stock/${id}`,
     {
-      method: 'POST',
-      body: JSON.stringify({ name }),
+      method: 'PUT',
+      body: JSON.stringify(data),
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
@@ -59,13 +56,13 @@ export const updateCategory = async (
   return { result, ok: res.ok };
 };
 
-export const deleteCategory = async (
+export const deleteStock = async (
   data: { id: number },
   token: string | undefined,
 ) => {
   const id = data.id;
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_API_URL}category/delete/${id}`,
+    `${process.env.NEXT_PUBLIC_BASE_API_URL}stock/${id}`,
     {
       method: 'DELETE',
       headers: {
@@ -78,9 +75,9 @@ export const deleteCategory = async (
   return { result, ok: res.ok };
 };
 
-export const getProCategory = async () => {
+export const getStockById = async (data: { id: number; name: string }) => {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_API_URL}procategory/categories`,
+    `${process.env.NEXT_PUBLIC_BASE_API_URL}stock/${data.id}`,
     {
       method: 'GET',
       headers: {

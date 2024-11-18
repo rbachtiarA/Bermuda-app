@@ -44,28 +44,30 @@ export const fetchCities = async (): Promise<IFetchCity[]> => {
   }
 };
 
-
 export const createAddressHandler = async (value: ICreateAddress) => {
-  const token = await getToken()
+  const token = await getToken();
   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}address/`, {
-      method:'POST',
-      body: JSON.stringify(value),
-      headers: {
-          "Content-type":"application/json",
-          'Authorization': `Bearer ${token}`
-      }
-  })
+    method: 'POST',
+    body: JSON.stringify(value),
+    headers: {
+      'Content-type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
-  const { status, msg } = await res.json()
-  
-  return { status, msg }
-}
+  const { status, msg } = await res.json();
+
+  return { status, msg };
+};
 
 export const getShippingCost = async (addressId: number, storeId: number) => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}address/shippingCost?addressId=${addressId}&storeId=${storeId}`, { cache: 'no-cache' })
-  const { status, msg } = await res.json()
-  return { status, msg }  
-}
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_API_URL}address/shippingCost?addressId=${addressId}&storeId=${storeId}`,
+    { cache: 'no-cache' },
+  );
+  const { status, msg } = await res.json();
+  return { status, msg };
+};
 
 //     if (!response.ok) {
 //       const errorData = await response.json();

@@ -1,64 +1,83 @@
-import { NextFunction, Request, Response } from "express";
-import { verify } from "jsonwebtoken";
+import { NextFunction, Request, Response } from 'express';
+import { verify } from 'jsonwebtoken';
 
 type IUser = {
-    id: number;
-    role: string
-}
+  id: number;
+  role: string;
+};
 
-export const verifyToken = async ( req: Request, res: Response, next: NextFunction) => {
-    try {       
-        const token = req.header("Authorization")?.replace("Bearer ", "")
-        
-        if (!token) throw "token empty"
-        
-        const verifiedToken = verify(token, process.env.SECRET_JWT!)
-        req.user = verifiedToken as IUser 
-        
-        next()
-    } catch (err) {
-        res.status(404).send({
-            status: 'error',
-            msg: err
-        })
-    }
-}
+export const verifyToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const token = req.header('Authorization')?.replace('Bearer ', '');
 
-export const checkAdmin = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        if (!(req.user?.role === 'STORE_ADMIN' || req.user?.role === 'SUPER_ADMIN')) throw "unauthorized!"
-        
-        next()
-    } catch (err) {
-        res.status(400).send({
-            status: 'error',
-            msg: err
-        })
-    }
-}
+    if (!token) throw 'token empty';
 
-export const checkSuperAdmin = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        if (req.user?.role !== 'SUPER_ADMIN') throw "unauthorized!"
+    const verifiedToken = verify(token, process.env.SECRET_JWT!);
+    req.user = verifiedToken as IUser;
 
-        next()
-    } catch (err) {
-        res.status(400).send({
-            status: 'error',
-            msg: err
-        })
-    }
-}
+    next();
+  } catch (err) {
+    res.status(404).send({
+      status: 'error',
+      msg: err,
+    });
+  }
+};
 
-export const checkStoreAdmin = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        if (req.user?.role !== 'STORE_ADMIN') throw "unauthorized!"
+export const checkAdmin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    if (!(req.user?.role === 'STORE_ADMIN' || req.user?.role === 'SUPER_ADMIN'))
+      throw 'unauthorized!';
 
-        next()
-    } catch (err) {
-        res.status(400).send({
-            status: 'error',
-            msg: err
-        })
-    }
-}
+    next();
+  } catch (err) {
+    res.status(400).send({
+      status: 'error',
+      msg: err,
+    });
+  }
+};
+
+export const checkSuperAdmin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    console.log(req.user?.role, '????/');
+
+    if (req.user?.role !== 'SUPER_ADMIN') throw 'unauthorized!';
+
+    next();
+  } catch (err) {
+    res.status(400).send({
+      status: 'error',
+      msg: err,
+    });
+  }
+};
+
+export const checkStoreAdmin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    if (req.user?.role !== 'STORE_ADMIN') throw 'unauthorized!';
+
+    next();
+  } catch (err) {
+    res.status(400).send({
+      status: 'error',
+      msg: err,
+    });
+  }
+};
