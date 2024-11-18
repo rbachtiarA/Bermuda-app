@@ -14,7 +14,6 @@ export default function PaymentRedirectMidtrans({token, orderId, data, setData, 
     }
     const onClickCheckStatus = async () => {
         const status = await getMidtransStatus(orderId)
-        // console.log(status.midtrans);
         
         if(status.status === "NOT_FOUND") {
             return setIsError("Please choose method in 'Pay with Gateway' first before 'check status'")
