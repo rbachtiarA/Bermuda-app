@@ -50,6 +50,8 @@ model Store {
   users        User[]
   stocks       Stock[]
   Order        Order[]
+  city         City          @relation(fields: [cityId], references: [id])
+  cityId       Int           @default(55)
 }
 
 model Product {
@@ -245,6 +247,7 @@ model City {
   Province   Province? @relation(fields: [provinceId], references: [id])
   provinceId Int?
   addresses  Address[]
+  Store      Store[]
 }
 
 model Province {

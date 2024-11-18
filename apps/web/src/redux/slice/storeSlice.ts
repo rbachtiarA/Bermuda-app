@@ -1,4 +1,3 @@
-import { ICartItem, IUpdateQuantityCart } from "@/type/cart";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: { id: number } = {
@@ -8,7 +7,11 @@ const initialState: { id: number } = {
 export const storeSlice = createSlice({
     name: "store",
     initialState,
-    reducers:{},
+    reducers:{
+        updateStore: (state, action:PayloadAction<number>) => {
+            return  {id: action.payload}
+        }
+    },
 
 })
 

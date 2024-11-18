@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import prisma from '@/prisma';
+import nearestStore from '@/helpers/nearestStore';
 
 //not needed yet
 export class StoreController {
@@ -62,6 +63,25 @@ export class StoreController {
                 status: 'ok',
                 msg: 'Success get data',
                 order: storeOrder
+            })
+        } catch (error) {
+            return res.status(400).send({
+                status: 'error',
+                msg: `${error}`
+            })
+        }
+    }
+
+    async getClosestStore(req: Request, res: Response) {
+        try {
+            const { lat, lon } = req.query
+            if(!lat || !lon) throw 'Wrong query submitted'
+
+            const stores = await prisma.store.findMany({})
+            const closestStore = nearestStore(Number(lat), Number(lon), stores)
+            return res.status(200).send({
+                status: 'ok',
+                msg: closestStore
             })
         } catch (error) {
             return res.status(400).send({
