@@ -18,7 +18,7 @@ export class AuthController {
         {
           clientID: process.env.GOOGLE_CLIENT_ID!,
           clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-          callbackURL: `${process.env.BASE_URL_API}/api/auth/google/callback`,
+          callbackURL: `${process.env.BASE_URL_BE}auth/google/callback`,
         },
         async (accessToken, refreshToken, profile, done) => {
           try {
@@ -97,7 +97,7 @@ export class AuthController {
 
       const payload = { id: req.user?.id, role: req.user?.role };
       const token = sign(payload, process.env.SECRET_JWT!, { expiresIn: '2w' });
-      res.redirect(`http://localhost:3000/passwordless?token=${token}`);
+      res.redirect(`${process.env.BASE_URL_FE}passwordless?token=${token}`);
     } catch (error) {
       res.status(500).send({
         status: 'error',

@@ -133,7 +133,7 @@ export default function SideBar() {
             <ul className="list-none text-sm">
               <li className="py-4">
                 <Link
-                  href="/admin"
+                  href=""
                   aria-current="page"
                   className="no-underline text-gray-700 relative"
                 >

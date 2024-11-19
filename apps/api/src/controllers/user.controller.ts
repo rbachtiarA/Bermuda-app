@@ -29,6 +29,10 @@ export class UserController {
     const userId = parseInt(req.params.id);
     const user = await prisma.user.findUnique({ where: { id: userId } });
 
+    if (!user) {
+      return res.status(404).send({ error: 'User not found' });
+  }
+
     return res.status(200).send(user);
   }
 
