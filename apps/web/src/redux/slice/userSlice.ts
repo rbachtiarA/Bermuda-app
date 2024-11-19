@@ -25,7 +25,7 @@ export const userSlice = createSlice({
       state.email = email;
       state.role = role;
       state.avatarUrl = avatarUrl;
-      state.address = address;
+      state.address = address
       state.isLoggedIn = true;
       state.selectedAddress = address?.[0];
     },
@@ -44,9 +44,12 @@ export const userSlice = createSlice({
     },
     selectAddress: (state, action: PayloadAction<IUserState["selectedAddress"]>) => {
       state.selectedAddress = action.payload;
-    }
+    },
+    updateAvatar: (state, action: PayloadAction<IUserState["avatarUrl"]>) => {
+      state.avatarUrl = action.payload;
+    },
   },
 });
 
-export const { loginAction, logoutAction, setLocation, selectAddress } = userSlice.actions;
-export default userSlice.reducer;
+export const { loginAction, logoutAction, setLocation, selectAddress, updateAvatar } = userSlice.actions;
+export default userSlice.reducer; 

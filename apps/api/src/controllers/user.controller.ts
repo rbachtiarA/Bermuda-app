@@ -202,10 +202,7 @@ export class UserController {
 
   async getUserAddressess(req: Request, res: Response) {
     try {
-      //remove this after cookies implemented
       const { userId } = req.params;
-
-      //isUserExist
       const userAddressess = await prisma.user.findUnique({
         select: {
           address: true,
@@ -234,6 +231,7 @@ export class UserController {
       res.status(200).send({
         status: 'ok',
         msg: 'edit avatar success!',
+        avatarUrl: link,
       });
     } catch (err) {
       return res.status(400).send({ status: 'error', msg: err });

@@ -15,15 +15,15 @@ export const StoreListData: React.FC = () => {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [storeData, setStoreData] = useState<IStoreList[]>([]);
 
+    const fetchStores = async () => {
+      try {
+        const response = await getAllStores();
+        setStoreData(response.data || []);
+      } catch (error) {
+        console.error("Error fetching stores:", error);
+      }
+    };
     useEffect(() => {
-        const fetchStores = async () => {
-          try {
-            const response = await getAllStores();
-            setStoreData(response.data || []);
-          } catch (error) {
-            console.error("Error fetching stores:", error);
-          }
-        };
     
         fetchStores();
       }, []);
@@ -47,7 +47,13 @@ export const StoreListData: React.FC = () => {
         </div>
       </div>
 
-      <NewStoreForm isOpen={isOpen} onOpenChange={(open) => (open ? onOpen() : onClose())} />
+      <NewStoreForm isOpen={isOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            fetchStores(); 
+          }
+          open ? onOpen() : onClose(); 
+        }} />
     </div>
   );
 };

@@ -14,6 +14,8 @@ import {
 import axios from 'axios';
 import { getToken } from '@/lib/server';
 import { toast } from 'react-toastify';
+import { useAppDispatch } from '@/redux/hook';
+import { updateAvatar } from '@/redux/slice/userSlice';
 
 interface EditAvatarProps {
   avatarUrl: string;
@@ -24,6 +26,7 @@ const AvatarImage: React.FC<EditAvatarProps> = ({ avatarUrl }) => {
   const [preview, setPreview] = useState<string>(avatarUrl);
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const dispatch = useAppDispatch();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -53,6 +56,8 @@ const AvatarImage: React.FC<EditAvatarProps> = ({ avatarUrl }) => {
     if (!res.ok) {
       throw new Error('Gagal mengunggah foto profil');
     }
+    const data = await res.json();
+    dispatch(updateAvatar(data.avatarUrl))
     toast.success(`Foto profil berhasil diperbarui!`);
     setIsModalOpen(false);
     setLoading(false);
