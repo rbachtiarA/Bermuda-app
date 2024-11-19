@@ -255,7 +255,7 @@ const ProductList = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto py-4 px-8">
       <div className="flex justify-between items-center mb-4">
         <input
           type="text"
