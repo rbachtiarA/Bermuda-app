@@ -104,7 +104,7 @@ export class ProductController {
     try {
       if (!req?.file) throw 'no file uploaded';
 
-      const link = `http://localhost:8000/api/public/product/${req?.file?.filename}`;
+      const link = `${process.env.BASE_URL_BE}public/product/${req?.file?.filename}`;
 
       const {
         id, // Get the id from the body if available

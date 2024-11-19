@@ -195,27 +195,27 @@ model Checkout {
 }
 
 model Order {
-  id               Int            @id @default(autoincrement())
-  user             User           @relation(fields: [userId], references: [id])
+  id               Int             @id @default(autoincrement())
+  user             User            @relation(fields: [userId], references: [id])
   userId           Int
-  shippingOption   ShippingOption @relation(fields: [shippingOptionId], references: [id])
-  shippingOptionId Int
+  shippingOption   ShippingOption? @relation(fields: [shippingOptionId], references: [id])
+  shippingOptionId Int?
   status           OrderStatus
   totalAmount      Float
   paymentProofUrl  String?
   shippedAt        DateTime?
-  shippingCost     Float          @default(0)
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
+  shippingCost     Float           @default(0)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
   orderItems       OrderItem[]
-  Address          Address        @relation(fields: [addressId], references: [id])
+  Address          Address         @relation(fields: [addressId], references: [id])
   addressId        Int
-  Store            Store          @relation(fields: [storeId], references: [id])
+  Store            Store           @relation(fields: [storeId], references: [id])
   Payment          Payment?
   storeId          Int
-  discount         Discount?      @relation(fields: [discountId], references: [id])
+  discount         Discount?       @relation(fields: [discountId], references: [id])
   discountId       Int?
-  discountAmount   Float          @default(0)
+  discountAmount   Float           @default(0)
 }
 
 model OrderItem {

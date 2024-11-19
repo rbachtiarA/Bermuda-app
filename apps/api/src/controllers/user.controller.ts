@@ -224,7 +224,7 @@ export class UserController {
   async editAvatar(req: Request, res: Response) {
     try {
       if (!req.file) throw 'no file uploaded';
-      const link = `${process.env.BASE_URL_API}public/avatar/${req.file?.filename}`;
+      const link = `${process.env.BASE_URL_BE}public/avatar/${req.file?.filename}`;
       console.log(link);
       await prisma.user.update({
         data: { avatarUrl: link },

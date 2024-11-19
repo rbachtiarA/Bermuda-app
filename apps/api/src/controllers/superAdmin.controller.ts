@@ -17,7 +17,7 @@ export class SuperAdminController {
 
     async createStore(req: Request, res: Response) {
         const { name, location, latitude, longitude, cityId } = req.body;
-
+        
         if (!name || !location || !latitude || !longitude || !cityId) {
             return res.status(400).json({ success: false, message: "All fields are required" });
         }

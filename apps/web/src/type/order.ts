@@ -4,7 +4,7 @@ import { IProduct } from "./product"
 export interface IOrder {
     id: number,
     userId: number,
-    shippingOptions: number,
+    shippingOptions?: number,
     status: 'PendingPayment'| 'Waiting' | 'Confirmed' | 'Proccessed' | 'Shipped' | 'Completed' | 'Cancelled'
     paymentProofUrl?: string,
     totalAmount: number,

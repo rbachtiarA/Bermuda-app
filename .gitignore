@@ -39,4 +39,4 @@ yarn-error.log*
 dist
 
 # public's file
-apps/api/public/paymentProof/*
+# apps/api/public/paymentProof/*
