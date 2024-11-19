@@ -14,7 +14,7 @@ export class SuperAdminRouter {
 
     private initializeRoutes(): void {
     this.router.get("/", verifyToken, checkSuperAdmin, this.superAdminController.getAllStore )
-    this.router.get("/create", verifyToken, checkSuperAdmin, this.superAdminController.createStore )
+    this.router.post("/create", verifyToken, checkSuperAdmin, this.superAdminController.createStore )
     }
 
     getRouter(): Router {

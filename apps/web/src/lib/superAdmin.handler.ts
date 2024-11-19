@@ -7,7 +7,7 @@ const API_URL = `${process.env.NEXT_PUBLIC_BASE_API_URL}`;
 export const createStore = async (storeData: ICreateStore) => {
     try {
         const token = await getToken()
-        const response = await fetch(`${API_URL}create`, {
+        const response = await fetch(`${API_URL}super-admin/create`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
