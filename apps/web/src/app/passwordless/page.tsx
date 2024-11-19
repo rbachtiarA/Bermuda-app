@@ -27,7 +27,7 @@ export default function PasswordlessPage() {
 
         if (response.ok) {
           dispatch(loginAction(userData.user))
-          router.push('/');
+          window.location.href = '/'
         }
       }
     };
