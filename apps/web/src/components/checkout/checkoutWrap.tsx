@@ -12,7 +12,6 @@ import { IDiscount } from "@/type/discount"
 import { getShippingCost } from "@/lib/address"
 import { getNearestStore } from "@/lib/store.handler"
 import { updateStore } from "@/redux/slice/storeSlice"
-import { error } from "console"
 import { toast } from "react-toastify"
 import StoreCheckoutDetails from "./storeCheckoutDetails"
 
