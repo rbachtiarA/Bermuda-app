@@ -1,5 +1,5 @@
-import { getToken } from './server';
 import { IStore } from '@/type/store';
+import { getToken } from './server';
 
 export const PasswordlessPage = async (storeId: number) => {
   const res = await fetch(
@@ -22,9 +22,9 @@ export const getStoreOrders = async () => {
       next: { revalidate: 1 },
     },
   );
-  const { status, msg, result } = await res.json();
+  const { status, msg, order } = await res.json();
 
-  return { status, msg, result };
+  return { status, msg, order };
 };
 
 export const getAllStore = async () => {
@@ -46,3 +46,22 @@ export const getAllStore = async () => {
 
   return { status, msg, stores };
 };
+
+export const getNearestStore = async (lat: number, lon: number) => {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}store/nearest?lat=${lat}&lon=${lon}`)
+  const { status, msg }: { status: string, msg: IStore } = await res.json()
+
+  return { status, msg }
+}
+export const getStoresList = async () => {
+  const token = await getToken()
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}store/`, {
+      headers: {
+          "Content-type":"application/json",
+          'Authorization': `Bearer ${token}`
+      }
+  })
+  const { status, msg }: { status: string, msg: IStore[] } = await res.json()
+
+  return { status, msg }
+}
