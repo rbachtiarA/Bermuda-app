@@ -17,6 +17,7 @@ export class StockRouter {
     this.router.get('/:id', this.stockController.getStockById);
     this.router.put('/:id', this.stockController.updateStock);
     this.router.delete('/:id', this.stockController.deleteStock);
+    this.router.get('/history/:stockId', this.stockController.getStockHistory);
   }
 
   getRouter(): Router {

@@ -17,3 +17,11 @@ export interface IStockDel {
   id: number;
   onDeleted: () => Promise<void>;
 }
+
+export interface StockHistory {
+  id: number;
+  stockId: number;
+  quantity: number;
+  action: string;
+  createdAt: string;
+}

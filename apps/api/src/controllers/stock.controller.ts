@@ -2,23 +2,18 @@ import prisma from '@/prisma';
 import { Request, Response } from 'express';
 
 export class StockController {
-  // Create a new stock entry (without price)
   async createStock(req: Request, res: Response) {
     try {
       const { storeId, productId, quantity } = req.body;
-      console.log(req.body, './.>?>?>');
 
-      // Validate required fields
       if (!storeId || !productId || !quantity) {
-        return res.status(400).json({ message: 'Missing required fields' });
+        return res.status(400).send({ message: 'Missing required fields' });
       }
 
-      // Ensure quantity is a valid number
       if (isNaN(quantity) || quantity <= 0) {
         return res.status(400).json({ message: 'Invalid quantity' });
       }
 
-      // Create a new stock record without the price field
       const newStock = await prisma.stock.create({
         data: {
           storeId: Number(storeId),
@@ -27,7 +22,6 @@ export class StockController {
         },
       });
 
-      // Return the newly created stock entry
       res.status(201).json({
         message: 'Stock created successfully',
         data: newStock,
@@ -45,7 +39,6 @@ export class StockController {
     try {
       const { storeId, productId } = req.query;
 
-      // Build query filters dynamically based on the provided parameters
       const filters: any = {};
       if (storeId) {
         filters.storeId = Number(storeId);
@@ -54,16 +47,14 @@ export class StockController {
         filters.productId = Number(productId);
       }
 
-      // Fetch stocks from the database with optional filters
       const stocks = await prisma.stock.findMany({
         where: filters,
         include: {
-          store: true, // Optionally include related store details
-          product: true, // Optionally include related product details
+          store: true,
+          product: true,
         },
       });
 
-      // Return the list of stocks
       res.status(200).json({
         message: 'Stocks retrieved successfully',
         data: stocks,
@@ -93,7 +84,6 @@ export class StockController {
         select: { product: true, store: true, quantity: true },
       });
 
-      // If stock is not found, return a 404 response
       if (!stock) {
         return res.status(404).json({
           status: 'error',
@@ -101,7 +91,6 @@ export class StockController {
         });
       }
 
-      // Return the stock details
       res.status(200).json({
         message: 'Stock retrieved successfully',
         data: stock,
@@ -117,10 +106,9 @@ export class StockController {
 
   async updateStock(req: Request, res: Response) {
     try {
-      const { id } = req.params; // ID stock yang akan diupdate
-      const { quantity, storeId, productId } = req.body; // Data yang ingin diperbarui
+      const { id } = req.params;
+      const { quantity, storeId, productId } = req.body;
 
-      // Validasi input
       if (!id) {
         return res.status(400).json({
           status: 'error',
@@ -128,7 +116,6 @@ export class StockController {
         });
       }
 
-      // Pastikan data yang dikirim valid
       if (!quantity && !storeId && !productId) {
         return res.status(400).json({
           status: 'error',
@@ -136,19 +123,22 @@ export class StockController {
         });
       }
 
-      // Cari stock berdasarkan ID
       const existingStock = await prisma.stock.findUnique({
         where: { id: Number(id) },
       });
+      if (!existingStock)
+        return res.status(404).json({ message: 'Stock not found' });
 
-      if (!existingStock) {
-        return res.status(404).json({
-          status: 'error',
-          msg: 'Stock not found',
-        });
-      }
+      const changeType =
+        quantity > existingStock.quantity ? 'INCREASE' : 'DECREASE';
+      await prisma.stockHistory.create({
+        data: {
+          stockId: existingStock.id,
+          changeType,
+          quantity: Math.abs(quantity - existingStock.quantity),
+        },
+      });
 
-      // Lakukan update data
       const updatedStock = await prisma.stock.update({
         where: { id: Number(id) },
         data: {
@@ -158,17 +148,11 @@ export class StockController {
         },
       });
 
-      // Kembalikan response sukses
-      res.status(200).json({
-        message: 'Stock updated successfully',
-        data: updatedStock,
-      });
+      res
+        .status(200)
+        .json({ message: 'Stock updated successfully', data: updatedStock });
     } catch (error) {
-      console.error(error);
-      res.status(500).json({
-        status: 'error',
-        msg: 'An error occurred while updating the stock',
-      });
+      res.status(500).json({ message: 'Error updating stock', error });
     }
   }
 
@@ -176,7 +160,6 @@ export class StockController {
     try {
       const id = parseInt(req.params.id, 10);
 
-      // Validate the ID parameter
       if (isNaN(id)) {
         return res.status(400).json({
           status: 'error',
@@ -184,7 +167,6 @@ export class StockController {
         });
       }
 
-      // Check if the stock exists
       const stock = await prisma.stock.findUnique({
         where: { id },
         select: { id: true },
@@ -197,7 +179,6 @@ export class StockController {
         });
       }
 
-      // Delete the stock record
       await prisma.stock.delete({
         where: { id },
       });
@@ -211,6 +192,40 @@ export class StockController {
       return res.status(500).json({
         status: 'error',
         msg: 'An error occurred while deleting the stock.',
+      });
+    }
+  }
+
+  async getStockHistory(req: Request, res: Response) {
+    try {
+      const { stockId } = req.params;
+
+      if (!stockId) {
+        return res.status(400).send({
+          status: 'error',
+          msg: 'Stock ID is required',
+        });
+      }
+
+      const stockHistory = await prisma.stockHistory.findMany({
+        where: { stockId: Number(stockId) },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      if (stockHistory.length === 0) {
+        return res.status(404).send({
+          message: 'No stock history found for the provided Stock ID',
+        });
+      }
+
+      return res.status(200).send({
+        message: 'Stock history retrieved successfully',
+        data: stockHistory,
+      });
+    } catch (error) {
+      return res.status(500).send({
+        status: 'error',
+        msg: 'Error retrieving stock history',
       });
     }
   }
