@@ -8,7 +8,7 @@ export class OrderController {
         try {            
             const { orderId } = req.body
             if(!req?.file) throw 'Please upload validated file'
-            const imgLink = `${process.env.IMAGE_STORAGE_URL}paymentProof/${req.file.filename}`
+            const imgLink = `${process.env.BASE_URL_BE}public/paymentProof/${req.file.filename}`
 
             const updatedOrder = await prisma.order.update({
                 where: {id: +orderId!},
