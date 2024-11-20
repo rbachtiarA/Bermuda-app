@@ -1,9 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-const initialState: { id: number, name: string, status: string} = {
+const initialState: { id: number, name: string} = {
     id: 0,
-    name: '',
-    status: ''
+    name: '' 
 }
 
 export const storeSlice = createSlice({
