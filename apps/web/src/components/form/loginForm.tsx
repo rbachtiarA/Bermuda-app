@@ -34,10 +34,9 @@ const LoginForm: React.FC = () => {
       console.log('Data yang di terima:', result); // debuging
       if (!ok) throw result.msg;
 
-      // dispatch(updatedCartFromDatabase(result.cart))
+      await createToken(result.token);
       action.resetForm();
       dispatch(loginAction(result.user))
-      createToken(result.token);
       window.location.href = '/';
     } catch (err) {
       setLoginError('Email atau password salah, silahkan coba lagi');
