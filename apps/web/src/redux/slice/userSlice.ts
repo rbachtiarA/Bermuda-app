@@ -27,7 +27,7 @@ export const userSlice = createSlice({
       state.avatarUrl = avatarUrl;
       state.address = address
       state.isLoggedIn = true;
-      state.selectedAddress = address?.[0];
+      state.selectedAddress = address?.find((address) => address.isPrimary === true) || address?.[0];
     },
     logoutAction: (state) => {
       state.id = 0;
