@@ -22,7 +22,7 @@ export default function AddressBar() {
           <AddressSelector />
         </div>
 
-        <div className="flex gap-4">
+        <div className="gap-4 hidden md:flex">
           <Dropdown>
             <DropdownTrigger>
               <button className="text-neutral-700 text-xs">

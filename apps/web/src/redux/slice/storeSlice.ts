@@ -1,8 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-const initialState: { id: number, name: string } = {
-    id: 1,
-    name: 'Bermuda Store'
+const initialState: { id: number, name: string, status: string} = {
+    id: 0,
+    name: '',
+    status: ''
 }
 
 export const storeSlice = createSlice({
@@ -11,7 +12,7 @@ export const storeSlice = createSlice({
     reducers:{
         updateStore: (state, action:PayloadAction<{id: number, name: string}>) => {
             const { id, name } = action.payload
-            const newState = {id, name}
+            const newState = {...state, id, name}
             return newState
         }
     }
