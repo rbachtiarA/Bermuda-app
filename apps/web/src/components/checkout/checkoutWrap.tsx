@@ -14,6 +14,8 @@ import { getNearestStore } from "@/lib/store.handler"
 import { updateStore } from "@/redux/slice/storeSlice"
 import { toast } from "react-toastify"
 import StoreCheckoutDetails from "./storeCheckoutDetails"
+import { selectAddress } from "@/redux/slice/userSlice"
+import { IUserState } from "@/type/user"
 
 export default function CheckoutWrapper() {
     const user = useAppSelector(state => state.user)
@@ -79,7 +81,10 @@ export default function CheckoutWrapper() {
     }
 
     const updateSelectedAddress = (address: IAddress | undefined) => {
-        setselectedAddress(address)
+        if(address !== undefined) {
+            setselectedAddress(address)
+            dispatch(selectAddress(address as IUserState['selectedAddress']))
+        }
     }
 
     const updateItemTotalPayment = (totalPayment: number) => {
