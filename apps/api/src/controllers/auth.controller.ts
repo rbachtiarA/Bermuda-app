@@ -127,9 +127,14 @@ export class AuthController {
           role: true,
           avatarUrl: true,
           address: true,
+          cart: {
+            include: {
+              CartItem: true
+            }
+          }
         },
       });
-
+      
       if (!user) {
         return res.status(404).json({ msg: 'User not found' });
       }
