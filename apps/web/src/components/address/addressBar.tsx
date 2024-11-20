@@ -1,7 +1,7 @@
 'use client';
 
 import { FaInbox, FaPhone } from 'react-icons/fa';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Dropdown,
   DropdownMenu,
@@ -10,10 +10,31 @@ import {
 } from '@nextui-org/react';
 import { LocationIcon, PhoneIcon } from './addressIcon';
 import { AddressSelector } from './addressSelector';
+import { useAppDispatch, useAppSelector } from '@/redux/hook';
+import { getNearestStore } from '@/lib/store.handler';
+import { updateStore } from '@/redux/slice/storeSlice';
 
 export default function AddressBar() {
   const [location, setLocation] = useState('JABODETABEK');
+  const dispatch = useAppDispatch()
+  const user = useAppSelector(state => state.user)
 
+  useEffect(() => {
+    if(!user.isLoggedIn && !user.selectedAddress) {
+        navigator.geolocation.getCurrentPosition(async (postition) => {
+          const { latitude, longitude } = postition.coords
+          const {status, msg} = await getNearestStore(latitude, longitude)
+          if(status === 'ok') dispatch(updateStore({id: msg.id, name: msg.name}))
+        })
+    } else {
+      const getData = async () => {
+        const {status, msg} = await getNearestStore(user.selectedAddress?.latitude!, user.selectedAddress?.longitude!)
+        if(status === 'ok') dispatch(updateStore({id: msg.id, name: msg.name}))
+      }
+      
+      getData()
+    }
+  },[user.selectedAddress])
   return (
     <div className="bg-gray-100 text-xs text-neutral-700 py-2 w-full hidden md:block">
       <div className="container mx-auto flex justify-between items-center px-4">
@@ -22,7 +43,7 @@ export default function AddressBar() {
           <AddressSelector />
         </div>
 
-        <div className="flex gap-4">
+        <div className="gap-4 hidden md:flex">
           <Dropdown>
             <DropdownTrigger>
               <button className="text-neutral-700 text-xs">

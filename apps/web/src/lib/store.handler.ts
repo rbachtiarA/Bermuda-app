@@ -1,7 +1,7 @@
 import { IStore } from '@/type/store';
 import { getToken } from './server';
 
-export const PasswordlessPage = async (storeId: number) => {
+export const getStoreStock = async (storeId: number) => {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_API_URL}store/stocks/${storeId}`,
     { next: { revalidate: 1 } },
