@@ -134,7 +134,6 @@ export class AuthController {
           }
         },
       });
-      console.log(user);
       
       if (!user) {
         return res.status(404).json({ msg: 'User not found' });
