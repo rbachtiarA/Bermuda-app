@@ -8,6 +8,12 @@ export interface IProduct {
   imageUrl: string | null;
   createdAt: string;
   updatedAt: string;
+  categories: string[];
+}
+
+export interface IProductDel {
+  id: number;
+  onDeleted: () => Promise<void>;
 }
 
 export interface IStocks {
