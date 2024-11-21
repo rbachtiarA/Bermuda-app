@@ -7,29 +7,35 @@ export default function NavbarMobileAdminDropdown({title}: {title: string}) {
     const router = useRouter()
     const titleBreadcrumb = () => {
         switch (title) {
-            case 'order':
+            case 'order-management':
                 return 'Order Management'
             
-            case 'storeAdmin':
+            case 'store-admin-management':
                 return 'Store Admin Management'
             
-            case 'user':
-                return 'User Management'
+            case 'product-category-management':
+                return 'Product Category Management'
             
-            case 'store':
-                return 'Store Management'
-            
-            case 'product':
+            case 'product-management':
                 return 'Product Management'
             
-            case 'discount':
+            case 'report-analysis':
+                return 'Report & Analyst'
+            
+            case 'stock-management':
+                return 'Stock Management'
+            
+            case 'store-management':
+                return 'Store Management'
+
+            case 'user-management':
+                return 'User Management'
+            
+            case 'discount-management':
                 return 'Discount Management'
             
-            case 'analyst':
-                return 'Record & Analyst'
-            
             default:
-                return 'Admin';
+                return title[0].toUpperCase()+title.slice(1);
         }
     }
   return (
@@ -46,26 +52,32 @@ export default function NavbarMobileAdminDropdown({title}: {title: string}) {
         </Button>
       </DropdownTrigger>
       <DropdownMenu aria-label="Static Actions" >
+        <DropdownItem key="user_management" textValue="User Management">
+            <span className="hover:cursor-pointer" onClick={() => router.push("/admin/user-management")}>User Management</span>
+        </DropdownItem>
         <DropdownItem key="store_management" textValue="Store Management">
+            <span className="hover:cursor-pointer" onClick={() => router.push("/admin/store-management")}>Store Management</span>
+        </DropdownItem>
+        <DropdownItem key="store_admin_management" textValue="Store Admin Management">
             <span className="hover:cursor-pointer" onClick={() => router.push('/admin/store-admin-management')}>Store Admin Management</span>
         </DropdownItem>
-        <DropdownItem key="user_management" textValue="User Management">
-            <span className="hover:cursor-pointer" onClick={() => router.push("/admin/user")}>User Management</span>
-        </DropdownItem>
-        <DropdownItem key="Store_Management" textValue="Store Management">
-            <span className="hover:cursor-pointer" onClick={() => router.push("/admin/store")}>Store Management</span>
+        <DropdownItem key="product_category_management" textValue="Product Category Management">
+            <span className="hover:cursor-pointer" onClick={() => router.push("/admin/product-category-management")}>Product Category Management</span>
         </DropdownItem>
         <DropdownItem key="product_management" textValue="Product Management">
-            <span className="hover:cursor-pointer" onClick={() => router.push("/admin/product")}>Product Management</span>
+            <span className="hover:cursor-pointer" onClick={() => router.push("/admin/product-management")}>Product Management</span>
+        </DropdownItem>
+        <DropdownItem key="stock_management" textValue="Stock Management">
+            <span className="hover:cursor-pointer" onClick={() => router.push("/admin/stock-management")}>Stock Management</span>
         </DropdownItem>
         <DropdownItem key="discount_management" textValue="Discount Management">
-            <span className="hover:cursor-pointer" onClick={() => router.push("/admin/discount")}>Discount Management</span>
+            <span className="hover:cursor-pointer" onClick={() => router.push("/admin/discount-management")}>Discount Management</span>
         </DropdownItem>
         <DropdownItem key="order_management" textValue="Order Management">
-            <span className="hover:cursor-pointer" onClick={() => router.push("/admin/order")}>Order Management</span>
+            <span className="hover:cursor-pointer" onClick={() => router.push("/admin/order-management")}>Order Management</span>
         </DropdownItem>
-        <DropdownItem key="report_analyst" textValue="Record & Analyst">
-            <span className="hover:cursor-pointer" onClick={() => router.push("/admin/analyst")}>Record & Analyst</span>
+        <DropdownItem key="report_analysis" textValue="Record & Analyst">
+            <span className="hover:cursor-pointer" onClick={() => router.push("/admin/report-analysis")}>Record & Analyst</span>
         </DropdownItem>
       </DropdownMenu>
     </Dropdown>

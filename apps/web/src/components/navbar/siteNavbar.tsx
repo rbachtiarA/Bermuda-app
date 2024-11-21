@@ -25,7 +25,6 @@ import { useAppDispatch } from '@/redux/hook';
 import { resetCart } from '@/redux/slice/cartSlice';
 import { resetCheckout } from '@/redux/slice/checkoutSlice';
 import { logoutAction } from '@/redux/slice/userSlice';
-import { getClientLocation } from '@/lib/address';
 import NavbarMobileHamburger from './navbarMobile/navbarMobileHamburger';
 
 export default function SiteNavbar() {
@@ -50,7 +49,6 @@ export default function SiteNavbar() {
       const fetchedToken = await getToken();
       setToken(fetchedToken ?? null);
     };
-    getClientLocation();
     fetchToken();
   }, []);
 

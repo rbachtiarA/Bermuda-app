@@ -20,7 +20,7 @@ export default function AdminActionsCell({
 	const router = useRouter()
 	const {isOpen, onOpen, onOpenChange} = useDisclosure()
 	const openOrder = () => {
-		router.push(`/admin/order/${order.id}`)
+		router.push(`/admin/order-management/${order.id}`)
 	}
 
   return (

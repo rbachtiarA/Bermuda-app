@@ -1,6 +1,5 @@
 import OrderCard from "@/components/order/orderCard"
 import { getAdminOrderById } from "@/lib/admin.handler"
-import { getOrderById } from "@/lib/order.handler"
 import { IOrder } from "@/type/order"
 import { Metadata, ResolvingMetadata } from "next"
 

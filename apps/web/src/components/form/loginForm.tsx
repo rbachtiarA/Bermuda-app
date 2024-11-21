@@ -34,7 +34,7 @@ const LoginForm: React.FC = () => {
       console.log('Data yang di terima:', result); // debuging
       if (!ok) throw result.msg;
 
-      // dispatch(updatedCartFromDatabase(result.cart))
+      await createToken(result.token);
       action.resetForm();
       dispatch(loginAction(result.user));
       await createToken(result.token);

@@ -1,6 +1,7 @@
 'use client';
 import { createToken } from '@/lib/server';
 import { useAppDispatch } from '@/redux/hook';
+import { updatedCartFromDatabase } from '@/redux/slice/cartSlice';
 import { loginAction } from '@/redux/slice/userSlice';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
@@ -25,7 +26,8 @@ export default function PasswordlessPage() {
 
         const userData = await response.json()
 
-        if (response.ok) {
+        if (response.ok) {          
+          dispatch(updatedCartFromDatabase(userData.user.cart.CartItem))
           dispatch(loginAction(userData.user))
           window.location.href = '/'
         }

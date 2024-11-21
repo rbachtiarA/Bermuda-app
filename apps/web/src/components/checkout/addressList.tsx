@@ -50,7 +50,15 @@ export default function AddressessList({ selectedAddress, updateSelectedAddress 
                 </CardFooter>
             </Card>
             <AddressCheckoutSelectorModal addressess={addressess} isOpen={changeAddressModal.isOpen} onOpenChange={changeAddressModal.onOpenChange} onConfirm={updateSelectedAddress}/>
-            <NewAddressModal isOpen={newAddressModal.isOpen} onOpenChange={newAddressModal.onOpenChange}/>
+            <NewAddressModal 
+            isOpen={newAddressModal.isOpen} 
+            onOpenChange={(isOpen) => {
+                    if(!isOpen) {
+                        getData()
+                    }
+                    newAddressModal.onOpenChange()
+                }
+            }/>
         </>
     )
 }
