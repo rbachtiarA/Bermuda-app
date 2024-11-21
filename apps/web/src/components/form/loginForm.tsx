@@ -37,7 +37,6 @@ const LoginForm: React.FC = () => {
       await createToken(result.token);
       action.resetForm();
       dispatch(loginAction(result.user));
-      await createToken(result.token);
       window.location.href = '/';
     } catch (err) {
       setLoginError('Email atau password salah, silahkan coba lagi');
