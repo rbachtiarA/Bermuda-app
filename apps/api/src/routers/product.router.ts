@@ -20,10 +20,15 @@ export class ProductRouter {
       uploader('product-', '/product').single('file'),
       verifyToken,
       checkSuperAdmin,
-      this.productController.createOrUpdateProduct,
+      this.productController.createProduct,
     );
     this.router.get('/products', this.productController.getProducts);
-    this.router.delete('/:id', this.productController.deleteProduct);
+    this.router.delete(
+      '/:id',
+      verifyToken,
+      checkSuperAdmin,
+      this.productController.deleteProduct,
+    );
   }
 
   getRouter(): Router {
