@@ -1,7 +1,7 @@
 'use client';
 
 import { FaInbox, FaPhone } from 'react-icons/fa';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import {
   Dropdown,
   DropdownMenu,
@@ -15,12 +15,11 @@ import { getNearestStore } from '@/lib/store.handler';
 import { updateStore } from '@/redux/slice/storeSlice';
 
 export default function AddressBar() {
-  const [location, setLocation] = useState('JABODETABEK');
   const dispatch = useAppDispatch()
   const user = useAppSelector(state => state.user)
 
   useEffect(() => {
-    if(!user.isLoggedIn && !user.selectedAddress) {
+    if(!user.isLoggedIn || !user.selectedAddress) {
         navigator.geolocation.getCurrentPosition(async (postition) => {
           const { latitude, longitude } = postition.coords
           const {status, msg} = await getNearestStore(latitude, longitude)
