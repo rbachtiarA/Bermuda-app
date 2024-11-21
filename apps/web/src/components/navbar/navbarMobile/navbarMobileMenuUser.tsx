@@ -11,7 +11,7 @@ export default function NavbarMobileMenu({
 }) {
   const user = useAppSelector((state) => state.user);
   const router = useRouter();
-
+  
   return (
     <>
       <div className="px-4">
@@ -19,7 +19,7 @@ export default function NavbarMobileMenu({
         {!token && (
           <div className="w-full grid grid-cols-2 gap-2 p-2">
             <Button as={Link} href="/login" color="primary">
-              Masuk
+              Login
             </Button>
             <Button
               as={Link}
@@ -27,7 +27,7 @@ export default function NavbarMobileMenu({
               color="primary"
               variant="bordered"
             >
-              Daftar
+              Register
             </Button>
           </div>
         )}
@@ -36,13 +36,13 @@ export default function NavbarMobileMenu({
             {user.role === 'USER' && (
               <>
                 <Link href="/account" color="foreground">
-                  Akun Saya
+                  My Account
                 </Link>
                 <Link href="/account/order" color="foreground">
-                  Pesanan Saya
+                  My Orders
                 </Link>
                 <Link href="/account/payment" color="foreground">
-                  Lihat Pembayaran Aktif
+                  My Active Payment
                 </Link>
               </>
             )}
@@ -96,10 +96,10 @@ export default function NavbarMobileMenu({
       </div>
       <Divider />
       <div className="px-4">
-        <h2 className="font-bold text-xl py-2">Menu Produk</h2>
+        <h2 className="font-bold text-xl py-2">Products</h2>
         <div className="px-4">
           <Link href="/product" color="foreground">
-            Semua Produk
+            All Products
           </Link>
         </div>
       </div>
