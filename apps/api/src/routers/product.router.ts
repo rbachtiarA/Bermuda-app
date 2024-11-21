@@ -2,7 +2,6 @@ import { ProductController } from '@/controllers/product.controller';
 import { checkSuperAdmin, verifyToken } from '@/middleware/token';
 import { uploader } from '@/middleware/uploader';
 import { Router } from 'express';
-import { getProducts } from '../../../web/src/lib/product.handler';
 
 export class ProductRouter {
   private router: Router;
