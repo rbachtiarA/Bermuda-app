@@ -19,7 +19,7 @@ const LoginSchema = Yup.object().shape({
 });
 const LoginForm: React.FC = () => {
   const router = useRouter();
-  const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
   const [loginError, setLoginError] = useState<string | null>(null);
   const initialValues: ILoginData = { email: '', password: '' };
 
@@ -29,14 +29,15 @@ const LoginForm: React.FC = () => {
   ) => {
     try {
       const { result, ok } = await loginUser(data);
-      dispatch(updatedCartFromDatabase(result.cart.CartItem))
-      
+      dispatch(updatedCartFromDatabase(result.cart.CartItem));
+
       console.log('Data yang di terima:', result); // debuging
       if (!ok) throw result.msg;
 
       await createToken(result.token);
       action.resetForm();
-      dispatch(loginAction(result.user))
+      dispatch(loginAction(result.user));
+      await createToken(result.token);
       window.location.href = '/';
     } catch (err) {
       setLoginError('Email atau password salah, silahkan coba lagi');
