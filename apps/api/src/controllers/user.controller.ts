@@ -11,16 +11,30 @@ import handlebars from 'handlebars';
 export class UserController {
   async getUsers(req: Request, res: Response) {
     try {
-      const usersData = await prisma.user.findMany();
+      const requesterRole = req.user?.role;
+      if (requesterRole !== 'SUPER_ADMIN') {
+        return res.status(403).send({
+          status: 'error',
+          msg: 'Unauthorized access',
+        });
+      }
+
+      const users = await prisma.user.findMany({
+        where: {
+          role: {
+            notIn: ['SUPER_ADMIN', 'STORE_ADMIN'],
+          },
+        },
+      });
 
       res.status(200).send({
         status: 'ok',
-        usersData,
+        users,
       });
     } catch (err) {
-      res.status(400).send({
+      res.status(500).send({
         status: 'error',
-        msg: err,
+        msg: 'Internal server error',
       });
     }
   }
@@ -31,7 +45,7 @@ export class UserController {
 
     if (!user) {
       return res.status(404).send({ error: 'User not found' });
-  }
+    }
 
     return res.status(200).send(user);
   }
@@ -50,8 +64,8 @@ export class UserController {
           name: '',
           password: '',
           isVerified: false,
-          referralCode: null
-        }
+          referralCode: null,
+        },
       });
 
       const payload = { email };
