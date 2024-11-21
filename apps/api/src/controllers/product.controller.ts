@@ -10,7 +10,6 @@ export class ProductController {
       const pageNumber = parseInt(page as string, 10);
       const pageSizeNumber = parseInt(pageSize as string, 10);
 
-      // Validasi page dan pageSize
       if (isNaN(pageNumber) || pageNumber <= 0) {
         return res.status(400).send({
           status: 'error',
@@ -24,30 +23,27 @@ export class ProductController {
         });
       }
 
-      // Membuat filter untuk query
       let filter: Prisma.ProductWhereInput = {};
       if (search) {
-        filter.name = { contains: search as string }; // mode insensitive untuk pencarian tanpa case-sensitive
+        filter.name = { contains: search as string };
       }
       if (categories && categories !== 'all') {
         filter.categories = {
-          some: { name: categories as string }, // Menggunakan relasi kategori
+          some: { name: categories as string },
         };
       }
 
-      // Query database untuk data produk dan totalnya
       const [products, totalCount] = await Promise.all([
         prisma.product.findMany({
           where: filter,
           orderBy: { createdAt: 'desc' },
-          include: { categories: true }, // Menyertakan data kategori
+          include: { categories: true },
           skip: (pageNumber - 1) * pageSizeNumber,
           take: pageSizeNumber,
         }),
         prisma.product.count({ where: filter }),
       ]);
 
-      // Mengirimkan response
       res.status(200).send({
         status: 'ok',
         products,
@@ -67,7 +63,6 @@ export class ProductController {
     }
   }
 
-  /// Temporary from Dwi
   async ProdutSearch(req: Request, res: Response) {
     try {
       const { search } = req.query;
@@ -76,15 +71,12 @@ export class ProductController {
       if (search) {
         filter.name = {
           contains: search as string,
-          // mode: 'insensitive', opsional
         };
       }
 
       const products = await prisma.product.findMany({
         where: filter,
         include: {
-          // categories: true,
-          // discounts: true,
           stock: true,
         },
       });
@@ -100,74 +92,176 @@ export class ProductController {
     }
   }
 
-  async createOrUpdateProduct(req: Request, res: Response) {
+  // async createOrUpdateProduct(req: Request, res: Response) {
+  //   try {
+  //     if (!req?.file) throw 'no file uploaded';
+
+  //     const link = `${process.env.BASE_URL_BE}public/product/${req?.file?.filename}`;
+
+  //     const {
+  //       id,
+  //       name,
+  //       description,
+  //       price,
+  //       slug,
+  //       isRecommended = false,
+  //       categories,
+  //     } = JSON.parse(req.body.data);
+  //     console.log(JSON.parse(req.body.data));
+
+  //     let product;
+
+  //     if (id) {
+  //       product = await prisma.product.update({
+  //         where: { id: Number(id) },
+  //         data: {
+  //           name,
+  //           description,
+  //           price: Number(price),
+  //           imageUrl: link,
+  //           slug,
+  //           isRecommended,
+  //           categories: {
+  //             set: [],
+  //             connect: categories.map((categoryId: number) => ({
+  //               id: Number(categoryId),
+  //             })),
+  //           },
+  //         },
+  //       });
+  //     } else {
+  //       product = await prisma.product.create({
+  //         data: {
+  //           name,
+  //           description,
+  //           price: Number(price),
+  //           imageUrl: link,
+  //           slug,
+  //           isRecommended,
+  //           categories: {
+  //             connect: categories.map((categoryId: number) => ({
+  //               id: Number(categoryId),
+  //             })),
+  //           },
+  //         },
+  //       });
+  //     }
+
+  //     res.status(201).send({
+  //       status: 'ok',
+  //       msg: id ? 'Product updated!' : 'Product created!',
+  //       product,
+  //     });
+  //   } catch (err) {
+  //     console.log(err);
+
+  //     res.status(400).send({
+  //       status: 'error',
+  //       msg: err,
+  //     });
+  //   }
+  // }
+
+  async createProduct(req: Request, res: Response) {
     try {
-      if (!req?.file) throw 'no file uploaded';
+      // Memeriksa apakah file ada
+      if (!req.file) throw new Error('No file uploaded');
 
-      const link = `${process.env.BASE_URL_BE}public/product/${req?.file?.filename}`;
+      const link = `${process.env.BASE_URL_BE}public/product/${req.file.filename}`;
 
+      // Parse detail produk dari body request
       const {
-        id, // Get the id from the body if available
         name,
         description,
         price,
         slug,
         isRecommended = false,
         categories,
-        // stores, // Uncomment if you plan to use stores later
       } = JSON.parse(req.body.data);
-      console.log(JSON.parse(req.body.data));
 
-      let product;
+      // Membuat produk di database
+      const product = await prisma.product.create({
+        data: {
+          name,
+          description,
+          price: Number(price),
+          imageUrl: link,
+          slug,
+          isRecommended,
+          categories: {
+            connect: categories.map((categoryId: number) => ({
+              id: Number(categoryId),
+            })),
+          },
+        },
+      });
 
-      if (id) {
-        // If the product id exists, update the product
-        product = await prisma.product.update({
-          where: { id: Number(id) },
-          data: {
-            name,
-            description,
-            price: Number(price),
-            imageUrl: link,
-            slug,
-            isRecommended,
-            categories: {
-              set: [], // Clear existing categories if you're updating the categories
-              connect: categories.map((categoryId: number) => ({
-                id: Number(categoryId),
-              })),
-            },
-            // stores: {
-            //   set: [], // Clear existing stores if you're updating the stores
-            //   connect: stores.map((storeId: number) => ({ id: storeId })),
-            // },
-          },
-        });
-      } else {
-        // If no id exists, create a new product
-        product = await prisma.product.create({
-          data: {
-            name,
-            description,
-            price: Number(price),
-            imageUrl: link,
-            slug,
-            isRecommended,
-            categories: {
-              connect: categories.map((categoryId: number) => ({
-                id: Number(categoryId),
-              })),
-            },
-            // stores: {
-            //   connect: stores.map((storeId: number) => ({ id: storeId })),
-            // },
-          },
+      // Mengirimkan respons sukses
+      res.status(201).send({
+        status: 'ok',
+        msg: 'Product created!',
+        product,
+      });
+    } catch (err) {
+      // Mencetak error di console
+      console.log(err);
+
+      // Mengirimkan respons error
+      res.status(400).send({
+        status: 'error',
+        msg: err instanceof Error ? err.message : 'Unknown error',
+      });
+    }
+  }
+
+  async updateProduct(req: Request, res: Response) {
+    try {
+      if (!req?.file) throw 'No file uploaded';
+
+      const link = `${process.env.BASE_URL_BE}public/product/${req?.file?.filename}`;
+
+      const {
+        id,
+        name,
+        description,
+        price,
+        slug,
+        isRecommended = false,
+        categories,
+      } = JSON.parse(req.body.data);
+
+      const existingProduct = await prisma.product.findUnique({
+        where: { id: Number(id) },
+      });
+
+      if (!existingProduct) {
+        return res.status(404).send({
+          status: 'error',
+          msg: 'Product not found!',
         });
       }
 
-      res.status(201).send({
+      const product = await prisma.product.update({
+        where: { id: Number(id) },
+        data: {
+          name,
+          description,
+          price: Number(price),
+          imageUrl: link,
+          slug,
+          isRecommended,
+          categories: {
+            set: [],
+            connect: categories.map((categoryId: number) => ({
+              id: Number(categoryId),
+            })),
+          },
+        },
+      });
+
+      res.status(200).send({
         status: 'ok',
-        msg: id ? 'Product updated!' : 'Product created!',
+        msg: 'Product updated!',
         product,
       });
     } catch (err) {
@@ -182,17 +276,13 @@ export class ProductController {
 
   async deleteProduct(req: Request, res: Response) {
     try {
-      const { id } = req.params; // Get the product ID from the request parameters
-
-      // Ensure the ID is a valid number
+      const { id } = req.params;
       if (isNaN(Number(id))) {
         return res.status(400).send({
           status: 'error',
           msg: 'Invalid product ID',
         });
       }
-
-      // Delete the product by its ID
       const deletedProduct = await prisma.product.delete({
         where: {
           id: Number(id),
@@ -206,7 +296,6 @@ export class ProductController {
         });
       }
 
-      // Send a response indicating the product was deleted successfully
       res.status(200).send({
         status: 'ok',
         msg: 'Product deleted successfully',
