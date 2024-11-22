@@ -37,7 +37,7 @@ export default function ProductCard({stock}:{stock: IStocks}) {
 
     return (
         <div>
-            <Card isPressable shadow='sm' className="border-none w-full rounded-b-none">
+            <Card isPressable isHoverable shadow='none' className="border-2 border-b-1 border-foreground-200 w-full rounded-b-none">
                 <CardHeader className="justify-center w-full">
                     {/* <Skeleton className="w-[150px] h-[150px] rounded-md"/> */}
                     <Image 
@@ -55,7 +55,7 @@ export default function ProductCard({stock}:{stock: IStocks}) {
                     </div>
                 </CardBody>
             </Card>
-            <Card shadow="sm" className="rounded-t-none">
+            <Card shadow="none" className="rounded-t-none border-2 border-t-1 border-foreground-200">
                 <CardBody>
                     <Button fullWidth color="primary" variant="bordered" onPress={() => onClickedAddToCart(1)} isDisabled={stock.quantity === 0}>
                         {stock.quantity !== 0 ? `+ Add to Cart`: 'Sold Out'}    

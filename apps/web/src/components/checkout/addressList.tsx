@@ -8,7 +8,7 @@ import AddressCheckoutSelectorModal from "../modal/addressCheckoutSelectorModal"
 import { NewAddressModal } from "../modal/newAddressModal"
 
 export default function AddressessList({ selectedAddress, updateSelectedAddress }: 
-    { selectedAddress:IAddress | undefined, updateSelectedAddress:(address: IAddress | undefined) => void  }) {
+    { selectedAddress:IAddress | null, updateSelectedAddress:(address: IAddress | undefined) => void  }) {
     const user = useAppSelector(state => state.user)
     const [addressess, setAddressess] = useState<IAddress[]>([])
     const changeAddressModal = useDisclosure()
@@ -19,7 +19,7 @@ export default function AddressessList({ selectedAddress, updateSelectedAddress 
         setAddressess([...data])
         
         //select the primary address
-        updateSelectedAddress(data.find((item) => item.isPrimary))
+        if(!user.selectedAddress) updateSelectedAddress(data.find((item) => item.isPrimary))
     }
 
     //load data when rendered
@@ -41,7 +41,10 @@ export default function AddressessList({ selectedAddress, updateSelectedAddress 
                     }
                     {
                         selectedAddress &&
-                            <p className="">{selectedAddress?.addressLine}, {selectedAddress?.city}, {selectedAddress?.state}, {selectedAddress?.postalCode}</p>
+                        <>
+                            <p className="font-semibold">{selectedAddress.label}</p>
+                            <p>{selectedAddress?.addressLine}, {selectedAddress?.city}, {selectedAddress?.state}, {selectedAddress?.postalCode}</p>
+                        </>
                     }
                 </CardBody>
                 <CardFooter className="flex justify-end w-full">

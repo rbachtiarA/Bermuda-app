@@ -24,7 +24,7 @@ export default function ProductList() {
     <>
       {store.id === 0 && <p>Please Login & create address / Allow our site to access your location</p>}
       <div
-        className="grid px-1 gap-2 overflow-auto "
+        className="grid p-1 gap-2 overflow-auto "
         style={{ gridTemplateColumns: `repeat(${data.length},200px)` }}
       >
         {data.map((stock) => (

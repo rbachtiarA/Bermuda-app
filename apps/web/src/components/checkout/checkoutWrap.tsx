@@ -25,7 +25,7 @@ export default function CheckoutWrapper() {
     const [discount, setDiscount] = useState<IDiscount|null>(null)
     const [shippingCost, setShippingCost] = useState<number | null>(null)
     const [methodPayment, setMethodPayment] = useState<'Transfer' | 'Gateway' | null>(null)
-    const [selectedAddress, setselectedAddress] = useState<IAddress | undefined>(undefined)
+    const [selectedAddress, setselectedAddress] = useState<IAddress | null>(user.selectedAddress as IAddress)
     const [isLoading, setIsLoading] = useState(false)
     const [isError, setIsError] = useState<string | null>(null)
     const router = useRouter()
@@ -111,10 +111,10 @@ export default function CheckoutWrapper() {
 
         const getNearStore = async () => {
             if(selectedAddress) {
-                const { status, msg } = await getNearestStore(selectedAddress.latitude!, selectedAddress.longitude!)
+                const { status, msg, distance } = await getNearestStore(selectedAddress.latitude!, selectedAddress.longitude!)
             
                 if(status === 'ok' && msg.id !== store.id) {
-                    dispatch(updateStore({id: msg.id, name: msg.name}))
+                    dispatch(updateStore({id: msg.id, name: msg.name, distance}))
                     toast.info(`change store to ${msg.name}, cause of address change`, {autoClose: 4000, style: {fontSize: '14px'}})
                     setDiscount(null)
                 }
@@ -128,13 +128,13 @@ export default function CheckoutWrapper() {
 
     const isPaymentInvalid = useMemo(
         () => {
-            return !shippingCost || !itemTotalPayment || !methodPayment || !selectedAddress
-        }, [shippingCost, itemTotalPayment, methodPayment])
+            return !store.inRange || !shippingCost || !itemTotalPayment || !methodPayment || !selectedAddress
+        }, [shippingCost, itemTotalPayment, methodPayment, selectAddress, store.inRange])
     
     return (
         <div className="grid md:grid-cols-[2fr_1fr] md:w-auto gap-2 w-full p-2">
             <div className="grid gap-2">
-                <StoreCheckoutDetails storeName={store.name}/>
+                <StoreCheckoutDetails storeName={store.name} inRange={store.inRange}/>
                 <AddressessList selectedAddress={selectedAddress} updateSelectedAddress={updateSelectedAddress}/>
                 <CheckoutList updateItemTotalPayment={updateItemTotalPayment}/>
             </div>
