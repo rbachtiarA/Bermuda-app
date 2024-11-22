@@ -49,9 +49,9 @@ export const getAllStore = async () => {
 
 export const getNearestStore = async (lat: number, lon: number) => {
   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}store/nearest?lat=${lat}&lon=${lon}`)
-  const { status, msg }: { status: string, msg: IStore } = await res.json()
-
-  return { status, msg }
+  const { status, msg, distance }: { status: string, msg: IStore, distance: number } = await res.json()
+  
+  return { status, msg, distance }
 }
 export const getStoresList = async () => {
   const token = await getToken()
