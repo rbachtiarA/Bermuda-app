@@ -50,6 +50,7 @@ export default function NavbarMobileHamburger({
           </div>
         </div>
       </div>
+
       <div
         className={`fixed top-[64px] md:top-[95px] z-[11] bg-foreground-500/50 w-full h-screen ${dropdownHamburger ? 'max-h-screen' : 'max-h-0'}`}
       >
@@ -66,7 +67,7 @@ export default function NavbarMobileHamburger({
             </span>
           </div>
           <Divider />
-          <NavbarMobileMenu onLogout={onLogout} token={token} />
+          <NavbarMobileMenu onLogout={onLogout} token={token} setDropdownHamburger={setDropdownHamburger}/>
         </div>
       </div>
     </>
