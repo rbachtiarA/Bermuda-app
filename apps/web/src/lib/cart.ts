@@ -28,7 +28,6 @@ export const postCartItems = async (userId:number , productId:number, quantity:n
             'Authorization': `Bearer ${token}`
         }
     })
-    console.log(res)
     const { cartItem }: {cartItem: ICartItem} = await res.json()
         
     return { status: res.status, cartItem }
@@ -49,12 +48,17 @@ export const updateCartItem = async (productId:number, quantity:number) => {
     return { ok: res.ok, data }
 }
 
-export const deleteCartItem = async (cartItemId:number) => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}cart/remove/${cartItemId}`, {
-        method:'DELETE'
+export const deleteCartItem = async (cartItemIds:number[]) => {
+    const token = await getToken()
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}cart/remove?cartIds=${cartItemIds}`, {
+        method:'DELETE',
+        headers: {
+            "Content-type":"application/json",
+            'Authorization': `Bearer ${token}`
+        }
     })
 
-    const data = await res.json()
+    const {status, data} :{status: string, data: number[]} = await res.json()
     return { ok: res.ok, data }
 }
 

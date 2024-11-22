@@ -23,15 +23,15 @@ export default function CartCard({cart, checkout, soldOut}: {cart: ICartItem, ch
         if(!isChecked) {
             dispatch(addSelectedCheckout(cart.id))
         } else {
-            dispatch(removeSelectedCheckout(cart.id))
+            dispatch(removeSelectedCheckout([cart.id]))
         }
     }
 
     const onRemovedItem = async (cartItemId: number) => {
         const checked = false
-        const { data } = await deleteCartItem(cartItemId)
-        dispatch(removedFromCart(data.data))
-        dispatch(removeSelectedCheckout(cartItemId))
+        const {data} = await deleteCartItem([cartItemId])
+        dispatch(removedFromCart(data))
+        dispatch(removeSelectedCheckout(data))
         setIsChecked(checked)
     }
     
