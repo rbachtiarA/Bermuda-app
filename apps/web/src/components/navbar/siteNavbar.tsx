@@ -28,6 +28,13 @@ import { logoutAction } from '@/redux/slice/userSlice';
 import NavbarMobileHamburger from './navbarMobile/navbarMobileHamburger';
 import LinkButtonBottomNavbar from '../bottomNavbar/LinkButton.BottomNavbar';
 import NotificationBottomNavbar from '../bottomNavbar/notificationCart.BottomNavbar';
+import { useRouter } from 'next/navigation';
+import { Quicksand } from 'next/font/google';
+
+const logo_font = Quicksand({
+  weight: ['400'],
+  subsets: ['latin']
+})
 
 export default function SiteNavbar() {
   const dispatch = useAppDispatch();
@@ -39,6 +46,7 @@ export default function SiteNavbar() {
   const [dropdownSearch, setDropdownSearch] = useState(false);
   const [dropdownHamburger, setDropdownHamburger] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter()
   const onLogout = async () => {
     await deleteToken();
     dispatch(resetCart());
@@ -74,8 +82,8 @@ export default function SiteNavbar() {
 
   return (
     <>
-      <Navbar isBordered className="shadow-sm hidden md:flex">
-        <NavbarBrand>
+      <Navbar isBordered className="shadow-sm hidden md:flex w-screen">
+        <NavbarBrand className='w-[200px] justify-center' style={logo_font.style}>
           <Link color="foreground" href="/">
               <SiteLogo />
               <p className="hidden sm:block font-bold text-inherit">
@@ -99,7 +107,7 @@ export default function SiteNavbar() {
         </NavbarContent>
 
         <NavbarContent>
-          <div className='w-full flex justify-evenly items-center'>
+          <div className='w-full flex justify-evenly items-center gap-4'>
             <div className='w-[48px]'>
               <LinkButtonBottomNavbar label='' href="/cart" imgsrc="/icon-shopping-cart.svg" imgalt="cart" component={<NotificationBottomNavbar value={cart.length}/>}/>
             </div>
@@ -108,22 +116,16 @@ export default function SiteNavbar() {
               <DropdownNav />
           ) : (
             <div className='flex gap-2'>
-              <Link
-                color="foreground"
-                href="/register"
-                className="text-gray-500"
-              >
-                Daftar
+              <Link as={Button} href={'/register'} onPress={() => router.push('/register')} color='primary' variant='bordered'>
+                Register
               </Link>
-              <Link color="foreground" href="/login" className="text-gray-500">
+              <Button onPress={() => router.push('/login')} color='primary'>
                 Masuk
-              </Link>
+              </Button>
             </div>
           )}
           </div>
         </NavbarContent>
-
-        
       </Navbar>
 
       {/* Mobile Nav */}
