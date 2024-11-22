@@ -76,9 +76,6 @@ export default function SiteNavbar() {
           <Link color="foreground" href="/">
             <NavbarBrand className="flex items-center gap-2">
               <SiteLogo />
-              <p className="hidden sm:block font-bold text-inherit">
-                Bermuda Store
-              </p>
             </NavbarBrand>
           </Link>
         </NavbarContent>
