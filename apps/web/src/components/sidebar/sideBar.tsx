@@ -11,6 +11,7 @@ export default function SideBar() {
     {link: '/admin/store-management', label: 'Store Management'},
     {link: '/admin/product-category-management', label: 'Product Category Management'},
     {link: '/admin/product-management', label: 'Product Management'},
+    {link: '/admin/stock-management', label: 'Stock Management'},
     {link: '/admin/discount-management', label: 'Discount Management'},
     {link: '/admin/order-management', label: 'Order Management'},
     {link: '/admin/report-analysis', label: 'Report & Analyst'}
