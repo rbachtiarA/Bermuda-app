@@ -1,7 +1,7 @@
 import TitleBreadcrumbs from "@/components/breadcrumbs/breadcrumbs";
 import BreadcrumbsAccount from "@/components/breadcrumbs/breadcrumbsAccount";
 import UserProtection from "@/components/routerProtection/userProtection";
-import SideBar from "@/components/sideBar";
+import SideBar from "@/components/sidebar/sideBar";
 
 export default function layout({children}:{children: React.ReactNode}) {
 

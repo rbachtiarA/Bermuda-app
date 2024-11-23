@@ -16,9 +16,9 @@ export const checkoutSlice = createSlice({
         selectedAllItems: (state, action:PayloadAction<number[]>) => {
             return [...action.payload]
         },
-        removeSelectedCheckout: (state, action:PayloadAction<number>) => {
-            const removedId = action.payload
-            return [...state.filter((id) => id !== removedId)]
+        removeSelectedCheckout: (state, action:PayloadAction<number[]>) => {
+            const removedIds = action.payload
+            return [...state.filter((id) => !removedIds.includes(id))]
         },
         resetCheckout: (state) => {
             return []

@@ -24,18 +24,17 @@ function distance(lat1: number, lon1: number, lat2: number, lon2: number): numbe
     }
 }
 
-export default function nearestStore(lat: number, lon: number, stores: Store[]): Store | null {
+export default function nearestStore(lat: number, lon: number, stores: Store[]): {store: Store, distance: number} | null {
     if(stores.length === 0) {
         return null
     }
 
     const storesDistance = stores.map((store) => distance(lat, lon, store.latitude, store.longitude))
     const closestDistance = Math.min(...storesDistance)
-    console.log(storesDistance);
     
     const nearestStoreIndex = storesDistance.findIndex((distance) => distance === closestDistance)
     if(nearestStoreIndex !== -1) {
-        return stores[nearestStoreIndex]
+        return {store: stores[nearestStoreIndex], distance: closestDistance}
     } else {
         return null
     }

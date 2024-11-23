@@ -2,19 +2,21 @@
 import { useAppDispatch, useAppSelector } from "@/redux/hook"
 import CartCard from "./cartCard"
 import { useEffect, useMemo } from "react"
-import { getAllCartItems, postCheckoutItems } from "@/lib/cart"
-import { updatedCartFromDatabase } from "@/redux/slice/cartSlice"
+import { deleteCartItem, getAllCartItems, postCheckoutItems } from "@/lib/cart"
+import { removedFromCart, updatedCartFromDatabase } from "@/redux/slice/cartSlice"
 import CartCheckout from "./cartCheckout"
 import { useRouter } from "next/navigation"
-import { resetCheckout, selectedAllItems } from "@/redux/slice/checkoutSlice"
-import { Button, Card, CardBody, Checkbox } from "@nextui-org/react"
+import { removeSelectedCheckout, resetCheckout, selectedAllItems } from "@/redux/slice/checkoutSlice"
+import { Button, Card, CardBody, Checkbox, useDisclosure } from "@nextui-org/react"
+import ConfirmationModal from "../modal/confirmationModal"
 export default function CartList() {
     const user = useAppSelector(state => state.user)
     const cart = useAppSelector(state => state.cart)
     const store = useAppSelector(state => state.store)
     const checkout = useAppSelector(state => state.checkout)
     const dispatch = useAppDispatch()    
-    const router = useRouter()    
+    const router = useRouter()
+    const {isOpen, onOpenChange, onOpen} = useDisclosure()
     
     const itemOnStock = cart.filter((item) => {
         if(item.product?.stock![0] !== undefined) {
@@ -42,6 +44,12 @@ export default function CartList() {
             router.push('/cart/checkout')
     }
                     
+    const deleteMultipleItemCart = async () => {
+        const {data} = await deleteCartItem(checkout)
+        dispatch(removedFromCart(data))
+        dispatch(removeSelectedCheckout(data))
+    }
+
     const totalSelectedItemsAmount = useMemo(() => {
         
         return cart.filter((item) => checkout.includes(item.id)).reduce((total, item) => total + item.quantity * item.product?.price!, 0)
@@ -66,7 +74,12 @@ export default function CartList() {
                             <CardBody>
                                 <div className="flex justify-between">
                                     <Checkbox  onValueChange={onSelectAll} isIndeterminate={checkout.length > 0 && checkout.length !== itemOnStock.length} isSelected={itemOnStock.length !== 0 && itemOnStock.length === checkout.length}>Semua</Checkbox>
-                                    {checkout.length !== 0 && <Button color="danger" variant="light" size="sm" className="max-h-6">Hapus</Button>}
+                                    {checkout.length !== 0 && 
+                                        <>
+                                            <Button color="danger" variant="light" size="sm" className="max-h-6" onPress={onOpen}>Hapus</Button>
+                                            <ConfirmationModal isOpen={isOpen} onOpenChange={onOpenChange} onConfirm={deleteMultipleItemCart} title='Remove selected item from cart' content={`Are you sure want to remove selected item from your cart ?`} />
+                                        </>
+                                    }
                                 </div>
                             </CardBody>
                         </Card>
