@@ -77,7 +77,7 @@ export const postCheckoutItems = async (selectedIds: number[]) => {
     return { ok: res.ok, data }
 }
 
-export const getCheckoutItems = async (userId: number) => {
+export const getCheckoutItems = async () => {
     const token = await getToken()
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}cart/checkout`, { 
         headers: {

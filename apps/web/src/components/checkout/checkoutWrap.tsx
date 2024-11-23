@@ -128,8 +128,8 @@ export default function CheckoutWrapper() {
 
     const isPaymentInvalid = useMemo(
         () => {
-            return !store.inRange || !shippingCost || !itemTotalPayment || !methodPayment || !selectedAddress
-        }, [shippingCost, itemTotalPayment, methodPayment, selectAddress, store.inRange])
+            return !store.inRange || !shippingCost || !itemTotalPayment || !methodPayment || !selectedAddress || !!isError
+        }, [shippingCost, itemTotalPayment, methodPayment, selectAddress, store.inRange, isError])
     
     return (
         <div className="grid md:grid-cols-[2fr_1fr] md:w-auto gap-2 w-full p-2">
