@@ -82,7 +82,7 @@ export default function SiteNavbar() {
 
   return (
     <>
-      <Navbar isBordered className="shadow-sm hidden md:flex w-screen">
+      <Navbar isBordered className="shadow-sm hidden md:flex">
         <NavbarBrand className='w-[200px] justify-center' style={logo_font.style}>
           <Link color="foreground" href="/">
               <SiteLogo />
@@ -120,7 +120,7 @@ export default function SiteNavbar() {
                 Register
               </Link>
               <Button onPress={() => router.push('/login')} color='primary'>
-                Masuk
+                Login
               </Button>
             </div>
           )}

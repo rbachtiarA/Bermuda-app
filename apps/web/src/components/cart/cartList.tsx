@@ -60,10 +60,10 @@ export default function CartList() {
             const data = await getAllCartItems(user.id, store.id)
             dispatch(updatedCartFromDatabase(data))
         }
-
+        dispatch(resetCheckout())
         getData()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [store.id])
 
     return (
         // <section className="grid grid-cols-1 md:grid-cols-[4fr_2fr] lg:grid-cols-[4fr_2fr] w-full max-w-[1500px] mt-2 md:gap-2 md:px-2 mb-[66px] md:mb-0">

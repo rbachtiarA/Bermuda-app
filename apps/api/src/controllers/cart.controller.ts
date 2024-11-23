@@ -175,7 +175,7 @@ export class CartController {
     const userId = req.user?.id
     const data = await prisma.checkout.findUnique({
       select: { CartItem: {
-        include: { product: true }
+        include: { product: { include: {stock: true}} }
       } },
       where: {
         userId: +userId!

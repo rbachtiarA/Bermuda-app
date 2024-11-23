@@ -15,7 +15,7 @@ import { AddressSelector } from './addressSelector';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import { getNearestStore } from '@/lib/store.handler';
 import { updateStore } from '@/redux/slice/storeSlice';
-import { distance } from 'framer-motion';
+import StoreIcon from '../icon/StoreIcon';
 
 export default function AddressBar() {
   const dispatch = useAppDispatch();
@@ -54,15 +54,16 @@ export default function AddressBar() {
         <div className="flex items-center gap-2 font-medium">
           <LocationIcon className="w-4 h-4 text-current" />
           <AddressSelector />
-          <div className="flex items-center gap-2">
-            <p className="font-semibold">Branch Store : {store.name}</p>
-            {!store.inRange && (
-              <Tooltip content="Your location more than 50 km from nearest store">
-                <Chip size="sm" color="danger" variant="flat">
-                  Out of Range
-                </Chip>
+          <div className='flex items-center gap-2'>
+            <StoreIcon size={16}/>
+            <p className='font-semibold'>
+              Branch : {store.name}
+            </p>
+            {!store.inRange && 
+              <Tooltip content='Your location more than 50 km from nearest store'>
+                <Chip size='sm' color='danger' variant='flat'>Out of Range</Chip>
               </Tooltip>
-            )}
+            }
           </div>
         </div>
 

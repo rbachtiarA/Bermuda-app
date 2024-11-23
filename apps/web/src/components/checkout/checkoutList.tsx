@@ -3,15 +3,28 @@ import { getCheckoutItems } from "@/lib/cart"
 import currencyRupiah from "@/lib/rupiahCurrency"
 import { useAppSelector } from "@/redux/hook"
 import { ICartItem } from "@/type/cart"
-import { Card, CardBody, CardHeader, Image, Skeleton } from "@nextui-org/react"
+import { Card, CardBody, CardHeader, Image } from "@nextui-org/react"
 import { useEffect, useMemo, useState } from "react"
 
 export default function CheckoutList({ updateItemTotalPayment }: { updateItemTotalPayment: (totalPayment: number) => void }) {
-    const user = useAppSelector(state => state.user)
+    const store = useAppSelector(state => state.store)
     const [checkoutItems, setCheckoutItems] = useState<ICartItem[]>([])
-    
+    const productStockNotReady = useMemo(() => {
+        const stocks = checkoutItems.map((item) => item.product?.stock)
+        const stocksInStore = stocks.map((stock) => stock?.find((item) => item.storeId === store.id))
+        const productNotReady = checkoutItems.filter((item) => {
+            const productStock = stocksInStore.find((stock) => item.productId === stock?.productId)
+            if(productStock) {
+                return item.quantity > productStock.quantity
+            } 
+            return true
+        })
+        const rslt = productNotReady.map((item) => item.productId) 
+        return rslt
+    }, [store.id])
     const getData = async () => {
-        const data:  ICartItem[] = await getCheckoutItems(user.id)
+        const data:  ICartItem[] = await getCheckoutItems()
+        
         setCheckoutItems([...data])
         const total = data.reduce((total, item) => total+item.quantity*item.product?.price! ,0)
         updateItemTotalPayment(total)        
@@ -29,11 +42,11 @@ export default function CheckoutList({ updateItemTotalPayment }: { updateItemTot
             <CardBody className="grid grid-rows-[auto] gap-2">
 
                 {checkoutItems.map((item) => (
-                    <div key={item.id} className="flex gap-2 items-center w-full">
+                    <div key={item.id} className={`flex gap-2 items-center w-full ${productStockNotReady.includes(item.productId)? 'text-danger': ''}`}>
                         {/* <Skeleton className="w-[80px] h-[80px] rounded-lg" /> */}
                         <Image src={item.product?.imageUrl || `${process.env.NEXT_PUBLIC_BASE_API_URL}public/product/default-product-image.png`} 
                         className="w-[80px] h-[80px] rounded-lg" />
-                        <div className="flex flex-col justify-evenly md:h-full w-full">
+                        <div className={`flex flex-col justify-evenly md:h-full w-full`}>
                             <p>{item.product?.name}</p>
                             <div className="flex justify-between">
                                 <p className="font-semibold">{item.quantity}<span>&nbsp;x&nbsp;</span>{currencyRupiah(item.product?.price!)}</p>
