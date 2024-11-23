@@ -1,7 +1,4 @@
 import React from 'react';
-import { User } from '@nextui-org/react';
-import { EyeIcon } from '@/components/icons/eyeIcon';
-import { EditIcon } from '@/components/icons/editIcon';
 import { Tooltip } from '@nextui-org/react';
 import DelCategory from './deleteCategory';
 import { ICategory } from '@/type/category';
@@ -13,7 +10,7 @@ interface CategorynCellProps {
   onDeleted: () => Promise<void>;
 }
 
-const RenderCellCategory: React.FC<CategorynCellProps> = ({
+const RenderCategory: React.FC<CategorynCellProps> = ({
   category,
   columnKey,
   onDeleted,
@@ -47,4 +44,4 @@ const RenderCellCategory: React.FC<CategorynCellProps> = ({
   }
 };
 
-export default RenderCellCategory;
+export default RenderCategory;

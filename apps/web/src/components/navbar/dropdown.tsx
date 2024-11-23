@@ -10,7 +10,6 @@ import {
 import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import { deleteToken, getToken } from '@/lib/server';
-import Link from 'next/link';
 import { resetCart } from '@/redux/slice/cartSlice';
 import { resetCheckout } from '@/redux/slice/checkoutSlice';
 import { capitalizeWord } from '@/lib/user.handler';
@@ -79,7 +78,7 @@ export default function DropdownNav() {
         >
           <CartNavbar />
         </DropdownItem>
-        <DropdownItem 
+        <DropdownItem
           key="payment"
           className="hidden md:block gap-2 border-b"
           textValue={`Payment`}
@@ -88,12 +87,34 @@ export default function DropdownNav() {
           <p>Payment</p>
         </DropdownItem>
         <DropdownItem
-          onPress={() => router.push(role === 'SUPER_ADMIN' ? '/admin' : `/account/${user.id}`)}
+          onPress={() =>
+            router.push(
+              role === 'SUPER_ADMIN' || role === 'STORE_ADMIN'
+                ? '/admin'
+                : `/account/${user.id}`,
+            )
+          }
           key="Account"
           className="p-2"
-          textValue={role === 'SUPER_ADMIN' ? 'Dashboard' : 'Akun Saya'}
+          textValue={
+            role === 'SUPER_ADMIN' || role === 'STORE_ADMIN'
+              ? 'Dashboard'
+              : 'Akun Saya'
+          }
         >
-          <p>{role === 'SUPER_ADMIN' ? 'Dashboard' : 'Akun Saya'}</p> 
+          <p>
+            {role === 'SUPER_ADMIN' || role === 'STORE_ADMIN'
+              ? 'Dashboard'
+              : 'Akun Saya'}
+          </p>
+        </DropdownItem>
+        <DropdownItem
+          key="back"
+          className="hidden md:block gap-2 border-b"
+          textValue={`Back`}
+          onPress={() => router.push('/')}
+        >
+          <p>Back</p>
         </DropdownItem>
 
         <DropdownItem

@@ -6,8 +6,10 @@ import { useState } from 'react';
 
 export default function SideBar() {
   const [isDashboardOpen, setDashboardOpen] = useState(true);
+  const user = useAppSelector((state) => state.user);
   const [isAccountOpen, setAccountOpen] = useState(true);
   const path = usePathname();
+  const role = user.role;
 
   const toggleDashboard = () => {
     setDashboardOpen(!isDashboardOpen);
@@ -26,22 +28,26 @@ export default function SideBar() {
           {path.split('/')[1] === 'admin' && (
             <div className="pl-2">
               <ul className="list-none text-sm">
-                <li className="py-4">
-                  <Link
-                    href="/admin/user-management"
-                    className="no-underline text-gray-700 relative"
-                  >
-                    User Management
-                  </Link>
-                </li>
-                <li className="py-4">
-                  <Link
-                    href="/admin/store-admin-management"
-                    className="no-underline text-gray-700 relative"
-                  >
-                    Store Admin Management
-                  </Link>
-                </li>
+                {role === 'SUPER_ADMIN' && (
+                  <li className="py-4">
+                    <Link
+                      href="/admin/user-management"
+                      className="no-underline text-gray-700 relative"
+                    >
+                      User Management
+                    </Link>
+                  </li>
+                )}
+                {role === 'SUPER_ADMIN' && (
+                  <li className="py-4">
+                    <Link
+                      href="/admin/store-admin-management"
+                      className="no-underline text-gray-700 relative"
+                    >
+                      Store Admin Management
+                    </Link>
+                  </li>
+                )}
                 <li className="py-4">
                   <Link
                     href="/admin/store-management"

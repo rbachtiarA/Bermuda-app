@@ -13,10 +13,11 @@ import {
 import { ICategory } from '@/type/category';
 import { columns, INITIAL } from '@/components/category/columnCategory';
 import { getCategories } from '@/lib/category.handler';
-import RenderCellCategory from '@/components/category/renderCategory';
 import BottomContent from '@/components/bottomContent';
 import { classNames } from '@/components/classNames';
 import TopCategory from '@/components/category/topCategory';
+import { useAppSelector } from '@/redux/hook';
+import RenderCategory from '@/components/category/renderCategory';
 
 export default function ProductManagement() {
   const [filterValue, setFilterValue] = useState('');
@@ -33,18 +34,19 @@ export default function ProductManagement() {
   const [categories, setCategories] = useState<ICategory[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
+  const user = useAppSelector((state) => state.user);
+  const role = user?.role;
 
   const fetchCategories = useCallback(async () => {
     try {
       const { result, ok } = await getCategories();
-
       if (ok && result && Array.isArray(result.allCategory)) {
         setCategories(result.allCategory);
       } else {
-        setError('Gagal mengambil data pengguna');
+        setError('Gagal mengambil data kategori');
       }
     } catch (err) {
-      setError('Terjadi kesalahan saat mengambil data pengguna');
+      setError('Terjadi kesalahan saat mengambil data kategori');
     } finally {
       setLoading(false);
     }
@@ -58,17 +60,16 @@ export default function ProductManagement() {
   const hasSearchFilter = Boolean(filterValue);
 
   const headerColumns = React.useMemo(() => {
-    if (visibleColumns === 'all') return columns;
-    return columns.filter((column) =>
-      Array.from(visibleColumns).includes(column.uid),
-    );
-  }, [visibleColumns]);
+    return role === 'SUPER_ADMIN'
+      ? columns
+      : columns.filter((column) => column.uid !== 'actions');
+  }, [role]);
 
   const filteredItems = React.useMemo(() => {
     let filteredCategories = [...categories];
     if (hasSearchFilter) {
-      filteredCategories = filteredCategories.filter((user) =>
-        user.name.toLowerCase().includes(filterValue.toLowerCase()),
+      filteredCategories = filteredCategories.filter((category) =>
+        category.name.toLowerCase().includes(filterValue.toLowerCase()),
       );
     }
     return filteredCategories;
@@ -118,7 +119,7 @@ export default function ProductManagement() {
           <Table
             isCompact
             removeWrapper
-            aria-label="Example table with custom cells, pagination and sorting"
+            aria-label="Product Category Table"
             bottomContent={
               <BottomContent
                 selectedKeys={selectedKeys}
@@ -172,7 +173,7 @@ export default function ProductManagement() {
                 <TableRow key={item.id}>
                   {(columnKey) => (
                     <TableCell>
-                      <RenderCellCategory
+                      <RenderCategory
                         category={item}
                         columnKey={columnKey}
                         onDeleted={fetchCategories}

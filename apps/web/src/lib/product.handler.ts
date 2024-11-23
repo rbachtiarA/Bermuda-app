@@ -1,3 +1,5 @@
+import { IProduct } from '@/type/product';
+
 export const createProduct = async (
   data: {
     name: string;
@@ -28,7 +30,6 @@ export const createProduct = async (
       },
     );
 
-    // Memeriksa jika respons statusnya OK
     if (!res.ok) {
       throw new Error('Failed to create product');
     }
@@ -39,6 +40,43 @@ export const createProduct = async (
     console.error('Error creating product:', error);
     return { result: null, ok: false };
   }
+};
+
+export const updateProduct = async (
+  data: {
+    id: number;
+    name: string | undefined;
+    description: string;
+    price: number;
+    slug: string;
+    isRecommended?: boolean;
+    categories?: string[];
+    imageUrl: string | undefined;
+  },
+  file: File | undefined,
+  token: string | undefined,
+) => {
+  const formData = new FormData();
+  formData.append('data', JSON.stringify(data));
+  if (file) {
+    formData.append('file', file);
+  }
+  console.log(formData, '<<<<');
+
+  const { id } = data;
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_API_URL}product/${id}`,
+    {
+      method: 'PUT',
+      body: formData,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        // 'Content-Type': 'application/json',
+      },
+    },
+  );
+  const result = await res.json();
+  return { result, ok: res.ok };
 };
 
 export const getProducts = async (
@@ -69,17 +107,29 @@ export const getProducts = async (
   };
 };
 
-export const getProductBySlug = async (slug: string) => {
+export const getProductById = async (
+  productId: number,
+): Promise<IProduct | null> => {
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_API_URL}/product/${slug}`,
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_API_URL}product/${productId}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
     );
-    if (!response.ok) throw new Error('Failed to fetch product details');
-    const data = await response.json();
+
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.msg || 'Failed to fetch product');
+    }
+    const data = await res.json();
     return data.product;
-  } catch (error) {
-    console.error('Error fetching product by slug:', error);
-    return null;
+  } catch (err) {
+    console.error('Error fetching product:', err);
+    throw err;
   }
 };
 

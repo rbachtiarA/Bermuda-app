@@ -81,7 +81,16 @@ export class StockController {
 
       const stock = await prisma.stock.findUnique({
         where: { id },
-        select: { product: true, store: true, quantity: true },
+        select: {
+          product: true,
+          store: true,
+          quantity: true,
+          stockHistory: {
+            orderBy: {
+              createdAt: 'desc',
+            },
+          },
+        },
       });
 
       if (!stock) {
