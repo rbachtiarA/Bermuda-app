@@ -1,14 +1,22 @@
+import { StockHistory } from './stock';
 export interface IProduct {
   id: number;
   slug: string;
   name: string;
   description: string;
   price: number;
+  isRecommended?: boolean;
   stock?: IStocks[];
   imageUrl: string | null;
   createdAt: string;
   updatedAt: string;
-  categories: string[];
+  categories: number[];
+  onUpdate?: () => Promise<void>;
+}
+
+interface Category {
+  id: number;
+  name: string;
 }
 
 export interface IProductDel {
@@ -22,6 +30,7 @@ export interface IStocks {
   storeId: number;
   productId: number;
   product: IProduct;
+  stockHistory: any;
 }
 
 export interface Product {

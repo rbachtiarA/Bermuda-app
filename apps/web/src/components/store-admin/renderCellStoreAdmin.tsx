@@ -24,7 +24,9 @@ const RenderCellStoreAdmin: React.FC<StoreAdminCellProps> = ({
       return (
         <User
           avatarProps={{ radius: 'full', size: 'sm', src: user.avatarUrl }}
-          classNames={{ description: 'text-default-500' }}
+          classNames={{
+            description: 'text-default-500',
+          }}
           description={user.email}
           name={cellValue as string}
         >
@@ -34,7 +36,12 @@ const RenderCellStoreAdmin: React.FC<StoreAdminCellProps> = ({
     case 'role':
       return (
         <div className="flex flex-col">
-          <p className="text-bold text-small capitalize">{cellValue as string}</p>
+          <p className="text-bold text-small capitalize">
+            {cellValue as string}
+          </p>
+          {/* <p className="text-bold text-tiny capitalize text-default-500">
+            {user.role}
+          </p> */}
         </div>
       );
     case 'actions':

@@ -2,10 +2,14 @@ export interface IStock {
   name: any;
   id: number;
   productId: number;
-  product?: string;
-  store?: string;
+  product?: Object;
+  store?: Object;
   storeId: number;
   quantity: number;
+}
+interface Object {
+  id: number;
+  name: string;
 }
 export interface IStockCreate {
   productId: number;

@@ -18,43 +18,51 @@ import { updateStore } from '@/redux/slice/storeSlice';
 import { distance } from 'framer-motion';
 
 export default function AddressBar() {
-  const dispatch = useAppDispatch()
-  const user = useAppSelector(state => state.user)
-  const store = useAppSelector(state => state.store)
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => state.user);
+  const store = useAppSelector((state) => state.store);
 
   useEffect(() => {
-    if(!user.isLoggedIn || !user.selectedAddress) {
-        navigator.geolocation.getCurrentPosition(async (postition) => {
-          const { latitude, longitude } = postition.coords
-          const {status, msg, distance} = await getNearestStore(latitude, longitude)
-          
-          
-          if(status === 'ok') dispatch(updateStore({id: msg.id, name: msg.name, distance}))
-        })
+    if (!user.isLoggedIn || !user.selectedAddress) {
+      navigator.geolocation.getCurrentPosition(async (postition) => {
+        const { latitude, longitude } = postition.coords;
+        const { status, msg, distance } = await getNearestStore(
+          latitude,
+          longitude,
+        );
+
+        if (status === 'ok')
+          dispatch(updateStore({ id: msg.id, name: msg.name, distance }));
+      });
     } else {
       const getData = async () => {
-        const {status, msg, distance} = await getNearestStore(user.selectedAddress?.latitude!, user.selectedAddress?.longitude!)
-        if(status === 'ok') dispatch(updateStore({id: msg.id, name: msg.name, distance}))
-      }
-      
-      getData()
+        const { status, msg, distance } = await getNearestStore(
+          user.selectedAddress?.latitude!,
+          user.selectedAddress?.longitude!,
+        );
+        if (status === 'ok')
+          dispatch(updateStore({ id: msg.id, name: msg.name, distance }));
+      };
+
+      getData();
     }
-  },[user.selectedAddress])
+  }, [user.selectedAddress]);
+
   return (
     <div className="bg-gray-100 text-xs text-neutral-700 py-2 w-full hidden md:block">
       <div className="container mx-auto flex justify-between items-center px-4">
         <div className="flex items-center gap-2 font-medium">
           <LocationIcon className="w-4 h-4 text-current" />
           <AddressSelector />
-          <div className='flex items-center gap-2'>
-            <p className='font-semibold'>
-              Branch Store : {store.name}
-            </p>
-            {!store.inRange && 
-              <Tooltip content='Your location more than 50 km from nearest store'>
-                <Chip size='sm' color='danger' variant='flat'>Out of Range</Chip>
+          <div className="flex items-center gap-2">
+            <p className="font-semibold">Branch Store : {store.name}</p>
+            {!store.inRange && (
+              <Tooltip content="Your location more than 50 km from nearest store">
+                <Chip size="sm" color="danger" variant="flat">
+                  Out of Range
+                </Chip>
               </Tooltip>
-            }
+            )}
           </div>
         </div>
 
@@ -133,9 +141,8 @@ export default function AddressBar() {
                 Download Bermuda Store
               </button>
             </DropdownTrigger>
-            <DropdownMenu className="">
+            <DropdownMenu>
               <DropdownItem>
-                {/* <p className="mb-2">Scan QR atau download dari:</p> */}
                 <a href="https://play.google.com/">
                   <img
                     src="https://static-content.alfagift.id/static/play-store-btn.png"

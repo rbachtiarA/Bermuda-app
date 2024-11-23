@@ -63,6 +63,54 @@ export class ProductController {
     }
   }
 
+  async getProductById(req: Request, res: Response) {
+    try {
+      const id = parseInt(req.params.id, 10);
+
+      if (isNaN(id)) {
+        return res.status(400).send({
+          status: 'error',
+          msg: 'Invalid product ID!',
+        });
+      }
+
+      const product = await prisma.product.findUnique({
+        where: { id },
+        include: {
+          categories: true,
+          stock: {
+            include: {
+              stockHistory: {
+                orderBy: {
+                  createdAt: 'desc',
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!product) {
+        return res.status(404).send({
+          status: 'error',
+          msg: 'Product not found!',
+        });
+      }
+
+      res.status(200).send({
+        status: 'ok',
+        product,
+      });
+    } catch (err) {
+      console.error(err);
+
+      res.status(500).send({
+        status: 'error',
+        msg: err instanceof Error ? err.message : 'Server error',
+      });
+    }
+  }
+
   async ProdutSearch(req: Request, res: Response) {
     try {
       const { search } = req.query;
@@ -92,84 +140,12 @@ export class ProductController {
     }
   }
 
-  // async createOrUpdateProduct(req: Request, res: Response) {
-  //   try {
-  //     if (!req?.file) throw 'no file uploaded';
-
-  //     const link = `${process.env.BASE_URL_BE}public/product/${req?.file?.filename}`;
-
-  //     const {
-  //       id,
-  //       name,
-  //       description,
-  //       price,
-  //       slug,
-  //       isRecommended = false,
-  //       categories,
-  //     } = JSON.parse(req.body.data);
-  //     console.log(JSON.parse(req.body.data));
-
-  //     let product;
-
-  //     if (id) {
-  //       product = await prisma.product.update({
-  //         where: { id: Number(id) },
-  //         data: {
-  //           name,
-  //           description,
-  //           price: Number(price),
-  //           imageUrl: link,
-  //           slug,
-  //           isRecommended,
-  //           categories: {
-  //             set: [],
-  //             connect: categories.map((categoryId: number) => ({
-  //               id: Number(categoryId),
-  //             })),
-  //           },
-  //         },
-  //       });
-  //     } else {
-  //       product = await prisma.product.create({
-  //         data: {
-  //           name,
-  //           description,
-  //           price: Number(price),
-  //           imageUrl: link,
-  //           slug,
-  //           isRecommended,
-  //           categories: {
-  //             connect: categories.map((categoryId: number) => ({
-  //               id: Number(categoryId),
-  //             })),
-  //           },
-  //         },
-  //       });
-  //     }
-
-  //     res.status(201).send({
-  //       status: 'ok',
-  //       msg: id ? 'Product updated!' : 'Product created!',
-  //       product,
-  //     });
-  //   } catch (err) {
-  //     console.log(err);
-
-  //     res.status(400).send({
-  //       status: 'error',
-  //       msg: err,
-  //     });
-  //   }
-  // }
-
   async createProduct(req: Request, res: Response) {
     try {
-      // Memeriksa apakah file ada
       if (!req.file) throw new Error('No file uploaded');
 
       const link = `${process.env.BASE_URL_BE}public/product/${req.file.filename}`;
 
-      // Parse detail produk dari body request
       const {
         name,
         description,
@@ -179,7 +155,6 @@ export class ProductController {
         categories,
       } = JSON.parse(req.body.data);
 
-      // Membuat produk di database
       const product = await prisma.product.create({
         data: {
           name,
@@ -196,17 +171,14 @@ export class ProductController {
         },
       });
 
-      // Mengirimkan respons sukses
       res.status(201).send({
         status: 'ok',
         msg: 'Product created!',
         product,
       });
     } catch (err) {
-      // Mencetak error di console
       console.log(err);
 
-      // Mengirimkan respons error
       res.status(400).send({
         status: 'error',
         msg: err instanceof Error ? err.message : 'Unknown error',
@@ -216,10 +188,6 @@ export class ProductController {
 
   async updateProduct(req: Request, res: Response) {
     try {
-      if (!req?.file) throw 'No file uploaded';
-
-      const link = `${process.env.BASE_URL_BE}public/product/${req?.file?.filename}`;
-
       const {
         id,
         name,
@@ -228,8 +196,17 @@ export class ProductController {
         slug,
         isRecommended = false,
         categories,
+        imageUrl,
       } = JSON.parse(req.body.data);
 
+      console.log(req?.file, 'INI FILEEE');
+
+      let link: string = '';
+      if (req?.file) {
+        link = `${process.env.BASE_URL_BE}public/product/${req?.file?.filename}`;
+      } else {
+        link = imageUrl;
+      }
       const existingProduct = await prisma.product.findUnique({
         where: { id: Number(id) },
       });

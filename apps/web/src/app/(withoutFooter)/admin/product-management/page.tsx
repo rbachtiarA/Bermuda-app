@@ -17,6 +17,7 @@ import { IProduct } from '@/type/product';
 import RenderProduct from '@/components/product/renderProduct';
 import { columns, INITIAL } from '@/components/product/columnProduct';
 import TopProduct from '@/components/product/topProduct';
+import { useAppSelector } from '@/redux/hook';
 
 export default function DiscountManagement() {
   const [filterValue, setFilterValue] = useState('');
@@ -35,6 +36,9 @@ export default function DiscountManagement() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
   const [totalPages, setTotalPages] = useState(0);
+
+  const user = useAppSelector((state) => state.user);
+  const role = user?.role;
 
   const fetcProducts = useCallback(async () => {
     setLoading(true);
@@ -63,11 +67,10 @@ export default function DiscountManagement() {
   }, [fetcProducts]);
 
   const headerColumns = React.useMemo(() => {
-    if (visibleColumns === 'all') return columns;
-    return columns.filter((column) =>
-      Array.from(visibleColumns).includes(column.uid),
-    );
-  }, [visibleColumns]);
+    return role === 'SUPER_ADMIN'
+      ? columns
+      : columns.filter((column) => column.uid !== 'actions');
+  }, [role]);
 
   const onRowsPerPageChange = React.useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
