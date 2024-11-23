@@ -11,7 +11,7 @@ const HomePage: NextPage = () => {
           <PromoCarousel />
         </div>
         <h1 className="text-2xl font-bold pt-8 px-4">
-          Selamat Datang di Toko Grosir Online
+          Selamat Datang di Bermuda Store
         </h1>
         <div className="py-10">
           <ProductList />

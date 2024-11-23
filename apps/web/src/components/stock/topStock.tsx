@@ -13,6 +13,7 @@ import { capitalize } from '@/components/utils';
 import { Selection } from '@nextui-org/react';
 import ModalCreateCategory from './modalCreateStock';
 import { columns } from './columnStock';
+import { useAppSelector } from '@/redux/hook';
 
 interface TopContentProps {
   filterValue: string;
@@ -25,16 +26,22 @@ interface TopContentProps {
   hasSearchFilter: boolean;
 }
 
-const TopCategory: React.FC<TopContentProps> = ({
+const TopStock: React.FC<TopContentProps> = ({
   filterValue,
   visibleColumns,
   onSearchChange,
   setVisibleColumns,
   usersLength,
   onRowsPerPageChange,
-  rowsPerPage,
-  hasSearchFilter,
 }) => {
+  const user = useAppSelector((state) => state.user);
+  const role = user?.role;
+
+  const filteredColumns = React.useMemo(() => {
+    return role === 'SUPER_ADMIN'
+      ? columns
+      : columns.filter((column) => column.uid !== 'actions');
+  }, [role]);
   return (
     <div className="flex flex-col gap-4">
       <div className="flex justify-between gap-3 items-end">
@@ -52,34 +59,36 @@ const TopCategory: React.FC<TopContentProps> = ({
           onClear={() => onSearchChange('')}
           onValueChange={onSearchChange}
         />
-        <div className="flex gap-3">
-          <Dropdown>
-            <DropdownTrigger className="hidden sm:flex">
-              <Button
-                endContent={<ChevronDownIcon className="text-small" />}
-                size="sm"
-                variant="flat"
+        {role === 'SUPER_ADMIN' && (
+          <div className="flex gap-3">
+            <Dropdown>
+              <DropdownTrigger className="hidden sm:flex">
+                <Button
+                  endContent={<ChevronDownIcon className="text-small" />}
+                  size="sm"
+                  variant="flat"
+                >
+                  Columns
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                disallowEmptySelection
+                aria-label="Table Columns"
+                closeOnSelect={false}
+                selectedKeys={visibleColumns}
+                selectionMode="multiple"
+                onSelectionChange={setVisibleColumns}
               >
-                Columns
-              </Button>
-            </DropdownTrigger>
-            <DropdownMenu
-              disallowEmptySelection
-              aria-label="Table Columns"
-              closeOnSelect={false}
-              selectedKeys={visibleColumns}
-              selectionMode="multiple"
-              onSelectionChange={setVisibleColumns}
-            >
-              {columns.map((column) => (
-                <DropdownItem key={column.uid} className="capitalize">
-                  {capitalize(column.name)}
-                </DropdownItem>
-              ))}
-            </DropdownMenu>
-          </Dropdown>
-          <ModalCreateCategory />
-        </div>
+                {columns.map((column) => (
+                  <DropdownItem key={column.uid} className="capitalize">
+                    {capitalize(column.name)}
+                  </DropdownItem>
+                ))}
+              </DropdownMenu>
+            </Dropdown>
+            <ModalCreateCategory />
+          </div>
+        )}
       </div>
       <div className="flex justify-between items-center">
         <span className="text-default-400 text-small">
@@ -101,4 +110,4 @@ const TopCategory: React.FC<TopContentProps> = ({
   );
 };
 
-export default TopCategory;
+export default TopStock;

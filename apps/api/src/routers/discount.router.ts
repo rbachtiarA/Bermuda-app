@@ -13,8 +13,17 @@ export class DiscountRouter {
   }
 
   private initializeRoutes(): void {
-    this.router.get('/store/:storeId', verifyToken, this.discountController.getAvailableDiscountOnCheckout)
-    this.router.get('/address', this.discountController.updateProvince)
+    this.router.get(
+      '/store/:storeId',
+      verifyToken,
+      this.discountController.getAvailableDiscountOnCheckout,
+    );
+    this.router.get('/address', this.discountController.updateProvince);
+    this.router.post('/manual', this.discountController.createManualDiscount);
+    this.router.post(
+      '/conditional',
+      this.discountController.createConditionalDiscount,
+    );
   }
 
   getRouter(): Router {

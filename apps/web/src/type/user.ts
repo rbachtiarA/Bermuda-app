@@ -3,6 +3,7 @@ export interface IUser {
   name: string;
   email: string;
   role: string;
+  referralCode: string;
   avatarUrl: string;
   isVerified: boolean;
 }
@@ -23,7 +24,7 @@ export interface IUserState {
   role: string;
   avatarUrl: string;
   address:
-      {
+    | {
         label: string;
         recipient: string;
         phoneNumber: string;

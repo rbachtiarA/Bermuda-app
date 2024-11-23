@@ -13,10 +13,11 @@ import {
 import { IStock } from '@/type/stock';
 import { columns, INITIAL } from '@/components/stock/columnStock';
 import { getStocks } from '@/lib/stock.handler';
-import RenderCellStock from '@/components/stock/renderStock';
 import BottomContent from '@/components/bottomContent';
 import { classNames } from '@/components/classNames';
 import TopStock from '@/components/stock/topStock';
+import { useAppSelector } from '@/redux/hook';
+import RenderStock from '@/components/stock/renderStock';
 
 export default function StockManagement() {
   const [filterValue, setFilterValue] = useState('');
@@ -33,6 +34,8 @@ export default function StockManagement() {
   const [stocks, setStocks] = useState<IStock[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
+  const user = useAppSelector((state) => state.user);
+  const role = user?.role;
 
   const fetchStocks = useCallback(async () => {
     try {
@@ -58,19 +61,22 @@ export default function StockManagement() {
   const hasSearchFilter = Boolean(filterValue);
 
   const headerColumns = React.useMemo(() => {
-    if (visibleColumns === 'all') return columns;
-    return columns.filter((column) =>
-      Array.from(visibleColumns).includes(column.uid),
-    );
-  }, [visibleColumns]);
+    return role === 'SUPER_ADMIN'
+      ? columns
+      : columns.filter((column) => column.uid !== 'actions');
+  }, [role]);
 
   const filteredItems = React.useMemo(() => {
     let filteredstocks = [...stocks];
+    console.log(filterValue, 'USER');
+
     if (hasSearchFilter) {
-      filteredstocks = filteredstocks.filter((user) =>
-        user.name.toLowerCase().includes(filterValue.toLowerCase()),
+      filteredstocks = filteredstocks.filter((stock: IStock) =>
+        stock?.product?.name.toLowerCase().includes(filterValue.toLowerCase()),
       );
     }
+    console.log(filteredstocks, 'USER');
+
     return filteredstocks;
   }, [stocks, filterValue]);
 
@@ -172,7 +178,7 @@ export default function StockManagement() {
                 <TableRow key={item.id}>
                   {(columnKey) => (
                     <TableCell>
-                      <RenderCellStock
+                      <RenderStock
                         stock={item}
                         columnKey={columnKey}
                         onDeleted={fetchStocks}
