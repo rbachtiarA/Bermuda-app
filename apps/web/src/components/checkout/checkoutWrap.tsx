@@ -31,21 +31,19 @@ export default function CheckoutWrapper() {
     const router = useRouter()
     const discountCut = useMemo(() => {
         if(!!discount) {
-            let val = 0
             switch (discount.discountType) {
                 case 'FLAT':
-                    val = discount.value
-                    break;
+                    return discount.value
                 case 'PERCENTAGE':
                     //if value based on 100/100
-                    val = itemTotalPayment!*(discount.value/100)
-                    break;
+                    return itemTotalPayment!*(discount.value/100)
                 case 'REFERRAL_GIVER':
-                    break;
+                    return discount.value
                 case 'REFERRAL_USER':
-                    break;
+                    return discount.value
+                default:
+                    return 0
             }
-            return val
         } else {
             return 0
         }

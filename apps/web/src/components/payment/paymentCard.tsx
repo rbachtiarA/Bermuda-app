@@ -1,8 +1,7 @@
 'use client'
 import { cancelOrder, getOrderPendingPayment } from "@/lib/order.handler"
-import { useAppSelector } from "@/redux/hook"
 import { IOrder } from "@/type/order"
-import { Card, CardBody, CardFooter, CardHeader } from "@nextui-org/react"
+import { Card, CardBody, CardFooter, CardHeader, Divider } from "@nextui-org/react"
 import { useEffect, useState } from "react"
 import PaymentDetails from "./paymentDetails/paymentDetails"
 import PaymentUploadProof from "./paymentDetails/paymentUploadProof"
@@ -13,7 +12,6 @@ import PaymentCancel from "./paymentCancel"
 import PaymentEmpty from "./paymentEmpty"
 
 export default function PaymentCard() {
-    const user = useAppSelector(state => state.user)
     const [data, setData] = useState<IOrder | null>(null)
     
     const getData = async () => {
@@ -44,8 +42,9 @@ export default function PaymentCard() {
                 <CardBody>
                     <div>
                         <h3 className="font-semibold">Shipping Address</h3>
-                        <p>{data?.Address.addressLine}, {data?.Address.city}, {data?.Address.state}, {data?.Address.postalCode}</p>
+                        <p>{data?.Address.addressLine}</p>
                     </div>
+                    <Divider className="my-1" />
                     <PaymentDetails DiscountAmount={data.discountAmount} shippingCost={data.shippingCost} items={data.orderItems} orderId={data?.id!} status={data?.status} totalAmount={data?.totalAmount!} paymentMethod={data.Payment.paymentMethod} />
 
                     {

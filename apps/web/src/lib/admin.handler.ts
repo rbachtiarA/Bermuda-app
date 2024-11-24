@@ -85,11 +85,11 @@ export const getAdminOrderById = async (orderId: number) => {
         headers: {
             "Content-type":"application/json",
             'Authorization': `Bearer ${token}`
-        }
+        },
+        next: { revalidate: 1 }
     })
 
     const { status, msg }: {status: string, msg: IOrder} = await res.json()
-    console.log(status, msg, 'hello');
     
     return { status, msg }
 }

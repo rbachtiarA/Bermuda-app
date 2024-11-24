@@ -1,5 +1,6 @@
 import { IAddress } from "./address"
 import { IProduct } from "./product"
+import { IStore } from "./store"
 
 export interface IOrder {
     id: number,
@@ -18,6 +19,7 @@ export interface IOrder {
     discountAmount: number
     shippedAt: string | null
     storeId: number
+    Store: IStore
 }
     
 

@@ -33,7 +33,6 @@ export class CreateOrderController {
         const orderItem = checkoutItem?.CartItem.map((item) => {
             return { productId: item.productId, quantity: item.quantity, price: item.product.price, discountValue: 0 }
         })
-        console.log(orderItem);
         
         if(!orderItem) throw 'Order is Invalid'
 
@@ -115,7 +114,7 @@ export class CreateOrderController {
                 //midtrans body
                 const parameter = {
                     transaction_details: {
-                        order_id: `ORDER_A${order.id}`,
+                        order_id: `${process.env.PREFIX_ORDERNAME_MIDTRANS}${order.id}`,
                         gross_amount: totalAmount
                     },
                     // item_details: [...itemDetails, {

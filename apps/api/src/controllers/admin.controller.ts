@@ -12,6 +12,7 @@ const getExistingOrder = async (orderId: number) => {
         include: {
             Payment: true,
             Address: true,
+            Store: true,
             orderItems: {
                 include: {
                     product: true
