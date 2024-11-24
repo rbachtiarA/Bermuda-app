@@ -16,8 +16,8 @@ export default function DiscountCard({discount, itemTotalPayment, onSelect, onCl
         <CardBody>
         <div>
             <p>{discount.discountType}</p>
-            <p>potongan : {discount.discountType !== 'PERCENTAGE'? currencyRupiah(discount.value) : `${discount.value}%`}</p>
-            <p>pembelian minimum : {currencyRupiah(discount.minPurchase!)}</p>
+            <p>Discount cut : {discount.discountType !== 'PERCENTAGE'? currencyRupiah(discount.value) : `${discount.value}%`}</p>
+            <p>Minimum purchase: {currencyRupiah(discount.minPurchase!)}</p>
         </div> 
         </CardBody>
     </Card>
