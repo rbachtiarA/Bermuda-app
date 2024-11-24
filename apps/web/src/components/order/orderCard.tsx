@@ -25,7 +25,7 @@ export default function OrderCard({order, ...props}: {order: IOrder, className?:
                 <CardBody>
                     {order.orderItems.map((item) => (
                         <div key={item.id} className="flex gap-2">
-                            <Image src={item.product.imageUrl || `${process.env.NEXT_PUBLIC_BASE_API_URL}public/product/default-product-image.png`} className="w-[100px] h-auto"/>
+                            <Image src={item.product.imageUrl || `/default-product-image.png`} className="w-[100px] h-auto"/>
                             <div className="flex flex-col justify-around">
                                 <p className="font-semibold">{item.product.name}</p>
                                 <p>{item.quantity} x {currencyRupiah(item.price)}</p>
