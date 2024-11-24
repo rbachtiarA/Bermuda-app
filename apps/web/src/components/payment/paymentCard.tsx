@@ -1,6 +1,5 @@
 'use client'
 import { cancelOrder, getOrderPendingPayment } from "@/lib/order.handler"
-import { useAppSelector } from "@/redux/hook"
 import { IOrder } from "@/type/order"
 import { Card, CardBody, CardFooter, CardHeader } from "@nextui-org/react"
 import { useEffect, useState } from "react"
@@ -13,7 +12,6 @@ import PaymentCancel from "./paymentCancel"
 import PaymentEmpty from "./paymentEmpty"
 
 export default function PaymentCard() {
-    const user = useAppSelector(state => state.user)
     const [data, setData] = useState<IOrder | null>(null)
     
     const getData = async () => {
