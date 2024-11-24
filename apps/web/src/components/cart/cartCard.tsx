@@ -49,7 +49,7 @@ export default function CartCard({cart, checkout, soldOut}: {cart: ICartItem, ch
                 <div className="flex w-full gap-x-2 justify-center items-center">
                     <div className="">
                         {/* <Skeleton className="rounded-lg w-[50px] h-[50px] md:w-[150px] md:h-[150px]" /> */}
-                        <Image src={product?.imageUrl || `${process.env.NEXT_PUBLIC_BASE_API_URL}public/product/default-product-image.png`} alt={`${product?.name}`} 
+                        <Image src={product?.imageUrl || `/default-product-image.png`} alt={`${product?.name}`} 
                         width={50} height={50} sizes="100vw"
                         className="rounded-lg w-[50px] h-[50px] md:w-[150px] md:h-[150px]" />
                     </div>

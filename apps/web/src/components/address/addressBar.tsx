@@ -67,7 +67,7 @@ export default function AddressBar() {
           </div>
         </div>
 
-        <div className="gap-4 hidden md:flex">
+        <div className="gap-4 hidden lg:flex">
           <Dropdown>
             <DropdownTrigger>
               <button className="text-neutral-700 text-xs">

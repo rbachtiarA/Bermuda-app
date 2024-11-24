@@ -9,6 +9,7 @@ import {
   Spinner,
   Button,
   Divider,
+  Badge,
 } from '@nextui-org/react';
 import SiteLogo from './../logo';
 import Category from './../category';
@@ -30,6 +31,7 @@ import LinkButtonBottomNavbar from '../bottomNavbar/LinkButton.BottomNavbar';
 import NotificationBottomNavbar from '../bottomNavbar/notificationCart.BottomNavbar';
 import { useRouter } from 'next/navigation';
 import { Quicksand } from 'next/font/google';
+import ProductIcon from '../icon/productIcon';
 
 const logo_font = Quicksand({
   weight: ['400'],
@@ -93,7 +95,6 @@ export default function SiteNavbar() {
             <NavbarItem>
               <Category />
             </NavbarItem>
-
             <NavbarItem className="w-full min-w-[400px]">
               <SearchNav
                 search={search}

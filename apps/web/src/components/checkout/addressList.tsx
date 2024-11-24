@@ -28,6 +28,11 @@ export default function AddressessList({ selectedAddress, updateSelectedAddress 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
+    useEffect(() => {
+        if(user.selectedAddress !== undefined) {
+            updateSelectedAddress(user.selectedAddress as IAddress)
+        }
+    }, [user.selectedAddress])
     return (
         <>
             <Card className="flex flex-col p-2">
@@ -43,7 +48,7 @@ export default function AddressessList({ selectedAddress, updateSelectedAddress 
                         selectedAddress &&
                         <>
                             <p className="font-semibold">{selectedAddress.label}</p>
-                            <p>{selectedAddress?.addressLine}, {selectedAddress?.city}, {selectedAddress?.state}, {selectedAddress?.postalCode}</p>
+                            <p>{selectedAddress?.addressLine}</p>
                         </>
                     }
                 </CardBody>

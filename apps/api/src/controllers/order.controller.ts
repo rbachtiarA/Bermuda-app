@@ -42,6 +42,7 @@ export class OrderController {
                 include: {
                     Payment: true,
                     Address: true,
+                    Store: true,
                     orderItems: {
                         include: {
                             product: true
@@ -173,7 +174,7 @@ export class OrderController {
             if(existOrder.Payment?.paymentMethod === 'Gateway' && !isExpired) {
                 //cancel midtrans
                 try {
-                    const midtransStatus = await midtrans.snap.transaction.cancel(`ORDER_A${existOrder.id}`)
+                    const midtransStatus = await midtrans.snap.transaction.cancel(`${process.env.PREFIX_ORDERNAME_MIDTRANS}${existOrder.id}`)
                 } catch (error) {
                     return res.status(200).send({status: 'ok', msg: 'NOT_FOUND'})
                 }

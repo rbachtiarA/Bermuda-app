@@ -2,6 +2,7 @@
 import { getCategories } from '@/lib/category.handler';
 import { ICategory } from '@/type/category';
 import { useEffect, useState } from 'react';
+import CategoryIcon from './icon/categoryIcon';
 
 const CategoryDropdown: React.FC = () => {
   const [categories, setCategories] = useState<ICategory[]>([]);
@@ -31,8 +32,11 @@ const CategoryDropdown: React.FC = () => {
         isDropdownOpen ? setIsDropdownOpen(false) : setIsDropdownOpen(true);
       }}
     >
-      <button className="px-4 py-2 text-sm font-medium text-gray-700 bg-white rounded-md hover:bg-gray-100">
-        Kategori
+      <button className="px-4 py-2 text-sm font-medium text-gray-700 bg-white rounded-md hover:bg-gray-100 flex items-center gap-2">
+        <CategoryIcon size={20}/>
+        <span>
+          Kategori
+        </span>
       </button>
       {isDropdownOpen && (
         <div className="order-1 absolute left-0 w-48 mt-2 origin-top-left bg-white border border-gray-200 rounded-md shadow-lg">
