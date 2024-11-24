@@ -114,7 +114,7 @@ export class CreateOrderController {
                 //midtrans body
                 const parameter = {
                     transaction_details: {
-                        order_id: `ORDER_A${order.id}`,
+                        order_id: `${process.env.PREFIX_ORDERNAME_MIDTRANS}${order.id}`,
                         gross_amount: totalAmount
                     },
                     // item_details: [...itemDetails, {
