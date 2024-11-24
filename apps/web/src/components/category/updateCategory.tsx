@@ -52,7 +52,6 @@ export default function UpdateCategory({ categoryId }: { categoryId: number }) {
 
   return (
     <>
-      {/* Tooltip dengan ikon edit */}
       <Tooltip color="primary" content="Edit category">
         <span
           className="text-lg text-primary cursor-pointer active:opacity-50"
@@ -62,7 +61,6 @@ export default function UpdateCategory({ categoryId }: { categoryId: number }) {
         </span>
       </Tooltip>
 
-      {/* Modal untuk Update Category */}
       <Modal isOpen={isOpen} onClose={onClose} placement="top-center">
         <ModalContent>
           <ModalHeader className="flex flex-col gap-1">

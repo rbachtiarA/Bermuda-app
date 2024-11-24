@@ -22,7 +22,15 @@ export class ProductRouter {
       checkSuperAdmin,
       this.productController.createProduct,
     );
+    this.router.put(
+      '/:id',
+      uploader('product-', '/product').single('file'),
+      verifyToken,
+      checkSuperAdmin,
+      this.productController.updateProduct,
+    );
     this.router.get('/products', this.productController.getProducts);
+    this.router.get('/:id', this.productController.getProductById);
     this.router.delete(
       '/:id',
       verifyToken,

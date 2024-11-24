@@ -16,13 +16,12 @@ interface StocknCellProps {
   onDeleted: () => Promise<void>;
 }
 
-const RenderCellStock: React.FC<StocknCellProps> = ({
+const RenderStock: React.FC<StocknCellProps> = ({
   stock,
   columnKey,
   onDeleted,
 }) => {
   const cellValue = stock[columnKey as keyof IStock];
-  console.log(cellValue, columnKey, '??????');
 
   switch (columnKey) {
     case 'id':
@@ -57,4 +56,4 @@ const RenderCellStock: React.FC<StocknCellProps> = ({
   }
 };
 
-export default RenderCellStock;
+export default RenderStock;

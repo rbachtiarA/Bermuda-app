@@ -20,10 +20,8 @@ export class StoreAdminController {
         name: '',
         password: '',
         role: 'STORE_ADMIN',
-        isVerified: true,
-        referralCode: null,
-        cart: { create: {} },
-        checkout: { create: {} },
+        isVerified: false,
+        referralCode: null
       },
     });
 
@@ -122,7 +120,7 @@ export class StoreAdminController {
   async deleteStoreAdmin(req: Request, res: Response) {
     try {
       const requesterRole = req.user?.role;
-      if (requesterRole !== 'Super_Admin') {
+      if (requesterRole !== 'SUPER_ADMIN') {
         return res.status(403).send({
           status: 'error',
           msg: 'Unauthorized access',
@@ -140,7 +138,7 @@ export class StoreAdminController {
 
       const storeAdmin = await prisma.user.findUnique({
         where: { id },
-        select: { role: true },
+        select: { role: true, checkout: true, cart: true },
       });
 
       if (!storeAdmin || storeAdmin.role !== 'STORE_ADMIN') {
@@ -148,6 +146,16 @@ export class StoreAdminController {
           status: 'error',
           msg: 'Store Admin not found',
         });
+      }
+      
+      if(storeAdmin.cart && storeAdmin.checkout) {
+        await prisma.cart.delete({
+          where: {id: storeAdmin.cart?.id } 
+        })
+  
+        await prisma.checkout.delete({
+          where: {id: storeAdmin.checkout?.id}
+        })
       }
 
       await prisma.user.delete({

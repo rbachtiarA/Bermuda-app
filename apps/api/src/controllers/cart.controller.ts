@@ -142,13 +142,28 @@ export class CartController {
 
   async deleteCartItem(req: Request, res: Response) {
     try {
-      const { cartItemId} = req.params
-
-      const deletedItem = await prisma.cartItem.delete({
-        where: { id: +cartItemId}
+      const { cartIds } = req.query
+      const userId = req.user?.id
+      const deletedIds = `${cartIds}`.split(',').map((item) => Number(item))
+      const cart = await prisma.cart.findUnique({
+        where: {
+          userId: +userId!
+        }
       })
 
-      return res.status(200).send({status: 'ok', data: deletedItem})
+      if(!cart) throw 'User is invalid'
+      await prisma.$transaction(async (tx) => {
+        const deletedItem = await tx.cartItem.deleteMany({
+          where: {
+            cartId: cart?.id,
+            id: { in: deletedIds }
+          }
+        })
+
+        if(deletedItem.count !== deletedIds.length) throw 'Invalid Checkout Id'
+      })
+
+      return res.status(200).send({status: 'ok', data: deletedIds})
     } catch (error) {
       return res.status(400).send({status: 'error', msg: error})
     }
@@ -160,7 +175,7 @@ export class CartController {
     const userId = req.user?.id
     const data = await prisma.checkout.findUnique({
       select: { CartItem: {
-        include: { product: true }
+        include: { product: { include: {stock: true}} }
       } },
       where: {
         userId: +userId!

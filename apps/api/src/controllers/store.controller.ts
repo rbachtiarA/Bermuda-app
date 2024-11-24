@@ -100,7 +100,8 @@ export class StoreController {
       const closestStore = nearestStore(Number(lat), Number(lon), stores);
       return res.status(200).send({
         status: 'ok',
-        msg: closestStore,
+        msg: closestStore?.store,
+        distance: closestStore?.distance
       });
     } catch (error) {
       return res.status(400).send({

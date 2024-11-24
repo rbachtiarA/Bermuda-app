@@ -58,8 +58,8 @@ export default function PaymentTotalList(
                         {paymentMethodOptions()}
                         <Divider />    
                     </div>
+                        {isError !== null && <p className="text-danger text-wrap md:max-w-[270px]">{isError}</p>}
                         <Button color="primary" className="my-2" onPress={onBuy} fullWidth isDisabled={isPaymentInvalid || isLoading}>{isLoading? <Spinner color="default"/> :'Buy now' }</Button>
-                        {isError !== null && <p className="text-sm text-warning-500 text-wrap md:max-w-[270px]">{isError}</p>}
             </CardFooter>
         </Card>
     )

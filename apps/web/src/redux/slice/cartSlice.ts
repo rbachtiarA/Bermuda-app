@@ -30,9 +30,9 @@ export const cartSlice = createSlice({
                 return state
             }
         },
-        removedFromCart: (state, action: PayloadAction<ICartItem>) => {
-            const { productId } = action.payload
-            return [...state.filter((cartItem) => cartItem.productId !== productId)]
+        removedFromCart: (state, action: PayloadAction<number[]>) => {
+            const selectedIds = action.payload
+            return [...state.filter((cartItem) => !selectedIds.includes(cartItem.id))]
         },
         resetCart: (state) => {
             return []

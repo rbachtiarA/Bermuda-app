@@ -8,27 +8,35 @@ import {
   Button,
   Select,
   SelectItem,
+  Tooltip,
 } from '@nextui-org/react';
-import { PlusIcon } from '../icons/plusIcon';
 import { getToken } from '@/lib/server';
-import { createProduct } from '@/lib/product.handler';
+import { getProductById, updateProduct } from '@/lib/product.handler';
 import { ICategory } from '@/type/category';
 import { getCategories } from '@/lib/category.handler';
+import { IProduct } from '@/type/product';
+import { EditIcon } from '../icons/editIcon';
 
-export default function ModalCreateProduct() {
+export default function UpdateProduct({
+  productId,
+  onUpdate,
+}: {
+  productId: number;
+  onUpdate: () => Promise<void>;
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const [categories, setCategories] = useState<ICategory[]>([]);
+  const [product, setProduct] = useState<IProduct>();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState(0);
   const [slug, setSlug] = useState('');
   const [isRecommended, setIsRecommended] = useState(false);
-  const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
-
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [file, setFile] = useState<File | undefined>(undefined);
   const [message, setMessage] = useState('');
 
-  const onOpen = () => setIsOpen(true);
   const onClose = () => {
     setIsOpen(false);
     setName('');
@@ -38,31 +46,61 @@ export default function ModalCreateProduct() {
     setIsRecommended(false);
     setSelectedCategories([]);
     setMessage('');
+    setImageUrl('');
   };
 
-  const handleCreate = async () => {
+  const fetchProductById = async (id: number) => {
+    try {
+      const token = await getToken();
+      const res = await getProductById(productId);
+
+      if (res) {
+        const data = res;
+        setProduct(data);
+        setImageUrl(data.imageUrl);
+        setName(data.name);
+        setDescription(data.description);
+        setPrice(data.price);
+        setSlug(data.slug);
+        setIsRecommended(data.isRecommended || false);
+        const result: string[] =
+          data?.categories?.map((item: any) => String(item.id)) || [];
+        setSelectedCategories(result);
+        setIsOpen(true);
+      } else {
+        setMessage('Gagal mendapatkan detail stok.');
+      }
+    } catch (error) {
+      setMessage('Terjadi kesalahan saat mengambil data.');
+    }
+  };
+
+  const handleUpdate = async () => {
     const data = {
-      name,
-      description,
-      price,
-      slug,
-      isRecommended,
-      categories: selectedCategories,
+      id: productId || 0,
+      name: name || '',
+      description: description || '',
+      price: price || 0,
+      slug: slug || '',
+      isRecommended: isRecommended || false,
+      categories: selectedCategories || [],
+      imageUrl: imageUrl || '',
     };
     try {
       const token = await getToken();
-      const { result, ok } = await createProduct(data, file, token);
+      const { result, ok } = await updateProduct(data, file, token);
 
       if (ok && result) {
-        setMessage('Product created successfully!');
-        window.location.reload();
+        setMessage('Product updated successfully!');
+        setIsOpen(false);
+        await onUpdate();
       } else {
         setMessage(result?.msg || 'Error occurred!');
       }
 
       onClose();
     } catch (error) {
-      setMessage('Failed to create product!');
+      setMessage('Failed to updated product!');
     }
   };
 
@@ -84,30 +122,23 @@ export default function ModalCreateProduct() {
     }
   }, [isOpen]);
 
-  const handleCategoryChange = (
-    event: React.ChangeEvent<HTMLSelectElement>,
-  ) => {
-    if (!event.target.selectedOptions) return;
-
-    const categoryIds = Array.from(event.target.selectedOptions, (option) =>
-      parseInt(option.value, 10),
-    );
-    setSelectedCategories(categoryIds);
+  const handleSelectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCategories(e.target.value.split(','));
   };
 
   return (
     <>
-      <Button
-        onPress={onOpen}
-        variant="flat"
-        endContent={<PlusIcon />}
-        size="sm"
-      >
-        Add New Product
-      </Button>
+      <Tooltip color="primary" content="Edit product">
+        <span
+          className="text-lg text-primary cursor-pointer active:opacity-50"
+          onClick={() => fetchProductById(productId)}
+        >
+          <EditIcon />
+        </span>
+      </Tooltip>
       <Modal isOpen={isOpen} onClose={onClose} placement="top-center">
         <ModalContent>
-          <ModalHeader>Create Product</ModalHeader>
+          <ModalHeader>Update Product</ModalHeader>
           <ModalBody>
             <div>
               <label
@@ -195,10 +226,10 @@ export default function ModalCreateProduct() {
             </div>
             <div className="mt-4">
               <Select
-                multiple
+                selectionMode="multiple"
                 aria-label="Select Categories"
-                value={selectedCategories.map(String)}
-                onChange={handleCategoryChange}
+                selectedKeys={selectedCategories}
+                onChange={handleSelectionChange}
               >
                 {categories?.length > 0 ? (
                   categories.map((category) => (
@@ -223,10 +254,31 @@ export default function ModalCreateProduct() {
               >
                 Upload Product Image
               </label>
+              {imageUrl && (
+                <div className="mb-2">
+                  <p className="text-sm text-gray-500">Current Image:</p>
+                  <img
+                    src={imageUrl || ''}
+                    alt="Product"
+                    className="w-32 h-32 object-cover rounded-md"
+                  />
+                </div>
+              )}
               <input
                 id="file"
                 type="file"
-                onChange={(e) => setFile(e.target.files?.[0])}
+                onChange={(e) => {
+                  const selectedFile = e.target.files?.[0];
+                  if (selectedFile) {
+                    setFile(selectedFile);
+                    const filePreviewUrl = URL.createObjectURL(selectedFile);
+                    setImageUrl(filePreviewUrl);
+
+                    if (imageUrl) {
+                      URL.revokeObjectURL(imageUrl);
+                    }
+                  }
+                }}
                 className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border file:border-gray-300 file:text-sm file:font-medium file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
                 accept="image/*"
                 required
@@ -239,12 +291,15 @@ export default function ModalCreateProduct() {
             <Button color="danger" variant="flat" onPress={onClose}>
               Close
             </Button>
-            <Button color="primary" onPress={handleCreate}>
-              Create Product
+            <Button color="primary" onPress={handleUpdate}>
+              Update Product
             </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
     </>
   );
+}
+function item(value: number, index: number, array: number[]): unknown {
+  throw new Error('Function not implemented.');
 }

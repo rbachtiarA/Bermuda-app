@@ -31,6 +31,8 @@ const VerifyUserRegister: React.FC<object> = () => {
 
     try {
       const result = await verifyUser( data, params.token );
+      console.log(result);
+      
       if (result.ok) {
         router.push('/login');
       } else {

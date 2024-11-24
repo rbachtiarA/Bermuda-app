@@ -21,14 +21,24 @@ import { useDebounce } from 'use-debounce';
 import HamburgerNavbar from './hamburgerNavbar';
 import { IProduct } from '@/type/product';
 import { getProducts } from '@/lib/product.handler';
-import { useAppDispatch } from '@/redux/hook';
+import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import { resetCart } from '@/redux/slice/cartSlice';
 import { resetCheckout } from '@/redux/slice/checkoutSlice';
 import { logoutAction } from '@/redux/slice/userSlice';
 import NavbarMobileHamburger from './navbarMobile/navbarMobileHamburger';
+import LinkButtonBottomNavbar from '../bottomNavbar/LinkButton.BottomNavbar';
+import NotificationBottomNavbar from '../bottomNavbar/notificationCart.BottomNavbar';
+import { useRouter } from 'next/navigation';
+import { Quicksand } from 'next/font/google';
+
+const logo_font = Quicksand({
+  weight: ['400'],
+  subsets: ['latin']
+})
 
 export default function SiteNavbar() {
   const dispatch = useAppDispatch();
+  const cart = useAppSelector(state => state.cart)
   const [token, setToken] = useState<string | null>(null);
   const [searchData, setSearchData] = useState<IProduct[]>([]);
   const [search, setSearch] = useState('');
@@ -36,6 +46,7 @@ export default function SiteNavbar() {
   const [dropdownSearch, setDropdownSearch] = useState(false);
   const [dropdownHamburger, setDropdownHamburger] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter()
   const onLogout = async () => {
     await deleteToken();
     dispatch(resetCart());
@@ -71,44 +82,49 @@ export default function SiteNavbar() {
 
   return (
     <>
-      <Navbar isBordered className="shadow-lg px-4 hidden md:flex">
-        <NavbarContent>
+      <Navbar isBordered className="shadow-sm hidden md:flex">
+        <NavbarBrand className='w-[200px] justify-center' style={logo_font.style}>
           <Link color="foreground" href="/">
-            <NavbarBrand className="flex items-center gap-2">
               <SiteLogo />
-            </NavbarBrand>
           </Link>
-        </NavbarContent>
+            </NavbarBrand>
+
         <NavbarContent>
-          <Category />
-        </NavbarContent>
-        <NavbarContent justify="center" className="flex-1 mx-4">
-          <SearchNav
-            search={search}
-            setSearch={setSearch}
-            setDropdown={setDropdownSearch}
-          />
+          <NavbarItem>
+            <Category />
+          </NavbarItem>
+
+          <NavbarItem className='w-full min-w-[400px]'>
+            <SearchNav
+              search={search}
+              setSearch={setSearch}
+              setDropdown={setDropdownSearch}
+            />
+          </NavbarItem>
         </NavbarContent>
 
-        <NavbarContent justify="end" className="w-auto">
+        <NavbarContent>
+          <div className='w-full flex justify-evenly items-center gap-4'>
+            <div className='w-[48px]'>
+              <LinkButtonBottomNavbar label='' href="/cart" imgsrc="/icon-shopping-cart.svg" imgalt="cart" component={<NotificationBottomNavbar value={cart.length}/>}/>
+            </div>
+
           {token ? (
-            <DropdownNav />
+              <DropdownNav />
           ) : (
-            <NavbarItem className="flex gap-3">
-              <Link
-                color="foreground"
-                href="/register"
-                className="text-gray-500"
-              >
-                Daftar
+            <div className='flex gap-2'>
+              <Link as={Button} href={'/register'} onPress={() => router.push('/register')} color='primary' variant='bordered'>
+                Register
               </Link>
-              <Link color="foreground" href="/login" className="text-gray-500">
-                Masuk
-              </Link>
-            </NavbarItem>
+              <Button onPress={() => router.push('/login')} color='primary'>
+                Login
+              </Button>
+            </div>
           )}
+          </div>
         </NavbarContent>
       </Navbar>
+
       {/* Mobile Nav */}
       <Navbar
         isBordered
