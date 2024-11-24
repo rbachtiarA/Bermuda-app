@@ -89,7 +89,6 @@ export const getAdminOrderById = async (orderId: number) => {
     })
 
     const { status, msg }: {status: string, msg: IOrder} = await res.json()
-    console.log(status, msg, 'hello');
     
     return { status, msg }
 }

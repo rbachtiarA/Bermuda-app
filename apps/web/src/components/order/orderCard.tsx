@@ -14,6 +14,7 @@ export default function OrderCard({order, ...props}: {order: IOrder, className?:
                 <CardBody>
                     <h2>Status Order : {order.status}</h2>
                     <p>Bought Date : {new Date(order.createdAt).toLocaleString()}</p>
+                    <p>Branch : {order.Store.name}</p>
                 </CardBody>
             </Card>
             
@@ -44,6 +45,7 @@ export default function OrderCard({order, ...props}: {order: IOrder, className?:
                 <Divider />
                 <CardBody>
                     <div className="flex flex-col gap-2">
+                        <p className="font-semibold">{order.Address.label??'Label Address'}</p>
                         <p className="font-semibold">Recipient : {order.Address.recipient}</p>
                         <div>
                             <p className="font-semibold">Address:</p>
@@ -62,7 +64,7 @@ export default function OrderCard({order, ...props}: {order: IOrder, className?:
                 <CardBody className="list-none flex flex-col gap-2">
                         <PaymentList label="Method Payment :" value={order.Payment.paymentMethod} />
                         <Divider />
-                        <PaymentList label="Total Item Amount:" value={currencyRupiah(order.totalAmount)}/>
+                        <PaymentList label="Total Item Amount:" value={currencyRupiah(order.orderItems.reduce((prev, curr) => prev + (curr.price* curr.quantity), 0))}/>
                         <PaymentList label="Shipping Cost:" value={currencyRupiah(order.shippingCost)}/>
                         <PaymentList label="Discount Amount:" value={`-`+currencyRupiah(order.discountAmount)}/>
                         <Divider />

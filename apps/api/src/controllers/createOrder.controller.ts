@@ -33,7 +33,6 @@ export class CreateOrderController {
         const orderItem = checkoutItem?.CartItem.map((item) => {
             return { productId: item.productId, quantity: item.quantity, price: item.product.price, discountValue: 0 }
         })
-        console.log(orderItem);
         
         if(!orderItem) throw 'Order is Invalid'
 

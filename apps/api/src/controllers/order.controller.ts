@@ -42,6 +42,7 @@ export class OrderController {
                 include: {
                     Payment: true,
                     Address: true,
+                    Store: true,
                     orderItems: {
                         include: {
                             product: true
