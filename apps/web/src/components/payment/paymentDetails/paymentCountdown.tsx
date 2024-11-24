@@ -21,6 +21,10 @@ export default function PaymentCountdown({expDate}: {expDate:string}) {
     }, [timeLeft])
 
   return (
-    <div>Time limit :   {`${Math.floor((timeLeft||0)/60)}`.padStart(2, '0')}:{`${((timeLeft||0)%60)}`.padStart(2, '0')} left</div>
+    <div>
+      <p className="font-semibold text-danger">
+        Time limit :   {`${Math.floor((timeLeft||0)/60)}`.padStart(2, '0')}:{`${((timeLeft||0)%60)}`.padStart(2, '0')} left
+      </p>
+    </div>
   )
 }

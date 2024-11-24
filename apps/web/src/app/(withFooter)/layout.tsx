@@ -1,11 +1,5 @@
 import type { Metadata } from 'next';
-import { Roboto } from 'next/font/google';
-import 'react-toastify/dist/ReactToastify.css';
-import AddressBar from '@/components/address/addressBar';
-import SiteNavbar from '@/components/navbar/siteNavbar';
-import BottomNavbar from '@/components/bottomNavbar/bottomNavbar';
 import Footer from '@/components/footer/footer';
-const roboto = Roboto({ subsets: ['latin'], weight: ['400', '700'] });
 
 export const metadata: Metadata = {
   title: 'Website Belanja Kebutuhan Rumah Tangga',
