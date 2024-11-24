@@ -31,21 +31,19 @@ export default function CheckoutWrapper() {
     const router = useRouter()
     const discountCut = useMemo(() => {
         if(!!discount) {
-            let val = 0
             switch (discount.discountType) {
                 case 'FLAT':
-                    val = discount.value
-                    break;
+                    return discount.value
                 case 'PERCENTAGE':
                     //if value based on 100/100
-                    val = itemTotalPayment!*(discount.value/100)
-                    break;
+                    return itemTotalPayment!*(discount.value/100)
                 case 'REFERRAL_GIVER':
-                    break;
+                    return discount.value
                 case 'REFERRAL_USER':
-                    break;
+                    return discount.value
+                default:
+                    return 0
             }
-            return val
         } else {
             return 0
         }
@@ -128,8 +126,8 @@ export default function CheckoutWrapper() {
 
     const isPaymentInvalid = useMemo(
         () => {
-            return !store.inRange || !shippingCost || !itemTotalPayment || !methodPayment || !selectedAddress
-        }, [shippingCost, itemTotalPayment, methodPayment, selectAddress, store.inRange])
+            return !store.inRange || !shippingCost || !itemTotalPayment || !methodPayment || !selectedAddress || !!isError
+        }, [shippingCost, itemTotalPayment, methodPayment, selectAddress, store.inRange, isError])
     
     return (
         <div className="grid md:grid-cols-[2fr_1fr] md:w-auto gap-2 w-full p-2">

@@ -25,7 +25,7 @@ export class MidtransController {
             } else {
                 //get midtransStatus, if customer didnt pick one of midtrans service will return 200 with NOT_FOUND
                 try {
-                    const midtransOrder = await midtrans.snap.transaction.status(`ORDER_A${orderId}`)        
+                    const midtransOrder = await midtrans.snap.transaction.status(`${process.env.PREFIX_ORDERNAME_MIDTRANS}${orderId}`)        
                     //status will be 'settlement' | 'pending'
                     midtransStatus = midtransOrder?.transaction_status
                     if(midtransStatus === 'settlement') {

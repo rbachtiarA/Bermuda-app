@@ -1,5 +1,6 @@
 import currencyRupiah from '@/lib/rupiahCurrency'
-import { Button, Card, CardBody, CardFooter, CardHeader } from '@nextui-org/react'
+import { Button, Card, CardBody, CardFooter, CardHeader, Divider } from '@nextui-org/react'
+import CartCheckoutItem from './cartCheckoutItem'
 export default function CartCheckout({ totalPayment, checkout, onCheckout }: { totalPayment: number, checkout: number[], onCheckout: () => void }) {
     
     const nextCardDesktop = 
@@ -9,7 +10,9 @@ export default function CartCheckout({ totalPayment, checkout, onCheckout }: { t
                 <h2 className='font-bold text-lg'>Checkout Details</h2>
             </CardHeader>
             <CardBody>
-                <div className='flex flex-col justify-between'>
+                <CartCheckoutItem />
+                <Divider className='my-1'/>
+                <div className='flex font-semibold justify-between'>
                     <p>Total : </p>
                     <p>{currencyRupiah(totalPayment)}</p>
                 </div>

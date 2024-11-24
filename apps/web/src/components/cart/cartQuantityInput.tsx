@@ -19,10 +19,10 @@ export default function CartQuantityInput({cart}: { cart: ICartItem}) {
     // isDebouncing for css purpose, when isDebounce it will change input bg color till debouncing finish
     const [isDebouncing, setIsDebouncing] = useState(false)
     
-    const updatedQuantity = async () => {
+    const updatedQuantity = async (qty: number) => {
         const productId = cart.product?.id
         if(productId) {
-            await updateCartItem(productId, debouncedQuantity)
+            await updateCartItem(productId, qty)
             dispatch(updatedCartQuantity({productId, quantity: debouncedQuantity}))
         }
         
@@ -62,24 +62,25 @@ export default function CartQuantityInput({cart}: { cart: ICartItem}) {
     useEffect(() => {
 
         if(debouncedQuantity > 0 && debouncedQuantity <= productStock) {
-           updatedQuantity()
+           updatedQuantity(debouncedQuantity)
         }
         setIsDebouncing(false)
 
     }, [debouncedQuantity])
 
-    // useEffect(() => {
-    //     if(productStock < quantity && productStock !== 0) {
-    //         setQuantity(productStock)
-    //     }
-    // },[])
+    useEffect(() => {
+        if(productStock < quantity && productStock !== 0) {
+            updatedQuantity(productStock)
+            setQuantity(productStock)
+        }
+    },[])
     return (
         <div className="flex flex-col md:flex-row justify-center items-center">
             <div className="flex w-full justify-end">
                 <p className="text-[10px]"><span>Sisa item: </span> {productStock}</p>
             </div>
             <div className="flex gap-1 w-full justify-end">
-                <Button size="sm" color={!isDebouncing? 'default': 'success'} isDisabled={quantity <= 1} isIconOnly onPress={() => onPressQuantityButton(-1)}><MinusIcon /></Button>
+                <Button size="sm" color={productStock < quantity? 'warning' : !isDebouncing? 'default': 'success'} isDisabled={quantity <= 1} isIconOnly onPress={() => onPressQuantityButton(-1)}><MinusIcon /></Button>
                 <Input size="sm" type="number" color={!isDebouncing? 'default': 'success'}
                     onChange={(e) => onChangeQuantityInput(e)} isDisabled={productStock === 0 } onBlur={onBlurQuantity}
                     value={`${quantity}`} min={1} className="w-[50px] no-arrow-input" />

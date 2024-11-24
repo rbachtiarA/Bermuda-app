@@ -183,7 +183,7 @@ export class CartController {
     const data = await prisma.checkout.findUnique({
       select: {
         CartItem: {
-          include: { product: true },
+          include: { product: { include: { stock: true } } },
         },
       },
       where: {

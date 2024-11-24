@@ -54,7 +54,7 @@ export default function ProductCard({ stock }: { stock: IStocks }) {
             isZoomed
             src={
               product.imageUrl ||
-              `${process.env.NEXT_PUBLIC_BASE_API_URL}public/product/default-product-image.png`
+              `/default-product-image.png`
             }
           />
         </CardHeader>
