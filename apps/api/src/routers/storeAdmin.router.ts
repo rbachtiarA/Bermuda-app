@@ -18,11 +18,6 @@ export class StoreAdminRouter {
       checkSuperAdmin,
       this.storeAdminController.createStoreAdmin,
     );
-    this.router.patch(
-      '/verify',
-      verifyToken,
-      this.storeAdminController.verifyStoreAdmin,
-    );
     this.router.get(
       '/storeadmins',
       verifyToken,

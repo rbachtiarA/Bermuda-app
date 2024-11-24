@@ -32,8 +32,6 @@ const TopStoreAdmin: React.FC<TopContentProps> = ({
   setVisibleColumns,
   usersLength,
   onRowsPerPageChange,
-  rowsPerPage,
-  hasSearchFilter,
 }) => {
   return (
     <div className="flex flex-col gap-4">

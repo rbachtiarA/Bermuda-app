@@ -13,6 +13,12 @@ export class DiscountRouter {
   }
 
   private initializeRoutes(): void {
+    // this.router.get(
+    //   '/',
+    //   verifyToken,
+    //   this.discountController.getAvailableDiscount,
+    // );
+    this.router.get('/', this.discountController.getDiscount);
     this.router.get(
       '/store/:storeId',
       verifyToken,
@@ -23,6 +29,10 @@ export class DiscountRouter {
     this.router.post(
       '/conditional',
       this.discountController.createConditionalDiscount,
+    );
+    this.router.post(
+      '/bogo',
+      this.discountController.createBuyOneGetOneDiscount,
     );
   }
 

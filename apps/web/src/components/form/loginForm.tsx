@@ -1,8 +1,7 @@
 'use client';
-import { createToken } from '@/lib/server';
+import { createRole, createToken, createUserId } from '@/lib/server';
 import { loginUser } from '@/lib/user.handler';
 import { useAppDispatch } from '@/redux/hook';
-import { updatedCartFromDatabase } from '@/redux/slice/cartSlice';
 import { loginAction } from '@/redux/slice/userSlice';
 import { ILoginData } from '@/type/user';
 import { Formik, Form, Field, FormikProps, FormikHelpers } from 'formik';
@@ -29,12 +28,11 @@ const LoginForm: React.FC = () => {
   ) => {
     try {
       const { result, ok } = await loginUser(data);
-      dispatch(updatedCartFromDatabase(result.cart.CartItem));
-
-      console.log('Data yang di terima:', result); // debuging
       if (!ok) throw result.msg;
 
       await createToken(result.token);
+      await createRole(result.user.role);
+      await createUserId(result.user.id);
       action.resetForm();
       dispatch(loginAction(result.user));
       window.location.href = '/';

@@ -1,30 +1,58 @@
 'use client';
 import { usePathname } from 'next/navigation';
 import SidebarItem from './sideBarItem';
+import { useState, useEffect } from 'react';
+import { getRole } from '@/lib/server';
 
 export default function SideBar() {
   const path = usePathname();
-  const ADMIN_DASHBOARD: {link: string, label: string }[] = [
-    {link: '/admin', label: 'My Profile'},
-    {link: '/admin/user-management', label: 'User Management'},
-    {link: '/admin/store-admin-management', label: 'Store Admin Management'},
-    {link: '/admin/store-management', label: 'Store Management'},
-    {link: '/admin/product-category-management', label: 'Product Category Management'},
-    {link: '/admin/product-management', label: 'Product Management'},
-    {link: '/admin/discount-management', label: 'Discount Management'},
-    {link: '/admin/order-management', label: 'Order Management'},
-    {link: '/admin/report-analysis', label: 'Report & Analyst'}
-  ]
+  const [role, setRole] = useState<string>('');
+  const ADMIN_DASHBOARD: { link: string; label: string }[] = [
+    { link: '/admin', label: 'My Profile' },
+    { link: '/admin/user-management', label: 'User Management' },
+    { link: '/admin/store-admin-management', label: 'Store Admin Management' },
+    { link: '/admin/store-management', label: 'Store Management' },
+    {
+      link: '/admin/product-category-management',
+      label: 'Product Category Management',
+    },
+    { link: '/admin/product-management', label: 'Product Management' },
+    { link: '/admin/stock-management', label: 'Stock Management' },
+    { link: '/admin/order-management', label: 'Order Management' },
+    { link: '/admin/report-analysis', label: 'Report & Analyst' },
+  ];
 
-  const USER_DASHBOARD: {link: string, label: string}[] = [
-    {link: '/account', label: 'My Profile'},
-    {link: '/account/order', label: 'My Orders'},
-    {link: '/account/payment', label: 'Active Payment'},
-  ]
-  
-  const UTILS_DASHBOARD: {link: string, label: string}[] = [
-    {link: `/${path.split('/')[1]}`, label: 'Account Settings'},
-  ]
+  const STORE_ADMIN: { link: string; label: string }[] = [
+    {
+      link: '/admin/product-category-management',
+      label: 'Product Category Management',
+    },
+    { link: '/admin/product-management', label: 'Product Management' },
+    { link: '/admin/discount-management', label: 'Discount Management' },
+    { link: '/admin/order-management', label: 'Order Management' },
+    { link: '/admin/report-analysis', label: 'Report & Analyst' },
+  ];
+
+  const USER_DASHBOARD: { link: string; label: string }[] = [
+    { link: '/account', label: 'My Profile' },
+    { link: '/account/order', label: 'My Orders' },
+    { link: '/account/payment', label: 'Active Payment' },
+  ];
+
+  const UTILS_DASHBOARD: { link: string; label: string }[] = [
+    { link: `/${path.split('/')[1]}`, label: 'Account Settings' },
+  ];
+
+  const fetchRole = async () => {
+    const res = await getRole();
+    setRole(res as string);
+  };
+
+  useEffect(() => {
+    fetchRole();
+  }, []);
+
+  console.log(role, 'ROLEE');
 
   return (
     <aside className="fixed left-0 h-screen w-[260px]">
@@ -33,25 +61,45 @@ export default function SideBar() {
           <div className="flex justify-between">
             <p className="text-sm font-semibold py-2">Dashboard</p>
           </div>
-          {path.split('/')[1] === 'admin' && 
+          {role && role === 'SUPER_ADMIN' && (
             <div className="pl-2">
               <ul className="list-none text-sm">
-                {
-                  ADMIN_DASHBOARD.map((item) => (
-                    <SidebarItem key={item.label} link={item.link} label={item.label} isActive={path === item.link} />
-                  ))
-                }
+                {ADMIN_DASHBOARD.map((item) => (
+                  <SidebarItem
+                    key={item.label}
+                    link={item.link}
+                    label={item.label}
+                    isActive={path === item.link}
+                  />
+                ))}
               </ul>
             </div>
-          }
-          {path.split('/')[1] === 'account' && (
+          )}
+          {role && role === 'STORE_ADMIN' && (
             <div className="pl-2">
               <ul className="list-none text-sm">
-                {
-                  USER_DASHBOARD.map((item) => (
-                    <SidebarItem key={item.label} link={item.link} label={item.label} isActive={path === item.link} />
-                  ))
-                }
+                {STORE_ADMIN.map((item) => (
+                  <SidebarItem
+                    key={item.label}
+                    link={item.link}
+                    label={item.label}
+                    isActive={path === item.link}
+                  />
+                ))}
+              </ul>
+            </div>
+          )}
+          {role && role === 'USER' && (
+            <div className="pl-2">
+              <ul className="list-none text-sm">
+                {USER_DASHBOARD.map((item) => (
+                  <SidebarItem
+                    key={item.label}
+                    link={item.link}
+                    label={item.label}
+                    isActive={path === item.link}
+                  />
+                ))}
               </ul>
             </div>
           )}
@@ -63,11 +111,14 @@ export default function SideBar() {
           </div>
           <div className="pl-2">
             <ul className="list-none text-sm">
-              {
-                UTILS_DASHBOARD.map((item) => (
-                  <SidebarItem key={item.label} link={item.link} label={item.label} isActive={false} />
-                ))
-              }
+              {UTILS_DASHBOARD.map((item) => (
+                <SidebarItem
+                  key={item.label}
+                  link={item.link}
+                  label={item.label}
+                  isActive={false}
+                />
+              ))}
             </ul>
           </div>
         </div>

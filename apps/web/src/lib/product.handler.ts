@@ -85,8 +85,6 @@ export const getProducts = async (
   pageSize: number = 10,
   categories: string = 'all',
 ) => {
-  console.log(currentPage, 'PAGEE');
-
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_API_URL}product/products?search=${search}&page=${currentPage}&pageSize=${pageSize}&categories=${categories}`,
     {

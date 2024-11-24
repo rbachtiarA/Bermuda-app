@@ -11,12 +11,13 @@ export interface IProduct {
   createdAt: string;
   updatedAt: string;
   categories: number[];
+  discounts?: any[];
   onUpdate?: () => Promise<void>;
 }
 
-interface Category {
-  id: number;
-  name: string;
+interface Discount {
+  id?: number;
+  name?: string;
 }
 
 export interface IProductDel {

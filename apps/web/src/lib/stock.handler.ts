@@ -4,7 +4,7 @@ export const getStocks = async () => {
   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}stock`, {
     method: 'GET',
     headers: {
-      'Content-Type': 'appliication/json',
+      'Content-Type': 'application/json',
     },
     next: { revalidate: 1 },
   });
