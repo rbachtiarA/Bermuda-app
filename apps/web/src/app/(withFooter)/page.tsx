@@ -10,7 +10,7 @@ const HomePage: NextPage = () => {
         <div className="w-full h-full px-[15px]">
           <PromoCarousel />
         </div>
-        <h1 className="text-2xl font-bold pt-8 px-4">
+        <h1 className="text-2xl font-bold pt-4 px-4">
           Selamat Datang di Bermuda Store
         </h1>
         <div className="py-10">

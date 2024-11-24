@@ -33,12 +33,12 @@ import { Quicksand } from 'next/font/google';
 
 const logo_font = Quicksand({
   weight: ['400'],
-  subsets: ['latin']
-})
+  subsets: ['latin'],
+});
 
 export default function SiteNavbar() {
   const dispatch = useAppDispatch();
-  const cart = useAppSelector(state => state.cart)
+  const cart = useAppSelector((state) => state.cart);
   const [token, setToken] = useState<string | null>(null);
   const [searchData, setSearchData] = useState<IProduct[]>([]);
   const [search, setSearch] = useState('');
@@ -46,7 +46,7 @@ export default function SiteNavbar() {
   const [dropdownSearch, setDropdownSearch] = useState(false);
   const [dropdownHamburger, setDropdownHamburger] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter()
+  const router = useRouter();
   const onLogout = async () => {
     await deleteToken();
     dispatch(resetCart());
@@ -82,47 +82,55 @@ export default function SiteNavbar() {
 
   return (
     <>
-      <Navbar isBordered className="shadow-sm hidden md:flex">
-        <NavbarBrand className='w-[200px] justify-center' style={logo_font.style}>
-          <Link color="foreground" href="/">
+      <Navbar isBordered maxWidth='full' className="shadow-sm hidden md:flex">
+        <div className="flex container mx-auto w-full items-center px-4">
+            <NavbarBrand className="w-full justify-start">
+            <Link color="foreground" href="/">
               <SiteLogo />
-          </Link>
-            </NavbarBrand>
+            </Link>
+          </NavbarBrand>
+          <NavbarContent className="flex items-center">
+            <NavbarItem>
+              <Category />
+            </NavbarItem>
 
-        <NavbarContent>
-          <NavbarItem>
-            <Category />
-          </NavbarItem>
+            <NavbarItem className="w-full min-w-[400px]">
+              <SearchNav
+                search={search}
+                setSearch={setSearch}
+                setDropdown={setDropdownSearch}
+              />
+            </NavbarItem>
+          </NavbarContent>
+          
 
-          <NavbarItem className='w-full min-w-[400px]'>
-            <SearchNav
-              search={search}
-              setSearch={setSearch}
-              setDropdown={setDropdownSearch}
-            />
-          </NavbarItem>
-        </NavbarContent>
+          <NavbarContent>
+            <div className="w-full flex justify-end items-center gap-4">
+              <div className="w-[48px]">
+                <LinkButtonBottomNavbar
+                  label=""
+                  href="/cart"
+                  imgsrc="/icon-shopping-cart.svg"
+                  imgalt="cart"
+                  component={<NotificationBottomNavbar value={cart.length} />}
+                />
+              </div>
 
-        <NavbarContent>
-          <div className='w-full flex justify-evenly items-center gap-4'>
-            <div className='w-[48px]'>
-              <LinkButtonBottomNavbar label='' href="/cart" imgsrc="/icon-shopping-cart.svg" imgalt="cart" component={<NotificationBottomNavbar value={cart.length}/>}/>
+              {token ? (
+                <DropdownNav />
+              ) : (
+                <div className="flex gap-2">
+                  <Button onPress={() => router.push('/register')} color="primary" variant="ghost">
+                    Register
+                  </Button>
+                  <Button onPress={() => router.push('/login')} color="primary">
+                    Login
+                  </Button>
+                </div>
+              )}
             </div>
-
-          {token ? (
-              <DropdownNav />
-          ) : (
-            <div className='flex gap-2'>
-              <Link as={Button} href={'/register'} onPress={() => router.push('/register')} color='primary' variant='bordered'>
-                Register
-              </Link>
-              <Button onPress={() => router.push('/login')} color='primary'>
-                Login
-              </Button>
-            </div>
-          )}
-          </div>
-        </NavbarContent>
+          </NavbarContent>
+        </div>
       </Navbar>
 
       {/* Mobile Nav */}
