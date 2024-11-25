@@ -32,12 +32,45 @@ export const regUser = async (data: IRegEmail) => {
   return { result, ok: res.ok };
 };
 
+export const resetPassword = async (data: IRegEmail) => {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_API_URL}account/reset-password`,
+    {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+  );
+  const result = await res.json();
+  return { result, ok: res.ok };
+};
+
 export const verifyUser = async (
   data: { password: string; name: string },
   token: string,
 ) => {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_API_URL}users/data-register/${token}`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    },
+  );
+  const result = await res.json();
+  return { result, ok: res.ok };
+};
+
+export const verifyResetPassword = async (
+  data: { password: string },
+  token: string,
+) => {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_API_URL}account/new-password/${token}`,
     {
       method: 'PATCH',
       body: JSON.stringify(data),

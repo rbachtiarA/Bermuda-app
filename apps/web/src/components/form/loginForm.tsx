@@ -110,6 +110,15 @@ const LoginForm: React.FC = () => {
                     </div>
                   ) : null}
                 </div>
+                <p className="mb-4">
+                  Lupa password anda?{' '}
+                  <Link
+                    href="/reset-password"
+                    className="text-blue-800 hover:underline font-bold"
+                  >
+                    Reset Password
+                  </Link>
+                </p>
 
                 <button
                   type="submit"

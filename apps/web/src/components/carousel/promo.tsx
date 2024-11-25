@@ -17,10 +17,10 @@ export default function PromoCarousel() {
       pagination={{ clickable: true }}
       autoplay={{ delay: 3000 }}
       loop={true}
-      className="w-full h-32 md:h-48 lg:h-72"
+      className="flex justify-center w-full h-32 md:h-48 lg:h-72"
     >
       {[...Array(10)].map((_, index) => (
-        <SwiperSlide key={index} className="flex items-center justify-center rounded-xl">
+        <SwiperSlide key={index} className="flex w-full items-center justify-center rounded-xl">
         <Image 
           src={`/carousel/pm_banner_${index + 1}.webp`}
           alt={`Slide ${index + 1}`}
@@ -30,25 +30,6 @@ export default function PromoCarousel() {
         />
       </SwiperSlide>
       ))}
-      
-      {/* <SwiperSlide className="flex items-center justify-center bg-blue-500 text-white font-bold text-xl rounded-xl">
-        Slide 2
-      </SwiperSlide>
-      <SwiperSlide className="flex items-center justify-center bg-blue-500 text-white font-bold text-xl rounded-xl">
-        Slide 3
-      </SwiperSlide>
-      <SwiperSlide className="flex items-center justify-center bg-blue-500 text-white font-bold text-xl rounded-xl">
-        Slide 4
-      </SwiperSlide>
-      <SwiperSlide className="flex items-center justify-center bg-blue-500 text-white font-bold text-xl rounded-xl">
-        Slide 5
-      </SwiperSlide>
-      <SwiperSlide className="flex items-center justify-center bg-blue-500 text-white font-bold text-xl rounded-xl">
-        Slide 6
-      </SwiperSlide>
-      <SwiperSlide className="flex items-center justify-center bg-blue-500 text-white font-bold text-xl rounded-xl">
-        Slide 7
-      </SwiperSlide> */}
     </Swiper>
   );
 }
