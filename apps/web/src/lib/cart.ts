@@ -64,7 +64,7 @@ export const deleteCartItem = async (cartItemIds:number[]) => {
 
 export const postCheckoutItems = async (selectedIds: number[]) => {
     const token = await getToken()
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}cart/checkout`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}checkout`, {
         method:'POST',
         body: JSON.stringify({selectedIds}),
         headers: {
@@ -79,7 +79,7 @@ export const postCheckoutItems = async (selectedIds: number[]) => {
 
 export const getCheckoutItems = async () => {
     const token = await getToken()
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}cart/checkout`, { 
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}checkout`, { 
         headers: {
             "Content-type":"application/json",
             'Authorization': `Bearer ${token}`
