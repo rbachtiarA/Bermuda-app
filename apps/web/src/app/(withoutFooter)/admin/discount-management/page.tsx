@@ -1,18 +1,8 @@
 'use client';
 import CreateBuyOneGetOneDiscount from '@/components/discount/discountBogo';
-import DiscountList from '@/components/discount/discountList';
 import CreateManualDiscount from '@/components/discount/discountManual';
 import CreateDiscountForm from '@/components/discount/discountMinPurchase';
 import Modal from '@/components/discount/modal';
-import { getDiscounts } from '@/lib/discount.handler';
-import { getToken } from '@/lib/server';
-import {
-  Table,
-  TableBody,
-  TableHeader,
-  TableCell,
-  TableRow,
-} from '@nextui-org/react';
 import React, { useEffect, useState } from 'react';
 
 const DiscountPage: React.FC = () => {

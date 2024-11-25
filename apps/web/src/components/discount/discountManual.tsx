@@ -23,7 +23,7 @@
 //   const [message, setMessage] = useState('');
 //   const [products, setProducts] = useState<any[]>([]);
 //   const [stores, setStores] = useState<any[]>([]);
-//   const [storeId, setStoreId] = useState<string>('');
+//   const [storeId, setStoreId] = useState<number>(0);
 
 //   useEffect(() => {
 //     const loadData = async () => {
@@ -39,8 +39,8 @@
 //             return x.users.find((y: any) => y.id === Number(userId)) ? x : null;
 //           })
 //           .filter((store: any) => store !== null);
-//         setStoreId(String(filterStores[0].id));
-//         formData.storeId = Number(storeId);
+//         setStoreId(filterStores[0].id);
+//         // formData.storeId = storeId;
 
 //         setProducts(fetchedProducts.products);
 //         setStores(filterStores);
@@ -58,7 +58,10 @@
 
 //     try {
 //       const token = await getToken();
-//       const { result, ok } = await createDiscount(formData, token);
+//       const { result, ok } = await createDiscount(
+//         { ...formData, storeId },
+//         token,
+//       );
 //       if (ok) {
 //         setMessage('Diskon manual berhasil dibuat.');
 //         setFormData({
@@ -87,7 +90,7 @@
 //           isDisabled
 //           label="Pilih Toko"
 //           value={formData.storeId?.toString() || ''}
-//           selectedKeys={[storeId]}
+//           selectedKeys={[String(storeId)]}
 //           onChange={(e) =>
 //             setFormData({ ...formData, storeId: parseInt(e.target.value) })
 //           }
@@ -170,44 +173,44 @@
 
 import React, { useEffect, useState } from 'react';
 import {
+  Input,
+  Button,
+  Select,
+  Card,
+  Spacer,
+  SelectItem,
   Modal,
   ModalContent,
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Button,
-  Select,
-  SelectItem,
-  Input,
 } from '@nextui-org/react';
-import { PlusIcon } from '../icons/plusIcon';
+import { createDiscount } from '@/lib/discount.handler';
 import { getToken, getUserId } from '@/lib/server';
 import { getProducts } from '@/lib/product.handler';
 import { getAllStore } from '@/lib/store.handler';
-import { createDiscount } from '@/lib/discount.handler';
+import { PlusIcon } from '../icons/plusIcon';
 
 const CreateManualDiscount: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
     productId: 0,
     value: 0,
-    discountType: 'PERCENTAGE',
+    discountType: '',
     storeId: 0,
   });
   const [loading, setLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [products, setProducts] = useState<any[]>([]);
   const [stores, setStores] = useState<any[]>([]);
+  const [storeId, setStoreId] = useState<number>(0);
+  const [productId, setProductId] = useState<number>(0);
 
   const onOpen = () => setIsOpen(true);
   const onClose = () => {
     setIsOpen(false);
-    setFormData({
-      productId: 0,
-      value: 0,
-      discountType: 'PERCENTAGE',
-      storeId: 0,
-    });
+    setProductId(0);
+    setStoreId(0);
     setMessage('');
   };
 
@@ -225,11 +228,8 @@ const CreateManualDiscount: React.FC = () => {
             return x.users.find((y: any) => y.id === Number(userId)) ? x : null;
           })
           .filter((store: any) => store !== null);
-
-        if (filterStores.length > 0) {
-          const defaultStoreId = filterStores[0].id;
-          setFormData((prev) => ({ ...prev, storeId: defaultStoreId }));
-        }
+        setStoreId(filterStores[0].id);
+        // formData.storeId = storeId;
 
         setProducts(fetchedProducts.products);
         setStores(filterStores);
@@ -240,23 +240,30 @@ const CreateManualDiscount: React.FC = () => {
     loadData();
   }, []);
 
-  const handleCreate = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     setLoading(true);
     setMessage('');
 
     try {
       const token = await getToken();
-      const { result, ok } = await createDiscount(formData, token);
-
+      const { result, ok } = await createDiscount(
+        { ...formData, storeId },
+        token,
+      );
       if (ok) {
         setMessage('Diskon manual berhasil dibuat.');
-        onClose();
-      } else {
-        setMessage(result?.msg || 'Gagal membuat diskon manual.');
+        setFormData({
+          productId: 0,
+          value: 0,
+          discountType: 'PERCENTAGE',
+          storeId: 0,
+        });
+        window.location.reload();
       }
     } catch (error) {
-      console.error('Error creating discount:', error);
-      setMessage('Terjadi kesalahan. Silakan coba lagi.');
+      console.error(error);
+      setMessage('Gagal membuat diskon manual. Silakan coba lagi.');
     } finally {
       setLoading(false);
     }
@@ -270,40 +277,44 @@ const CreateManualDiscount: React.FC = () => {
         endContent={<PlusIcon />}
         size="sm"
       >
-        Create Manual Discount
+        Add New
       </Button>
-      <Modal isOpen={isOpen} onClose={onClose} placement="top-center">
+      <Modal isOpen={isOpen} placement="top-center">
         <ModalContent>
           <ModalHeader className="flex flex-col gap-1">
             Create Manual Discount
           </ModalHeader>
           <ModalBody>
             <Select
-              label="Select Store"
-              value={formData.storeId?.toString()}
+              name="storeId"
+              isDisabled
+              label="Pilih Toko"
+              value={formData.storeId?.toString() || ''}
+              selectedKeys={[String(storeId)]}
               onChange={(e) =>
                 setFormData({ ...formData, storeId: parseInt(e.target.value) })
               }
-              className="max-w-xs"
-              disabled
+              fullWidth
               required
             >
-              {stores.map((store) => (
+              {stores?.map((store) => (
                 <SelectItem key={store.id} value={store.id.toString()}>
                   {store.name}
                 </SelectItem>
               ))}
             </Select>
             <Select
-              label="Select Product"
-              className="max-w-xs"
-              value={formData.productId?.toString()}
+              name="productId"
+              label="Pilih Produk"
+              value={formData.productId?.toString() || ''}
               onChange={(e) =>
                 setFormData({
                   ...formData,
                   productId: parseInt(e.target.value),
                 })
               }
+              fullWidth
+              required
             >
               {products.map((product) => (
                 <SelectItem key={product.id} value={product.id.toString()}>
@@ -312,9 +323,10 @@ const CreateManualDiscount: React.FC = () => {
               ))}
             </Select>
             <Input
-              label="Discount Value"
+              name="value"
               type="number"
-              placeholder="Enter discount value"
+              label="Nilai Diskon"
+              placeholder="Masukkan nilai diskon"
               value={formData.value !== null ? formData.value.toString() : ''}
               onChange={(e) =>
                 setFormData({
@@ -322,30 +334,31 @@ const CreateManualDiscount: React.FC = () => {
                   value: e.target.value ? parseFloat(e.target.value) : 0,
                 })
               }
-              className="max-w-xs"
+              fullWidth
+              required
             />
             <Select
-              label="Discount Type"
-              className="max-w-xs"
+              label="Tipe Diskon"
               value={formData.discountType}
               onChange={(e) =>
                 setFormData({ ...formData, discountType: e.target.value })
               }
+              fullWidth
+              required
             >
               <SelectItem key="FLAT" value="FLAT">
                 Nominal
               </SelectItem>
               <SelectItem key="PERCENTAGE" value="PERCENTAGE">
-                Percentage
+                Persentase
               </SelectItem>
             </Select>
+
             {message && (
               <p
-                className={`mt-2 ${
-                  message.includes('berhasil')
-                    ? 'text-green-500'
-                    : 'text-red-500'
-                }`}
+                style={{
+                  color: message.includes('berhasil') ? 'green' : 'red',
+                }}
               >
                 {message}
               </p>
@@ -355,8 +368,8 @@ const CreateManualDiscount: React.FC = () => {
             <Button color="danger" variant="flat" onPress={onClose}>
               Close
             </Button>
-            <Button color="primary" onPress={handleCreate} isDisabled={loading}>
-              {loading ? 'Loading...' : 'Create'}
+            <Button color="primary" onSubmit={handleSubmit}>
+              Create
             </Button>
           </ModalFooter>
         </ModalContent>

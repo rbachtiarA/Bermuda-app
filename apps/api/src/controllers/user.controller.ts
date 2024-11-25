@@ -123,6 +123,8 @@ export class UserController {
           password: hashPassword,
           name: name,
           referralCode: referralCode,
+          cart: { create: {} },
+          checkout: { create: {} },
         },
       });
 

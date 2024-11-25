@@ -13,7 +13,11 @@ export class StoreController {
         select: {
           stocks: {
             include: {
-              product: true,
+              product: {
+                include: {
+                  discounts: true,
+                },
+              },
             },
           },
         },

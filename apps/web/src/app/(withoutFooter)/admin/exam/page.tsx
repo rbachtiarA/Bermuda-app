@@ -12,14 +12,13 @@ import {
 } from '@nextui-org/react';
 import { IDiscountAll } from '@/type/discount';
 import { columns, INITIAL } from '@/components/exam/columnExam';
-import { getDiscounts } from '@/lib/discount.handler';
 import BottomContent from '@/components/bottomContent';
 import { classNames } from '@/components/classNames';
-import TopExam from '@/components/exam/topExam';
-import { useAppSelector } from '@/redux/hook';
 import RenderExam from '@/components/exam/renderexam';
+import { getDiscounts } from '@/lib/discount.handler';
+import TopExam from '@/components/exam/topExam';
 
-export default function ProductManagement() {
+export default function DiscountManagement() {
   const [filterValue, setFilterValue] = useState('');
   const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
   const [visibleColumns, setVisibleColumns] = useState<Selection>(
@@ -34,42 +33,42 @@ export default function ProductManagement() {
   const [discounts, setDiscounts] = useState<IDiscountAll[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
-  const user = useAppSelector((state) => state.user);
-  const role = user?.role;
 
-  const fetchDiscounts = useCallback(async () => {
+  const fetchDiscount = useCallback(async () => {
     try {
       const { result, ok } = await getDiscounts();
+
       if (ok && result && Array.isArray(result.discounts)) {
-        setDiscounts(result.discounts); // Pastikan ini sesuai
+        setDiscounts(result.discounts);
       } else {
-        setError('Gagal mengambil data diskon');
+        setError('Gagal mengambil data pengguna');
       }
     } catch (err) {
-      setError('Terjadi kesalahan saat mengambil data diskon');
+      setError('Terjadi kesalahan saat mengambil data pengguna');
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    fetchDiscounts();
-  }, [fetchDiscounts]);
+    fetchDiscount();
+  }, [fetchDiscount]);
 
   const pages = Math.ceil(discounts.length / rowsPerPage);
   const hasSearchFilter = Boolean(filterValue);
 
   const headerColumns = React.useMemo(() => {
-    return role === 'SUPER_ADMIN'
-      ? columns
-      : columns.filter((column) => column.uid !== 'actions');
-  }, [role]);
+    if (visibleColumns === 'all') return columns;
+    return columns.filter((column) =>
+      Array.from(visibleColumns).includes(column.uid),
+    );
+  }, [visibleColumns]);
 
   const filteredItems = React.useMemo(() => {
     let filteredDiscounts = [...discounts];
     if (hasSearchFilter) {
-      filteredDiscounts = filteredDiscounts.filter((discount: IDiscountAll) =>
-        discount.name.toLowerCase().includes(filterValue.toLowerCase()),
+      filteredDiscounts = filteredDiscounts.filter((discount) =>
+        discount.discountType.toLowerCase().includes(filterValue.toLowerCase()),
       );
     }
     return filteredDiscounts;
@@ -113,13 +112,14 @@ export default function ProductManagement() {
         <div className="bg-white p-8">
           <header className="flex items-center justify-between mb-6">
             <h1 className="text-lg font-semibold text-gray-800">
-              Discount Example
+              Discount Management
             </h1>
           </header>
           <Table
             isCompact
             removeWrapper
             aria-label="Discount Table"
+            className="min-w-full"
             bottomContent={
               <BottomContent
                 selectedKeys={selectedKeys}
@@ -130,7 +130,6 @@ export default function ProductManagement() {
                 onPageChange={setPage}
               />
             }
-            bottomContentPlacement="outside"
             checkboxesProps={{
               classNames: {
                 wrapper:
@@ -153,7 +152,6 @@ export default function ProductManagement() {
                 hasSearchFilter={hasSearchFilter}
               />
             }
-            topContentPlacement="outside"
             onSelectionChange={setSelectedKeys}
             onSortChange={setSortDescriptor}
           >
@@ -168,7 +166,7 @@ export default function ProductManagement() {
                 </TableColumn>
               )}
             </TableHeader>
-            <TableBody emptyContent={'No discount found'} items={sortedItems}>
+            <TableBody emptyContent="No discounts found" items={sortedItems}>
               {(item) => (
                 <TableRow key={item.id}>
                   {(columnKey) => (
@@ -176,7 +174,7 @@ export default function ProductManagement() {
                       <RenderExam
                         discount={item}
                         columnKey={columnKey}
-                        // onDeleted={fetchDiscounts}
+                        onDeleted={fetchDiscount}
                       />
                     </TableCell>
                   )}

@@ -1,6 +1,5 @@
 import React from 'react';
 import { User } from '@nextui-org/react';
-import { EyeIcon } from '@/components/icons/eyeIcon';
 import { EditIcon } from '@/components/icons/editIcon';
 import { Tooltip } from '@nextui-org/react';
 import { IUserState } from '@/type/user';
@@ -39,19 +38,11 @@ const RenderCellStoreAdmin: React.FC<StoreAdminCellProps> = ({
           <p className="text-bold text-small capitalize">
             {cellValue as string}
           </p>
-          {/* <p className="text-bold text-tiny capitalize text-default-500">
-            {user.role}
-          </p> */}
         </div>
       );
     case 'actions':
       return (
         <div className="relative flex items-center gap-2 justify-center">
-          <Tooltip content="Details">
-            <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-              <EyeIcon />
-            </span>
-          </Tooltip>
           <Tooltip content="Edit user">
             <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
               <EditIcon />

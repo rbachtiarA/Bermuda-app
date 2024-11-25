@@ -54,6 +54,12 @@ export class CartController {
         },
       });
 
+      let checkout = await prisma.checkout.findUnique({
+        where: {
+          userId: +userId!,
+        },
+      });
+
       if (!cart) {
         let cartNew = await prisma.cart.create({
           data: {
@@ -61,6 +67,14 @@ export class CartController {
           },
         });
       }
+      if (!checkout) {
+        let checkoutNew = await prisma.checkout.create({
+          data: {
+            userId: +userId!,
+          },
+        });
+      }
+
       //check is user exist, then give cart Id
       const user = await prisma.user.findUnique({
         select: { cart: true },
@@ -138,6 +152,15 @@ export class CartController {
         },
         data: {
           quantity: quantity,
+        },
+        select: {
+          id: true, // Menyertakan ID cartItem
+          quantity: true, // Menyertakan jumlah baru
+          product: {
+            include: {
+              discounts: true, // Menyertakan diskon terkait produk
+            },
+          },
         },
       });
 

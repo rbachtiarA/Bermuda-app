@@ -8,6 +8,11 @@ export interface IDiscountAll {
   value: number;
 }
 
+export interface IDiscountDel {
+  id: number;
+  onDeleted: () => Promise<void>;
+}
+
 export interface IDiscount {
   id?: number;
   discountType?:

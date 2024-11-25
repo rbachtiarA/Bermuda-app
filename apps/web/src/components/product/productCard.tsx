@@ -41,6 +41,20 @@ export default function ProductCard({ stock }: { stock: IStocks }) {
     }
   };
 
+  const discountType = () => {
+    const flatDiscount = product.discounts?.find(
+      (discount) => discount.discountType === 'FLAT',
+    );
+
+    const percentageDiscount = product.discounts?.find(
+      (discount) => discount.discountType === 'PERCENTAGE',
+    );
+
+    if (flatDiscount) {
+      return flatDiscount.value;
+    }
+  };
+
   return (
     <div>
       <Card
@@ -52,21 +66,41 @@ export default function ProductCard({ stock }: { stock: IStocks }) {
         <CardHeader className="justify-center w-full">
           <Image
             isZoomed
-            src={
-              product.imageUrl ||
-              `/default-product-image.png`
-            }
+            src={product.imageUrl || `/default-product-image.png`}
           />
         </CardHeader>
         <CardBody>
           <div className="flex flex-col w-full justify-between h-full">
             <h2>{product.name}</h2>
-            <h3 className="text-primary font-bold">
-              {currencyRupiah(product.price)}
-            </h3>
+
+            {product.discounts?.some(
+              (discount) => discount.discountType === 'FLAT',
+            ) ? (
+              <>
+                <h3 className="text-gray-400 font-bold">
+                  <del>{currencyRupiah(product.price)}</del>
+                </h3>
+                <h3 className="text-primary font-bold">
+                  {currencyRupiah(product.price - discountType())}
+                </h3>
+              </>
+            ) : (
+              <h3 className="text-primary font-bold">
+                {currencyRupiah(product.price)}
+              </h3>
+            )}
             <div className="w-full font-semibold text-[12px ]">
               <p>Stock: {stock.quantity} item</p>
             </div>
+
+            {/* Logika untuk Buy One Get One */}
+            {product.discounts?.some(
+              (discount) => discount.discountType === 'BUY_ONE_GET_ONE',
+            ) && (
+              <div className="text-green-500 font-bold text-sm mt-2">
+                🎉 Buy One Get One Free!
+              </div>
+            )}
           </div>
         </CardBody>
       </Card>
