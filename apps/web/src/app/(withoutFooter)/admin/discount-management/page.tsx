@@ -47,7 +47,6 @@ const DiscountPage: React.FC = () => {
           </h2>
         </div>
       </div>
-      <div>{/* <DiscountList /> */}</div>
 
       {/* Modals */}
       <Modal
