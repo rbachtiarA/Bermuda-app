@@ -25,10 +25,10 @@ export default function PasswordlessPage() {
         })
 
         const userData = await response.json()
+        dispatch(updatedCartFromDatabase(userData.user.cart.CartItem))
+        dispatch(loginAction(userData.user))
 
         if (response.ok) {          
-          dispatch(updatedCartFromDatabase(userData.user.cart.CartItem))
-          dispatch(loginAction(userData.user))
           window.location.href = '/'
         }
       }

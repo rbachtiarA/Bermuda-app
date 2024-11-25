@@ -25,8 +25,7 @@ const DiscountList: React.FC = () => {
     const fetchDiscounts = async () => {
       try {
         setLoading(true); // Set loading to true while data is being fetched
-        const token = await getToken();
-        const { result } = await getDiscounts(token);
+        const { result } = await getDiscounts();
 
         // Log the response to understand its structure
         console.log('API Response:', result);
