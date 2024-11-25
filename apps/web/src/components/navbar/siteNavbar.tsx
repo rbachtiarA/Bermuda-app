@@ -35,12 +35,12 @@ import ProductIcon from '../icon/productIcon';
 
 const logo_font = Quicksand({
   weight: ['400'],
-  subsets: ['latin']
-})
+  subsets: ['latin'],
+});
 
 export default function SiteNavbar() {
   const dispatch = useAppDispatch();
-  const cart = useAppSelector(state => state.cart)
+  const cart = useAppSelector((state) => state.cart);
   const [token, setToken] = useState<string | null>(null);
   const [searchData, setSearchData] = useState<IProduct[]>([]);
   const [search, setSearch] = useState('');
@@ -48,7 +48,7 @@ export default function SiteNavbar() {
   const [dropdownSearch, setDropdownSearch] = useState(false);
   const [dropdownHamburger, setDropdownHamburger] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter()
+  const router = useRouter();
   const onLogout = async () => {
     await deleteToken();
     dispatch(resetCart());
@@ -84,17 +84,14 @@ export default function SiteNavbar() {
 
   return (
     <>
-      <Navbar isBordered className="shadow-sm hidden md:flex" maxWidth='full'>
-        <NavbarBrand style={logo_font.style}>
-          <Link color="foreground" href="/">
+      <Navbar isBordered maxWidth='full' className="shadow-sm hidden md:flex">
+          <NavbarBrand className="w-full justify-start">
+            <Link color="foreground" href="/">
               <SiteLogo />
-              <p className="hidden sm:block font-bold text-inherit">
-                Bermuda Store
-              </p>
-          </Link>
-        </NavbarBrand>
-
-        <NavbarContent justify='center' className='ml-2'>
+            </Link>
+          </NavbarBrand>
+          
+          <NavbarContent justify='center' className='ml-2'>
           <NavbarItem>
             <Button color='default' variant='light' onPress={() => router.push('/product')}>
               <ProductIcon size={20}/>
@@ -113,29 +110,30 @@ export default function SiteNavbar() {
             />
           </NavbarItem>
         </NavbarContent>
+          
 
-        <NavbarContent justify='end'>
-          <NavbarItem className='flex-shrink-0 md:hidden lg:flex'>
-              <Badge content={cart.length} color='primary'>
-                <LinkButtonBottomNavbar label='' href="/cart" imgsrc="/icon-shopping-cart.svg" imgalt="cart" component={<></>}/>
-              </Badge>
-          </NavbarItem>
+          <NavbarContent justify='end'>
+            <NavbarItem className='flex-shrink-0 md:hidden lg:flex'>
+                <Badge content={cart.length} color='primary'>
+                  <LinkButtonBottomNavbar label='' href="/cart" imgsrc="/icon-shopping-cart.svg" imgalt="cart" component={<></>}/>
+                </Badge>
+            </NavbarItem>
 
-          <NavbarItem>
-            {token ? (
-                <DropdownNav />
-            ) : (
-              <div className='flex gap-2'>
-                <Link as={Button} href={'/register'} onPress={() => router.push('/register')} color='primary' variant='bordered'>
-                  Register
-                </Link>
-                <Button onPress={() => router.push('/login')} color='primary'>
-                  Login
-                </Button>
-              </div>
-            )}
-          </NavbarItem>
-        </NavbarContent>
+            <NavbarItem>
+                {token ? (
+                  <DropdownNav />
+                ) : (
+                  <div className="flex gap-2">
+                    <Button onPress={() => router.push('/register')} color="primary" variant="ghost">
+                      Register
+                    </Button>
+                    <Button onPress={() => router.push('/login')} color="primary">
+                      Login
+                    </Button>
+                  </div>
+                )}
+            </NavbarItem>
+          </NavbarContent>
       </Navbar>
 
       {/* Mobile Nav */}

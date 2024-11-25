@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import prisma from '@/prisma';
 import nearestStore from '@/helpers/nearestStore';
 
-//not needed yet
 export class StoreController {
   async getStoreStocks(req: Request, res: Response) {
     try {
