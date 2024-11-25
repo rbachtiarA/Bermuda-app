@@ -18,6 +18,7 @@ export class AddressRouter {
     this.router.get('/update', this.addressController.updateProvince);
     this.router.get('/cities', this.addressController.getCities);
     this.router.get('/shippingCost', this.addressController.getShippingCost);
+    this.router.delete('/:id', this.addressController.deleteAddress);
   }
 
   getRouter(): Router {

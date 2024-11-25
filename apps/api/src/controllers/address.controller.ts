@@ -155,4 +155,23 @@ export class AddressController {
       });
     }
   }
+
+  async deleteAddress(req: Request, res: Response) {
+    const { id } = req.params;
+
+    try {
+      const address = await prisma.address.findUnique({
+        where: { id: Number(id) },
+      });
+      if (!address) {
+        return res.status(404).json({ message: 'Address not found' });
+      }
+
+      await prisma.address.delete({ where: { id: Number(id) } });
+      res.status(200).json({ message: 'Address deleted successfully' });
+    } catch (error) {
+      console.error('Error deleting address:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+  }
 }

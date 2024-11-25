@@ -23,11 +23,13 @@ export interface ILocation {
 }
 
 export interface IAddressList {
+  id: number;
   label: string;
   recipient: string;
   phoneNumber: string;
   addressLine: string;
   city: string;
+  cityId: number;
   state: string;
   postalCode: string;
   latitude: number;
