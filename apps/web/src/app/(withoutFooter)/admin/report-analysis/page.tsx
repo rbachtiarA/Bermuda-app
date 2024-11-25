@@ -1,4 +1,5 @@
 import StockHistoryPage from '@/components/stock/stockHistory';
+import SalesHistoryPage from '@/components/stock/salesHistory';
 
 export default function page() {
   return (
@@ -10,7 +11,12 @@ export default function page() {
               Report & Analysis
             </h1>
           </header>
-          <StockHistoryPage />
+          <div className="mb-[2rem]">
+            <SalesHistoryPage />
+          </div>
+          <div>
+            <StockHistoryPage />
+          </div>
         </div>
       </main>
     </div>

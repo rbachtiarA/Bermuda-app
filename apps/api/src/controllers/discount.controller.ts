@@ -3,7 +3,6 @@ import prisma from '@/prisma';
 import path from 'path';
 import { rajaonkir } from '@/templates/rajaonkir';
 
-//not needed yet
 export class DiscountController {
   async getAvailableDiscountOnCheckout(req: Request, res: Response) {
     try {
@@ -57,6 +56,51 @@ export class DiscountController {
       return res.status(400).send({
         status: 'error',
         msg: error,
+      });
+    }
+  }
+
+  async getDiscount(req: Request, res: Response) {
+    const { storeId, productId, discountType } = req.query;
+
+    try {
+      const filters: any = {};
+
+      if (storeId) {
+        filters.storeId = Number(storeId);
+      }
+      if (productId) {
+        filters.productId = Number(productId);
+      }
+      if (discountType) {
+        filters.discountType = discountType;
+      }
+
+      const discounts = await prisma.discount.findMany({
+        where: filters,
+        include: {
+          products: true,
+          stores: true,
+        },
+      });
+
+      if (discounts.length === 0) {
+        return res.status(404).json({
+          status: 'error',
+          message: 'Diskon tidak ditemukan',
+        });
+      }
+
+      return res.status(200).json({
+        status: 'ok',
+        message: 'Diskon berhasil diambil',
+        discounts,
+      });
+    } catch (error) {
+      console.error('Error fetching discounts:', error);
+      return res.status(500).json({
+        status: 'error',
+        message: 'Gagal mengambil diskon',
       });
     }
   }
@@ -145,7 +189,7 @@ export class DiscountController {
       const discount = await prisma.discount.create({
         data: {
           discountType: 'BUY_ONE_GET_ONE',
-          value: 100,
+          value: 1,
           productId,
           storeId,
         },

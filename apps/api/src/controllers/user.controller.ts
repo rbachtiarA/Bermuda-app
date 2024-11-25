@@ -84,7 +84,7 @@ export class UserController {
 
       await transporter.sendMail({
         to: email,
-        subject: 'Selamat Datang di BertigaMart',
+        subject: 'Selamat Datang di Bermuda Store',
         html: html,
       });
 

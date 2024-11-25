@@ -4,7 +4,7 @@ export const getStocks = async () => {
   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}stock`, {
     method: 'GET',
     headers: {
-      'Content-Type': 'appliication/json',
+      'Content-Type': 'application/json',
     },
     next: { revalidate: 1 },
   });
@@ -92,10 +92,11 @@ export const getStockById = async (data: { id: number; name: string }) => {
 
 export const getStockHistory = async (
   stockId: number,
+  userId: number,
   token: string | undefined,
 ) => {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_API_URL}stock/history/${stockId}`,
+    `${process.env.NEXT_PUBLIC_BASE_API_URL}stock/history/${stockId}/${userId}`,
     {
       method: 'GET',
       headers: {

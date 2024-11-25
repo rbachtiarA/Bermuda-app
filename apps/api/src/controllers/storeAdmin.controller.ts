@@ -21,7 +21,7 @@ export class StoreAdminController {
         password: '',
         role: 'STORE_ADMIN',
         isVerified: false,
-        referralCode: null
+        referralCode: null,
       },
     });
 
@@ -41,7 +41,7 @@ export class StoreAdminController {
 
     await transporter.sendMail({
       to: email,
-      subject: 'Selamat Datang di BertigaMart',
+      subject: 'Selamat Datang di Bermuda Store',
       html: html,
     });
 
@@ -54,38 +54,6 @@ export class StoreAdminController {
       res.status(400).send({
         status: 'error',
         msg: err,
-      });
-    }
-  }
-
-  async verifyStoreAdmin(req: Request, res: Response) {
-    try {
-      const store_admin = await prisma.user.findUnique({
-        where: { id: req.user?.id },
-      });
-
-      if (!store_admin)
-        return res.status(400).send({ status: 'error', msg: 'Invalid link' });
-
-      if (store_admin.isVerified)
-        return res.status(400).send({
-          status: 'error',
-          msg: 'Store Admin already verified',
-        });
-
-      await prisma.user.update({
-        data: { isVerified: true },
-        where: { id: req.user?.id },
-      });
-
-      res.status(200).send({
-        status: 'ok',
-        msg: 'Store Admin verified successfully',
-      });
-    } catch (err) {
-      res.status(500).send({
-        status: 'error',
-        msg: 'Internal server error',
       });
     }
   }
@@ -147,15 +115,15 @@ export class StoreAdminController {
           msg: 'Store Admin not found',
         });
       }
-      
-      if(storeAdmin.cart && storeAdmin.checkout) {
+
+      if (storeAdmin.cart && storeAdmin.checkout) {
         await prisma.cart.delete({
-          where: {id: storeAdmin.cart?.id } 
-        })
-  
+          where: { id: storeAdmin.cart?.id },
+        });
+
         await prisma.checkout.delete({
-          where: {id: storeAdmin.checkout?.id}
-        })
+          where: { id: storeAdmin.checkout?.id },
+        });
       }
 
       await prisma.user.delete({

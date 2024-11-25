@@ -78,6 +78,7 @@ export class ProductController {
         where: { id },
         include: {
           categories: true,
+          discounts: true,
           stock: {
             include: {
               stockHistory: {

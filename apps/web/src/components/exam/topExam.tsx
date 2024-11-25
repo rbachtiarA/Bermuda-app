@@ -11,8 +11,9 @@ import { SearchIcon } from '@/components/icons/searchIcon';
 import { ChevronDownIcon } from '@/components/icons/chevronDownIcon';
 import { capitalize } from '@/components/utils';
 import { Selection } from '@nextui-org/react';
-import ModalCreateStoreAdmin from './modalCreateStoreAdmin';
-import { columns } from './columnStoreAdmin';
+import { columns } from './columnExam';
+import { useAppSelector } from '@/redux/hook';
+import CreateManualDiscount from '../discount/discountManual';
 
 interface TopContentProps {
   filterValue: string;
@@ -25,7 +26,7 @@ interface TopContentProps {
   hasSearchFilter: boolean;
 }
 
-const TopStoreAdmin: React.FC<TopContentProps> = ({
+const TopExam: React.FC<TopContentProps> = ({
   filterValue,
   visibleColumns,
   onSearchChange,
@@ -33,6 +34,15 @@ const TopStoreAdmin: React.FC<TopContentProps> = ({
   usersLength,
   onRowsPerPageChange,
 }) => {
+  const user = useAppSelector((state) => state.user);
+  const role = user?.role;
+
+  const filteredColumns = React.useMemo(() => {
+    return role === 'STORE_ADMIN'
+      ? columns
+      : columns.filter((column) => column.uid !== 'actions');
+  }, [role]);
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex justify-between gap-3 items-end">
@@ -50,38 +60,40 @@ const TopStoreAdmin: React.FC<TopContentProps> = ({
           onClear={() => onSearchChange('')}
           onValueChange={onSearchChange}
         />
-        <div className="flex gap-3">
-          <Dropdown>
-            <DropdownTrigger className="hidden sm:flex">
-              <Button
-                endContent={<ChevronDownIcon className="text-small" />}
-                size="sm"
-                variant="flat"
+        {role === 'STORE_ADMIN' && (
+          <div className="flex gap-3">
+            <Dropdown>
+              <DropdownTrigger className="hidden sm:flex">
+                <Button
+                  endContent={<ChevronDownIcon className="text-small" />}
+                  size="sm"
+                  variant="flat"
+                >
+                  Columns
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                disallowEmptySelection
+                aria-label="Table Columns"
+                closeOnSelect={false}
+                selectedKeys={visibleColumns}
+                selectionMode="multiple"
+                onSelectionChange={setVisibleColumns}
               >
-                Columns
-              </Button>
-            </DropdownTrigger>
-            <DropdownMenu
-              disallowEmptySelection
-              aria-label="Table Columns"
-              closeOnSelect={false}
-              selectedKeys={visibleColumns}
-              selectionMode="multiple"
-              onSelectionChange={setVisibleColumns}
-            >
-              {columns.map((column) => (
-                <DropdownItem key={column.uid} className="capitalize">
-                  {capitalize(column.name)}
-                </DropdownItem>
-              ))}
-            </DropdownMenu>
-          </Dropdown>
-          <ModalCreateStoreAdmin />
-        </div>
+                {filteredColumns.map((column) => (
+                  <DropdownItem key={column.uid} className="capitalize">
+                    {capitalize(column.name)}
+                  </DropdownItem>
+                ))}
+              </DropdownMenu>
+            </Dropdown>
+            <CreateManualDiscount />
+          </div>
+        )}
       </div>
       <div className="flex justify-between items-center">
         <span className="text-default-400 text-small">
-          Total {usersLength} stores
+          Total {usersLength} discounts
         </span>
         <label className="flex items-center text-default-400 text-small">
           Rows per page:
@@ -99,4 +111,4 @@ const TopStoreAdmin: React.FC<TopContentProps> = ({
   );
 };
 
-export default TopStoreAdmin;
+export default TopExam;

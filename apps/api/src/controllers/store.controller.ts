@@ -12,7 +12,11 @@ export class StoreController {
         select: {
           stocks: {
             include: {
-              product: true,
+              product: {
+                include: {
+                  discounts: true,
+                },
+              },
             },
           },
         },
@@ -32,7 +36,11 @@ export class StoreController {
 
   async getAllStore(req: Request, res: Response) {
     try {
-      const store = await prisma.store.findMany();
+      const store = await prisma.store.findMany({
+        include: {
+          users: true,
+        },
+      });
       if (!store) throw 'There is Error for displaying product';
 
       return res.status(200).send({
@@ -100,7 +108,7 @@ export class StoreController {
       return res.status(200).send({
         status: 'ok',
         msg: closestStore?.store,
-        distance: closestStore?.distance
+        distance: closestStore?.distance,
       });
     } catch (error) {
       return res.status(400).send({
