@@ -2,6 +2,7 @@
 import { createRole, createToken, createUserId } from '@/lib/server';
 import { loginUser } from '@/lib/user.handler';
 import { useAppDispatch } from '@/redux/hook';
+import { updatedCartFromDatabase } from '@/redux/slice/cartSlice';
 import { loginAction } from '@/redux/slice/userSlice';
 import { ILoginData } from '@/type/user';
 import { Formik, Form, Field, FormikProps, FormikHelpers } from 'formik';
@@ -29,7 +30,7 @@ const LoginForm: React.FC = () => {
     try {
       const { result, ok } = await loginUser(data);
       if (!ok) throw result.msg;
-
+      dispatch(updatedCartFromDatabase(result.cart.CartItem));
       await createToken(result.token);
       await createRole(result.user.role);
       await createUserId(result.user.id);

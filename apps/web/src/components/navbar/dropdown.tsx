@@ -30,10 +30,10 @@ export default function DropdownNav() {
   };
 
   const onLogout = async () => {
-    await deleteToken();
     dispatch(resetCart());
     dispatch(resetCheckout());
     dispatch(logoutAction());
+    await deleteToken();
     window.location.href = '/';
   };
 

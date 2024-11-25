@@ -28,15 +28,8 @@ import { resetCheckout } from '@/redux/slice/checkoutSlice';
 import { logoutAction } from '@/redux/slice/userSlice';
 import NavbarMobileHamburger from './navbarMobile/navbarMobileHamburger';
 import LinkButtonBottomNavbar from '../bottomNavbar/LinkButton.BottomNavbar';
-import NotificationBottomNavbar from '../bottomNavbar/notificationCart.BottomNavbar';
 import { useRouter } from 'next/navigation';
-import { Quicksand } from 'next/font/google';
 import ProductIcon from '../icon/productIcon';
-
-const logo_font = Quicksand({
-  weight: ['400'],
-  subsets: ['latin'],
-});
 
 export default function SiteNavbar() {
   const dispatch = useAppDispatch();
