@@ -232,36 +232,4 @@ export class CartController {
       return res.status(400).send({status: 'error', msg: error})
     }
   }
-
-  async removeCheckoutCartItem(req: Request, res: Response) {
-    try {
-       //change variable userId to auth system, selectIds collection of selected Item
-       const userId = req.user?.id
-
-       //verify is userId valid,and then return checkoutId
-       const userCheckoutId = await prisma.user.findUnique({
-         where: { id: +userId!},
-         select: {
-           checkout: {
-             select: {
-               id: true
-             }
-           }
-         }
-       })
-       if(!userCheckoutId) throw 'Invalid user'
-
-       //remove cart items from cart if checkout success
-       const removedItems = await prisma.cartItem.deleteMany({
-        where: {
-          checkoutId: userCheckoutId.checkout?.id
-        }
-       })
-        
-       
-       return res.status(200).send({status: 'ok', msg: 'cart item removed, checkout success'})
-    } catch (error) {
-      return res.status(400).send({status: 'error', msg: error})
-    }
-  }
 }
