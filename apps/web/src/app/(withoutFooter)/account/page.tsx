@@ -1,4 +1,7 @@
+
+import UserDetails from "@/components/userProfile/userDetails";
 import { Metadata } from "next";
+
 
 export const metadata: Metadata = {
   title: 'My Account | Bermuda Store',
@@ -7,9 +10,6 @@ export const metadata: Metadata = {
 };
 export default function page() {
   return (
-    <div className="">
-        <h2 className="text-center font-bold text-xl">USER DASHBOARD</h2>
-        
-    </div>
+    <UserDetails />
   )
 }
