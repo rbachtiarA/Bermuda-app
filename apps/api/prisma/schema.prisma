@@ -43,7 +43,7 @@ model Store {
   location     String
   latitude     Float
   longitude    Float
-  products     Product[]     @relation("ProductStores")
+  products     Product[]
   discounts    Discount[]
   salesReports SalesReport[]
   stockReports StockReport[]
@@ -56,14 +56,15 @@ model Store {
 
 model Product {
   id            Int               @id @default(autoincrement())
-  name          String
+  name          String            @unique
   description   String            @db.Text
   price         Int
   imageUrl      String?
   categories    ProductCategory[]
   isRecommended Boolean           @default(false)
   slug          String
-  stores        Store[]           @relation("ProductStores")
+  store         Store?            @relation(fields: [storeId], references: [id])
+  storeId       Int?
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
   cartItems     CartItem[]

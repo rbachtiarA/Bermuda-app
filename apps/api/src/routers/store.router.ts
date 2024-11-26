@@ -14,6 +14,12 @@ export class StoreRouter {
 
   private initializeRoutes(): void {
     this.router.get(
+      '/products',
+      verifyToken,
+      checkAdmin,
+      this.storeController.getStoreProducts,
+    );
+    this.router.get(
       '/',
       verifyToken,
       checkAdmin,

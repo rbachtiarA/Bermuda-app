@@ -34,6 +34,26 @@ export const getAllStoreAdmin = async (token: string | undefined) => {
   return { result, ok: res.ok };
 };
 
+export const updateStoreAdmin = async (
+  data: { id: number; email: string },
+  token: string | undefined,
+) => {
+  const { id, email } = data;
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_API_URL}storeadmin/${id}`,
+    {
+      method: 'PUT',
+      body: JSON.stringify({ email }),
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    },
+  );
+  const result = await res.json();
+  return { result, ok: res.ok };
+};
+
 export const deleteStoreAdmin = async (
   data: { id: number },
   token: string | undefined,

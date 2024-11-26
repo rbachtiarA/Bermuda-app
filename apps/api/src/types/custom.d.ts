@@ -1,10 +1,10 @@
 type IUser = {
-    id: number,
-    role: string
-}
+  id: number;
+  role: string;
+};
 
 declare namespace Express {
-    export interface Request {
-        user?: IUser
-    }
+  export interface Request {
+    user?: IUser;
+  }
 }

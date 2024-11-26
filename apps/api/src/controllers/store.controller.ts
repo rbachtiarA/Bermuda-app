@@ -132,4 +132,110 @@ export class StoreController {
       });
     }
   }
+
+  async getStoreProducts(req: Request, res: Response) {
+    try {
+      // Ambil userId dan role dari user yang sudah diverifikasi
+      const userId = req.user?.id;
+      const role = req.user?.role;
+
+      let storeProducts;
+
+      if (role === 'SUPER_ADMIN') {
+        // Jika SUPER_ADMIN, dapatkan semua produk dari semua toko
+        storeProducts = await prisma.product.findMany({
+          include: {
+            categories: true, // Contoh jika produk memiliki relasi categories
+            store: true, // Termasuk informasi toko
+          },
+          orderBy: { createdAt: 'desc' },
+        });
+      } else {
+        // Jika bukan SUPER_ADMIN, pastikan user adalah admin toko yang valid
+        const admin = await prisma.user.findUnique({
+          where: { id: +userId! },
+        });
+
+        if (!admin) throw 'Admin is invalid';
+        if (!admin.storeId) throw 'Admin does not belong to any store';
+
+        // Ambil produk berdasarkan toko admin
+        storeProducts = await prisma.product.findMany({
+          where: {
+            storeId: admin?.storeId!,
+          },
+          include: {
+            categories: true, // Contoh jika produk memiliki relasi categories
+          },
+          orderBy: { createdAt: 'desc' },
+        });
+      }
+
+      if (!storeProducts || storeProducts.length === 0) {
+        return res
+          .status(200)
+          .send({ status: 'ok', msg: 'There are no products in this store' });
+      }
+
+      // Kirimkan data produk
+      return res.status(200).send({
+        status: 'ok',
+        msg: 'Success get data',
+        products: storeProducts,
+      });
+    } catch (error) {
+      return res.status(400).send({
+        status: 'error',
+        msg: `${error}`,
+      });
+    }
+  }
+
+  // async getStoreProduct(req: Request, res: Response) {
+  //   try {
+  //     const { storeId } = req.params;
+
+  //     // Validasi input: storeId harus disediakan
+  //     if (!storeId) {
+  //       return res.status(400).send({
+  //         status: 'error',
+  //         msg: 'Store ID is required',
+  //       });
+  //     }
+
+  //     // Query database untuk mencari store dan produk terkait
+  //     const store = await prisma.store.findUnique({
+  //       where: { id: parseInt(storeId) }, // Pastikan storeId dikonversi menjadi angka
+  //       select: {
+  //         products: {
+  //           include: {
+  //             discounts: true, // Sertakan diskon yang terkait
+  //             stock: true, // Pastikan schema Prisma memiliki relasi `stock`
+  //           },
+  //         },
+  //       },
+  //     });
+
+  //     // Jika store tidak ditemukan
+  //     if (!store) {
+  //       return res.status(404).send({
+  //         status: 'error',
+  //         msg: 'Store not found',
+  //       });
+  //     }
+
+  //     // Kirimkan data produk
+  //     return res.status(200).send({
+  //       status: 'ok',
+  //       msg: 'Products retrieved successfully',
+  //       products: store.products,
+  //     });
+  //   } catch (error) {
+  //     // Tangkap error dan kirimkan response error
+  //     return res.status(400).send({
+  //       status: 'error',
+  //       msg: `Error: ${error}`,
+  //     });
+  //   }
+  // }
 }

@@ -39,29 +39,59 @@ export const getAllStore = async () => {
       next: { revalidate: 1 },
     },
   );
-  // const { stores } = await res.json();
-  // console.log(stores, '<<>><><><>>');
-
   const { status, msg, stores } = await res.json();
 
   return { status, msg, stores };
 };
 
 export const getNearestStore = async (lat: number, lon: number) => {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}store/nearest?lat=${lat}&lon=${lon}`)
-  const { status, msg, distance }: { status: string, msg: IStore, distance: number } = await res.json()
-  
-  return { status, msg, distance }
-}
-export const getStoresList = async () => {
-  const token = await getToken()
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}store/`, {
-      headers: {
-          "Content-type":"application/json",
-          'Authorization': `Bearer ${token}`
-      }
-  })
-  const { status, msg }: { status: string, msg: IStore[] } = await res.json()
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_API_URL}store/nearest?lat=${lat}&lon=${lon}`,
+  );
+  const {
+    status,
+    msg,
+    distance,
+  }: { status: string; msg: IStore; distance: number } = await res.json();
 
-  return { status, msg }
+  return { status, msg, distance };
+};
+
+export const getStoresList = async () => {
+  const token = await getToken();
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}store/`, {
+    headers: {
+      'Content-type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const { status, msg }: { status: string; msg: IStore[] } = await res.json();
+
+  return { status, msg };
+};
+
+export async function getStoreProducts() {
+  try {
+    const token = await getToken();
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_API_URL}store/products`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (!res.ok) {
+      throw new Error('Failed to fetch products');
+    }
+
+    const data = await res.json();
+    return data.products;
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    throw error;
+  }
 }
