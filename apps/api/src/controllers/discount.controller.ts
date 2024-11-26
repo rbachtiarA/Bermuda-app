@@ -44,7 +44,7 @@ export class DiscountController {
               },
             },
           ],
-        },
+        },include: {products: true},
       });
 
       if (!checkoutItems) throw 'Something wrong when check your cart';

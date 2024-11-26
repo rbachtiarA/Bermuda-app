@@ -4,14 +4,13 @@ import currencyRupiah from '@/lib/rupiahCurrency';
 import { useAppSelector } from '@/redux/hook';
 import { IDiscount } from '@/type/discount';
 import {
-  Button,
   Card,
   CardBody,
   CardHeader,
   Divider,
   useDisclosure,
 } from '@nextui-org/react';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import DiscountSelectionModal from '../modal/discountSelection';
 
 export default function DiscountButton({
@@ -60,11 +59,19 @@ export default function DiscountButton({
           )}
           {discount && (
             <div>
-              <p>{discount.discountType}</p>
-              {discount.discountType != 'BUY_ONE_GET_ONE' && (
-                <p>Discount cut : {currencyRupiah(discount.value)}</p>
+              {discount.discountType === 'BUY_ONE_GET_ONE'&& 
+                <>
+                  <p>BUY ONE GET ONE</p>
+                  <p>{discount.products?.name}</p>
+                  <p className='text-warning-500'>Multiple doesn't apply</p>
+                </>
+              }
+              {discount.discountType !== 'BUY_ONE_GET_ONE' && (
+                <>
+                  <p>Discount cut : {discount.discountType !== 'FLAT'? `${discount.value}%` :currencyRupiah(discount.value)}</p>
+                  <p>Minimum purchase : {currencyRupiah(discount.minPurchase!)}</p>
+                </>
               )}
-              <p>Minimum purchase : {currencyRupiah(discount.minPurchase!)}</p>
             </div>
           )}
         </CardBody>

@@ -29,8 +29,17 @@ export class CreateOrderController {
         })
         if(!checkoutItem) throw 'Checkout is invalid'
 
+        const discountBOGO = await prisma.discount.findFirst({
+            where: { id: +discountId, discountType: 'BUY_ONE_GET_ONE' },
+            include: { products: true }
+        })
         //convert checkout item to array of {productId, quantity, price, }
         const orderItem = checkoutItem?.CartItem.map((item) => {
+            if(discountBOGO) {
+                if(item.productId === discountBOGO.productId) {
+                    item.quantity++
+                }
+            }
             return { productId: item.productId, quantity: item.quantity, price: item.product.price, discountValue: 0 }
         })
         
@@ -84,7 +93,7 @@ export class CreateOrderController {
                     shippingCost: shippingCost,
                     discountId: discountId,
                     storeId,
-                    discountAmount: discountAmount,
+                    discountAmount: discountBOGO? discountBOGO.products?.price :discountAmount,
                     Payment: {
                         create: {
                             amountPaid: totalAmount,
@@ -117,11 +126,6 @@ export class CreateOrderController {
                         order_id: `${process.env.PREFIX_ORDERNAME_MIDTRANS}${order.id}`,
                         gross_amount: totalAmount
                     },
-                    // item_details: [...itemDetails, {
-                    //     name: 'shipping Cost',
-                    //     price: shippingCost,
-                    //     quantity: 1
-                    // }] ,
                     customer_details: {
                         first_name: user.name
                     },
