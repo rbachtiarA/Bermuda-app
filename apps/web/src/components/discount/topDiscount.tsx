@@ -11,9 +11,11 @@ import { SearchIcon } from '@/components/icons/searchIcon';
 import { ChevronDownIcon } from '@/components/icons/chevronDownIcon';
 import { capitalize } from '@/components/utils';
 import { Selection } from '@nextui-org/react';
-import { columns } from './columnExam';
+import { columns } from './columnDiscount';
 import { useAppSelector } from '@/redux/hook';
-import CreateManualDiscount from '../discount/discountManual';
+import CreateManualDiscount from './discountManual';
+import CreateBuyOneGetOneDiscount from './discountBogo';
+import CreateDiscountMinPurchase from './discountMinPurchase';
 
 interface TopContentProps {
   filterValue: string;
@@ -26,7 +28,7 @@ interface TopContentProps {
   hasSearchFilter: boolean;
 }
 
-const TopExam: React.FC<TopContentProps> = ({
+const TopDiscounts: React.FC<TopContentProps> = ({
   filterValue,
   visibleColumns,
   onSearchChange,
@@ -42,6 +44,16 @@ const TopExam: React.FC<TopContentProps> = ({
       ? columns
       : columns.filter((column) => column.uid !== 'actions');
   }, [role]);
+
+  const [showDiscountForm, setShowDiscountForm] = React.useState<
+    'manual' | 'bogo' | 'minPurchase' | null
+  >(null);
+
+  const handleDiscountFormChange = (
+    type: 'manual' | 'bogo' | 'minPurchase',
+  ) => {
+    setShowDiscountForm(type);
+  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -87,7 +99,41 @@ const TopExam: React.FC<TopContentProps> = ({
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <CreateManualDiscount />
+
+            {/* New Dropdown for Discount Creation */}
+            <Dropdown>
+              <DropdownTrigger className="hidden sm:flex">
+                <Button
+                  endContent={<ChevronDownIcon className="text-small" />}
+                  size="sm"
+                  variant="flat"
+                >
+                  Create Discount
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu aria-label="Discount Types">
+                <DropdownItem
+                  onClick={() => handleDiscountFormChange('manual')}
+                >
+                  Create Manual Discount
+                </DropdownItem>
+                <DropdownItem onClick={() => handleDiscountFormChange('bogo')}>
+                  Create Buy-One-Get-One Discount
+                </DropdownItem>
+                <DropdownItem
+                  onClick={() => handleDiscountFormChange('minPurchase')}
+                >
+                  Create Min Purchase Discount
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+
+            {/* Display the corresponding discount form */}
+            {showDiscountForm === 'manual' && <CreateManualDiscount />}
+            {showDiscountForm === 'bogo' && <CreateBuyOneGetOneDiscount />}
+            {showDiscountForm === 'minPurchase' && (
+              <CreateDiscountMinPurchase />
+            )}
           </div>
         )}
       </div>
@@ -111,4 +157,4 @@ const TopExam: React.FC<TopContentProps> = ({
   );
 };
 
-export default TopExam;
+export default TopDiscounts;

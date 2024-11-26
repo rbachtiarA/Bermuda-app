@@ -16,13 +16,12 @@ import {
 } from '@nextui-org/react';
 
 const StockHistoryPage: React.FC = () => {
-  const [stockId, setStockId] = useState<string>('1'); // Default stockId untuk di-fetch
+  const [stockId, setStockId] = useState<string>('1');
   const [stockHistory, setStockHistory] = useState<StockHistory[] | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Function untuk fetch stock history
-  const fetchStockHistory = async (id: string) => {
+  const fetchStockHistory = async () => {
     setLoading(true);
     setError(null);
     setStockHistory(null);
@@ -35,7 +34,7 @@ const StockHistoryPage: React.FC = () => {
       }
 
       const { result, ok } = await getStockHistory(
-        Number(id),
+        Number(stockId),
         Number(userId),
         token,
       );
@@ -52,12 +51,9 @@ const StockHistoryPage: React.FC = () => {
     }
   };
 
-  // useEffect untuk otomatis fetch data saat komponen dirender
   useEffect(() => {
-    if (stockId.trim()) {
-      fetchStockHistory(stockId);
-    }
-  }, [stockId]);
+    fetchStockHistory();
+  }, []);
 
   return (
     <div className="flex flex-col justify-center px-4 py-6 bg-gray-100">
@@ -67,7 +63,6 @@ const StockHistoryPage: React.FC = () => {
       ) : stockHistory ? (
         <div className="w-full max-w-4xl">
           <Card style={{ padding: '20px' }}>
-            <h3>Stock History for ID: {stockId}</h3>
             <Table
               aria-label="Stock History Table"
               style={{ marginTop: '20px' }}
@@ -75,6 +70,8 @@ const StockHistoryPage: React.FC = () => {
             >
               <TableHeader>
                 <TableColumn>ID</TableColumn>
+                <TableColumn>Change Type</TableColumn>
+                <TableColumn>Product</TableColumn>
                 <TableColumn>Quantity</TableColumn>
                 <TableColumn>Date</TableColumn>
               </TableHeader>
@@ -82,6 +79,8 @@ const StockHistoryPage: React.FC = () => {
                 {stockHistory.map((history) => (
                   <TableRow key={history.id}>
                     <TableCell>{history.id}</TableCell>
+                    <TableCell>{history.changeType}</TableCell>
+                    <TableCell>{history.stock?.product.name}</TableCell>
                     <TableCell>{history.quantity}</TableCell>
                     <TableCell>
                       {new Date(history.createdAt).toLocaleString()}

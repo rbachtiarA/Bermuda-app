@@ -15,7 +15,7 @@ import { columns, INITIAL } from '@/components/product/columnProduct';
 import BottomContent from '@/components/bottomContent';
 import { classNames } from '@/components/classNames';
 import { useAppSelector } from '@/redux/hook';
-import { getStoreProducts } from '@/lib/store.handler';
+import { getStoreAdminProducts, getStoreProducts } from '@/lib/store.handler';
 import TopProduct from '@/components/product/topProduct';
 import RenderProduct from '@/components/product/renderProduct';
 
@@ -39,7 +39,10 @@ export default function ProductManagement() {
 
   const fetchProducts = useCallback(async () => {
     try {
-      const products = await getStoreProducts();
+      const products =
+        role === 'SUPER_ADMIN'
+          ? await getStoreProducts()
+          : await getStoreAdminProducts();
       if (products && Array.isArray(products)) {
         setProducts(products);
       } else {

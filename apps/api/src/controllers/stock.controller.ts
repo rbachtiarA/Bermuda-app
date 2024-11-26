@@ -207,14 +207,13 @@ export class StockController {
 
   async getReportSales(req: Request, res: Response) {
     try {
-      const { storeId, userId } = req.params;
+      const { userId } = req.params;
       let stockHistory: any[] = [];
 
-      // Check if storeId is provided and is required
-      if (!storeId && !userId) {
+      if (!userId) {
         return res.status(400).send({
           status: 'error',
-          msg: 'Store ID or User ID is required',
+          msg: 'User ID is required',
         });
       }
 
@@ -225,22 +224,30 @@ export class StockController {
           },
         });
 
-        // If user exists and their role is SUPER_ADMIN, ignore storeId
         if (user?.role === 'SUPER_ADMIN') {
-          // Fetch all orders, regardless of storeId
-          stockHistory = await prisma.order.findMany({
-            orderBy: { createdAt: 'desc' },
-          });
-        } else if (storeId) {
-          // If user is not SUPER_ADMIN, storeId is required
-          stockHistory = await prisma.order.findMany({
-            where: { storeId: Number(storeId) },
+          stockHistory = await prisma.stockHistory.findMany({
+            include: {
+              stock: {
+                include: {
+                  product: true,
+                },
+              },
+            },
             orderBy: { createdAt: 'desc' },
           });
         } else {
-          return res.status(400).send({
-            status: 'error',
-            msg: 'Store ID is required for non-SUPER_ADMIN users',
+          stockHistory = await prisma.stockHistory.findMany({
+            where: {
+              stock: {
+                storeId: Number(user?.storeId),
+              },
+            },
+            orderBy: {
+              createdAt: 'desc',
+            },
+            include: {
+              stock: true,
+            },
           });
         }
 

@@ -9,7 +9,10 @@ interface DiscountCellProps {
   onDeleted: () => Promise<void>;
 }
 
-const RenderExam: React.FC<DiscountCellProps> = ({ discount, columnKey }) => {
+const RenderDiscount: React.FC<DiscountCellProps> = ({
+  discount,
+  columnKey,
+}) => {
   const cellValue = discount[columnKey as keyof IDiscountAll];
 
   switch (columnKey) {
@@ -34,4 +37,4 @@ const RenderExam: React.FC<DiscountCellProps> = ({ discount, columnKey }) => {
   }
 };
 
-export default RenderExam;
+export default RenderDiscount;

@@ -1,9 +1,9 @@
 'use client';
 import ProductDetail from '@/components/product/detailProduct';
-import { useParams } from 'next/navigation'; // Gunakan useParams dari next/navigation
+import { useParams } from 'next/navigation';
 
 export default function ProductPage() {
-  const { productId } = useParams(); // Mengambil productId dari URL
+  const { productId } = useParams();
 
   if (!productId) return <div>Loading...</div>;
 

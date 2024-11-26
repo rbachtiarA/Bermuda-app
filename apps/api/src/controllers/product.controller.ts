@@ -141,52 +141,6 @@ export class ProductController {
     }
   }
 
-  // async createProduct(req: Request, res: Response) {
-  //   try {
-  //     if (!req.file) throw new Error('No file uploaded');
-
-  //     const link = `${process.env.BASE_URL_BE}public/product/${req.file.filename}`;
-
-  //     const {
-  //       name,
-  //       description,
-  //       price,
-  //       slug,
-  //       isRecommended = false,
-  //       categories,
-  //     } = JSON.parse(req.body.data);
-
-  //     const product = await prisma.product.create({
-  //       data: {
-  //         name,
-  //         description,
-  //         price: Number(price),
-  //         imageUrl: link,
-  //         slug,
-  //         isRecommended,
-  //         categories: {
-  //           connect: categories.map((categoryId: number) => ({
-  //             id: Number(categoryId),
-  //           })),
-  //         },
-  //       },
-  //     });
-
-  //     res.status(201).send({
-  //       status: 'ok',
-  //       msg: 'Product created!',
-  //       product,
-  //     });
-  //   } catch (err) {
-  //     console.log(err);
-
-  //     res.status(400).send({
-  //       status: 'error',
-  //       msg: err instanceof Error ? err.message : 'Unknown error',
-  //     });
-  //   }
-  // }
-
   async createProduct(req: Request, res: Response) {
     try {
       if (!req.file) throw new Error('No file uploaded');
@@ -202,10 +156,9 @@ export class ProductController {
         categories,
       } = JSON.parse(req.body.data);
 
-      // Check if a product with the same name already exists
       const existingProduct = await prisma.product.findUnique({
         where: {
-          name, // Ensure the product name is unique
+          name,
         },
       });
 
@@ -216,7 +169,6 @@ export class ProductController {
         });
       }
 
-      // Create the new product if the name is unique
       const product = await prisma.product.create({
         data: {
           name,

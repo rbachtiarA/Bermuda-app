@@ -135,23 +135,20 @@ export class StoreController {
 
   async getStoreProducts(req: Request, res: Response) {
     try {
-      // Ambil userId dan role dari user yang sudah diverifikasi
       const userId = req.user?.id;
       const role = req.user?.role;
 
       let storeProducts;
 
       if (role === 'SUPER_ADMIN') {
-        // Jika SUPER_ADMIN, dapatkan semua produk dari semua toko
         storeProducts = await prisma.product.findMany({
           include: {
-            categories: true, // Contoh jika produk memiliki relasi categories
-            store: true, // Termasuk informasi toko
+            categories: true,
+            store: true,
           },
           orderBy: { createdAt: 'desc' },
         });
       } else {
-        // Jika bukan SUPER_ADMIN, pastikan user adalah admin toko yang valid
         const admin = await prisma.user.findUnique({
           where: { id: +userId! },
         });
@@ -159,13 +156,12 @@ export class StoreController {
         if (!admin) throw 'Admin is invalid';
         if (!admin.storeId) throw 'Admin does not belong to any store';
 
-        // Ambil produk berdasarkan toko admin
         storeProducts = await prisma.product.findMany({
           where: {
             storeId: admin?.storeId!,
           },
           include: {
-            categories: true, // Contoh jika produk memiliki relasi categories
+            categories: true,
           },
           orderBy: { createdAt: 'desc' },
         });
@@ -177,7 +173,6 @@ export class StoreController {
           .send({ status: 'ok', msg: 'There are no products in this store' });
       }
 
-      // Kirimkan data produk
       return res.status(200).send({
         status: 'ok',
         msg: 'Success get data',
@@ -191,51 +186,111 @@ export class StoreController {
     }
   }
 
-  // async getStoreProduct(req: Request, res: Response) {
-  //   try {
-  //     const { storeId } = req.params;
+  async getStoreAdminProducts(req: Request, res: Response) {
+    try {
+      const userId = req.user?.id;
+      const role = req.user?.role;
 
-  //     // Validasi input: storeId harus disediakan
-  //     if (!storeId) {
-  //       return res.status(400).send({
-  //         status: 'error',
-  //         msg: 'Store ID is required',
-  //       });
-  //     }
+      let storeProducts;
 
-  //     // Query database untuk mencari store dan produk terkait
-  //     const store = await prisma.store.findUnique({
-  //       where: { id: parseInt(storeId) }, // Pastikan storeId dikonversi menjadi angka
-  //       select: {
-  //         products: {
-  //           include: {
-  //             discounts: true, // Sertakan diskon yang terkait
-  //             stock: true, // Pastikan schema Prisma memiliki relasi `stock`
-  //           },
-  //         },
-  //       },
-  //     });
+      if (role === 'SUPER_ADMIN') {
+        storeProducts = await prisma.stock.findMany({
+          include: {
+            product: {
+              include: { categories: true },
+            },
+          },
+          orderBy: { id: 'asc' },
+        });
+      } else {
+        const admin = await prisma.user.findUnique({
+          where: { id: +userId! },
+        });
 
-  //     // Jika store tidak ditemukan
-  //     if (!store) {
-  //       return res.status(404).send({
-  //         status: 'error',
-  //         msg: 'Store not found',
-  //       });
-  //     }
+        if (!admin) throw 'Admin is invalid';
+        if (!admin.storeId) throw 'Admin does not belong to any store';
 
-  //     // Kirimkan data produk
-  //     return res.status(200).send({
-  //       status: 'ok',
-  //       msg: 'Products retrieved successfully',
-  //       products: store.products,
-  //     });
-  //   } catch (error) {
-  //     // Tangkap error dan kirimkan response error
-  //     return res.status(400).send({
-  //       status: 'error',
-  //       msg: `Error: ${error}`,
-  //     });
-  //   }
-  // }
+        storeProducts = await prisma.stock.findMany({
+          where: {
+            storeId: admin?.storeId!,
+          },
+          include: {
+            product: {
+              include: { categories: true },
+            },
+          },
+          orderBy: { id: 'asc' },
+        });
+      }
+
+      if (!storeProducts || storeProducts.length === 0) {
+        return res
+          .status(200)
+          .send({ status: 'ok', msg: 'There are no products in this store' });
+      }
+
+      return res.status(200).send({
+        status: 'ok',
+        msg: 'Success get data',
+        products: storeProducts,
+      });
+    } catch (error) {
+      return res.status(400).send({
+        status: 'error',
+      });
+    }
+  }
+
+  async getStoreDiscounts(req: Request, res: Response) {
+    try {
+      const userId = req.user?.id;
+      const role = req.user?.role;
+
+      let storeDiscounts;
+
+      if (role === 'SUPER_ADMIN') {
+        storeDiscounts = await prisma.discount.findMany({
+          include: {
+            products: true,
+            stores: true,
+          },
+          orderBy: { createdAt: 'desc' },
+        });
+      } else {
+        const admin = await prisma.user.findUnique({
+          where: { id: +userId! },
+        });
+
+        if (!admin) throw 'Admin is invalid';
+        if (!admin.storeId) throw 'Admin does not belong to any store';
+
+        storeDiscounts = await prisma.discount.findMany({
+          where: {
+            storeId: admin.storeId!,
+          },
+          include: {
+            products: true,
+          },
+          orderBy: { createdAt: 'desc' },
+        });
+      }
+
+      if (!storeDiscounts || storeDiscounts.length === 0) {
+        return res
+          .status(200)
+          .send({ status: 'ok', msg: 'There are no discounts in this store' });
+      }
+
+      return res.status(200).send({
+        status: 'ok',
+        msg: 'Success get data',
+        discounts: storeDiscounts,
+      });
+    } catch (error) {
+      return res.status(400).send({
+        status: 'error',
+        msg: `${error}`,
+      });
+    }
+  }
 }

@@ -11,7 +11,6 @@ export class AuthController {
     this.initializePassport();
   }
 
-  // Metode untuk menginisialisasi Google OAuth Strategy
   private initializeGoogleStrategy() {
     passport.use(
       new GoogleStrategy(
@@ -60,7 +59,6 @@ export class AuthController {
                   checkout: { create: {} },
                   cart: { create: {} },
                 },
-                
               });
             }
 
@@ -129,12 +127,12 @@ export class AuthController {
           address: true,
           cart: {
             include: {
-              CartItem: true
-            }
-          }
+              CartItem: true,
+            },
+          },
         },
       });
-      
+
       if (!user) {
         return res.status(404).json({ msg: 'User not found' });
       }

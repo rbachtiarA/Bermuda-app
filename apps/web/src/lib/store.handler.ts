@@ -95,3 +95,55 @@ export async function getStoreProducts() {
     throw error;
   }
 }
+
+export async function getStoreAdminProducts() {
+  try {
+    const token = await getToken();
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_API_URL}store/storeadmin`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (!res.ok) {
+      throw new Error('Failed to fetch products');
+    }
+
+    const data = await res.json();
+    return data.products;
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    throw error;
+  }
+}
+
+export async function getStoreDiscounts() {
+  try {
+    const token = await getToken();
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_API_URL}store/discounts`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    if (!res.ok) {
+      throw new Error('Failed to fetch discounts');
+    }
+
+    const data = await res.json();
+    return data.discounts;
+  } catch (error) {
+    console.error('Error fetching discouts:', error);
+    throw error;
+  }
+}
