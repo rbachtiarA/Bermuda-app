@@ -1,5 +1,5 @@
 import { useAppDispatch } from '@/redux/hook';
-import { ICreateAddress, IFetchCity } from '@/type/address';
+import { IAddressList, ICreateAddress, IFetchCity } from '@/type/address';
 import {
   Button,
   Checkbox,
@@ -14,12 +14,14 @@ import { useEffect, useState } from 'react';
 import { GoogleMapPicker } from '../address/googleMapsPicker';
 import { Form, Formik, FormikHelpers, FormikProps } from 'formik';
 import * as Yup from 'yup';
-import { createAddressHandler, fetchCities } from '@/lib/address';
+import { createAddressHandler, fetchCities, updateAddressHandler } from '@/lib/address';
 import { CitySearchInput } from '../address/citySearchInput';
 
 interface EditAddressModalProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
+  initialData?: IAddressList | null;
+  onSubmitSuccess?: () => void;
 }
 
 const validationSchema = Yup.object().shape({
@@ -35,12 +37,26 @@ const validationSchema = Yup.object().shape({
 export const EditAddressModal: React.FC<EditAddressModalProps> = ({
   isOpen,
   onOpenChange,
+  initialData,
+  onSubmitSuccess,
 }) => {
+  
   const [cities, setCities] = useState<IFetchCity[]>([]);
   const [showMap, setShowMap] = useState(false);
   const [markerAddress, setMarkerAddress] = useState('');
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
-  const initialValues: ICreateAddress = {
+  const initialValues: ICreateAddress = initialData ? {
+    label: initialData.label,
+    recipient: initialData.recipient,
+    phoneNumber: initialData.phoneNumber,
+    cityId: initialData.cityId,
+    state: initialData.state || 'Kota',
+    addressLine: initialData.addressLine,
+    postalCode: initialData.postalCode || '',
+    latitude: initialData.latitude || 0,
+    longitude: initialData.longitude || 0,
+    isPrimary: initialData.isPrimary || false,
+  } : {
     label: '',
     recipient: '',
     phoneNumber: '',
@@ -51,7 +67,7 @@ export const EditAddressModal: React.FC<EditAddressModalProps> = ({
     latitude: 0,
     longitude: 0,
     isPrimary: false,
-  };
+  }
 
   const dispatch = useAppDispatch();
 
@@ -73,13 +89,17 @@ export const EditAddressModal: React.FC<EditAddressModalProps> = ({
     action: FormikHelpers<ICreateAddress>,
   ) => {
     try {
-      console.log('Data yang diterima: ', values);
-      const response = await createAddressHandler(values);
-      console.log('Response:', response);
+      if (initialData) {
+        await updateAddressHandler(initialData.id, values);
+      } else {
+        await createAddressHandler(values);
+        return
+      }
       action.resetForm();
       setMarkerAddress('');
       setIsFormSubmitted(true);
       setTimeout(() => setIsFormSubmitted(false), 100);
+      if (onSubmitSuccess) onSubmitSuccess();
       onOpenChange(false);
     } catch (error) {
       console.error('Error saat menyimpan alamat:', error);
@@ -91,13 +111,13 @@ export const EditAddressModal: React.FC<EditAddressModalProps> = ({
       isOpen={isOpen}
       onOpenChange={onOpenChange}
       isDismissable={false}
-      isKeyboardDismissDisabled={true}
+      isKeyboardDismissDisabled={false}
       size="lg"
       scrollBehavior="outside"
       className="overflow-auto"
     >
       <ModalContent>
-        <ModalHeader className="flex flex-col gap-1">Tambah Alamat</ModalHeader>
+        <ModalHeader className="flex flex-col gap-1">{initialData ? 'Edit Alamat' : 'Tambah Alamat'}</ModalHeader>
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
@@ -113,7 +133,14 @@ export const EditAddressModal: React.FC<EditAddressModalProps> = ({
               handleChange,
             } = props;
             return (
-              <Form>
+              <Form
+              onKeyDown={(e) => {
+                const target = e.target as HTMLElement;
+                if (e.key === 'Enter' && target.tagName === 'INPUT') {
+                  e.preventDefault();
+                }
+              }}
+              >
                 <ModalBody>
                   <div>
                     <Input

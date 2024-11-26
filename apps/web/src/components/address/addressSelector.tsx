@@ -16,6 +16,7 @@ import { FaChevronDown } from 'react-icons/fa';
 import { NewAddressModal } from './newAddressModal';
 import { getUserAddressess } from '@/lib/address';
 import { IAddressList } from '@/type/address';
+import { EditAddressModal } from './editAddressModal';
 
 export const AddressSelector: React.FC = () => {
   const {

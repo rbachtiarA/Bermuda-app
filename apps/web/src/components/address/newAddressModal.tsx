@@ -31,8 +31,6 @@ const validationSchema = Yup.object().shape({
   addressLine: Yup.string().required(
     'Masukkan nama jalan/nama bangunan/lantai/nomor rumah atau unit',
   ),
-  // latitude: Yup.number().required("Pilih lokasi pada peta"),
-  // longitude: Yup.number().required("Pilih lokasi pada peta"),
 });
 export const NewAddressModal: React.FC<NewAddressModalProps> = ({
   isOpen,

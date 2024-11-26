@@ -85,6 +85,7 @@ export default function SiteNavbar() {
   return (
     <>
       <Navbar isBordered maxWidth='full' className="shadow-sm hidden md:flex">
+        <div className='flex container px-4'>
           <NavbarBrand className="w-full justify-start">
             <Link color="foreground" href="/">
               <SiteLogo />
@@ -112,13 +113,12 @@ export default function SiteNavbar() {
         </NavbarContent>
           
 
-          <NavbarContent justify='end'>
+          <NavbarContent justify='end' className='flex gap-10'>
             <NavbarItem className='flex-shrink-0 md:hidden lg:flex'>
                 <Badge content={cart.length} color='primary'>
                   <LinkButtonBottomNavbar label='' href="/cart" imgsrc="/icon-shopping-cart.svg" imgalt="cart" component={<></>}/>
                 </Badge>
             </NavbarItem>
-
             <NavbarItem>
                 {token ? (
                   <DropdownNav />
@@ -134,6 +134,7 @@ export default function SiteNavbar() {
                 )}
             </NavbarItem>
           </NavbarContent>
+        </div>
       </Navbar>
 
       {/* Mobile Nav */}
