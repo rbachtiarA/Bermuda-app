@@ -3,7 +3,7 @@ import { Button, Card, CardBody } from '@nextui-org/react';
 import { ReactNode, useState } from 'react';
 import EditAddress from './editAddress';
 import DeleteAddress from './deleteAddress';
-import { NewAddressModal } from '../modal/newAddressModal';
+import { NewAddressModal } from './newAddressModal';
 
 export default function AddressCard({
   address,

@@ -13,7 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import AddressCard from './addressCard';
 import { selectAddress } from '@/redux/slice/userSlice';
 import { FaChevronDown } from 'react-icons/fa';
-import { NewAddressModal } from '../modal/newAddressModal';
+import { NewAddressModal } from './newAddressModal';
 import { getUserAddressess } from '@/lib/address';
 import { IAddressList } from '@/type/address';
 
