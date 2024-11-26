@@ -1,35 +1,68 @@
-import { useEffect, useState } from 'react';
-import { Button, Input, Select, SelectItem, Spacer } from '@nextui-org/react';
+import React, { useEffect, useState } from 'react';
+import {
+  Button,
+  Input,
+  Select,
+  SelectItem,
+  Spacer,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from '@nextui-org/react';
 import { getToken, getUserId } from '@/lib/server';
 import { getAllStore } from '@/lib/store.handler';
 import { createDiscountMinPur } from '@/lib/discount.handler';
 import { getProducts } from '@/lib/product.handler';
+import { PlusIcon } from '../icons/plusIcon';
 
-const CreateDiscountMInPurchase: React.FC = () => {
-  const [minPurchase, setMinPurchase] = useState<string>('');
-  const [value, setValue] = useState<string>('');
-  const [discountType, setDiscountType] = useState<string>('');
-  const [storeId, setStoreId] = useState<number>(0);
-  const [productId, setProductId] = useState<number>(0);
+const CreateDiscountMinPurchase: React.FC = () => {
+  const [formData, setFormData] = useState({
+    minPurchase: '',
+    value: '',
+    discountType: '',
+    storeId: 0,
+    productId: 0,
+  });
   const [loading, setLoading] = useState<boolean>(false);
   const [message, setMessage] = useState<string>('');
   const [stores, setStores] = useState<any[]>([]);
+  const [storeId, setStoreId] = useState<number>(0);
   const [products, setProducts] = useState<any[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const onOpen = () => setIsOpen(true);
+  const onClose = () => {
+    setIsOpen(false);
+    setMessage('');
+    setFormData({
+      minPurchase: '',
+      value: '',
+      discountType: '',
+      storeId: 0,
+      productId: 0,
+    });
+  };
 
   useEffect(() => {
     const loadData = async () => {
       try {
         const token = await getToken();
-        const [fetchedStores] = await Promise.all([getAllStore()]);
         const userId = await getUserId();
-
+        const [fetchedStores, fetchedProducts] = await Promise.all([
+          getAllStore(),
+          getProducts(),
+        ]);
         const filterStores = fetchedStores.stores
           .map((x: any) => {
             return x.users.find((y: any) => y.id === Number(userId)) ? x : null;
           })
           .filter((store: any) => store !== null);
-        const fetchedProducts = await getProducts();
-
+        setFormData({
+          ...formData,
+          storeId: filterStores[0]?.id || 0,
+        });
         setStoreId(filterStores[0].id);
         setStores(filterStores);
         setProducts(fetchedProducts?.products);
@@ -48,22 +81,25 @@ const CreateDiscountMInPurchase: React.FC = () => {
 
     try {
       const token = await getToken();
-      const { result, ok } = await createDiscountMinPur(
+      const { ok } = await createDiscountMinPur(
         {
-          discountType: discountType,
-          minPurchase: Number(minPurchase),
-          storeId: storeId,
-          value: Number(value),
+          discountType: formData.discountType,
+          minPurchase: Number(formData.minPurchase),
+          storeId: formData.storeId,
+          value: Number(formData.value),
         },
         token,
       );
+
       if (ok) {
-        setMessage('Diskon manual berhasil dibuat.');
-        setStoreId(0);
-        setValue('');
-        setStores([]);
-        setDiscountType('');
-        setMinPurchase('');
+        setMessage('Diskon berhasil dibuat.');
+        setFormData({
+          minPurchase: '',
+          value: '',
+          discountType: '',
+          storeId: 0,
+          productId: 0,
+        });
         window.location.reload();
       }
     } catch (error) {
@@ -75,255 +111,125 @@ const CreateDiscountMInPurchase: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: '400px', margin: 'auto' }}>
-      <h3>Buat Diskon Bersyarat</h3>
-      <Select
-        isDisabled
-        name="storeId"
-        label="Pilih Toko"
-        value={storeId?.toString() || ''}
-        selectedKeys={[String(storeId)]}
-        onChange={(e) => setStoreId(parseInt(e.target.value))}
-        fullWidth
-        required
+    <>
+      <Button
+        onPress={onOpen}
+        variant="flat"
+        size="sm"
+        endContent={<PlusIcon />}
       >
-        {stores.map((store) => (
-          <SelectItem key={store.id} value={store.id.toString()}>
-            {store.name}
-          </SelectItem>
-        ))}
-      </Select>
-      <Spacer y={1} />
-      <Select
-        name="productId"
-        label="Pilih Produk"
-        value={productId?.toString() || ''}
-        onChange={(e) => setProductId(parseInt(e.target.value))}
-        fullWidth
-        required
-      >
-        {products.map((product) => (
-          <SelectItem key={product.id} value={product.id.toString()}>
-            {product.name}
-          </SelectItem>
-        ))}
-      </Select>
-      <Spacer y={1} />
-      <Spacer y={1} />
-      <Input
-        type="number"
-        label="Minimal Pembelian"
-        placeholder="Masukkan minimal pembelian"
-        value={minPurchase}
-        onChange={(e) => setMinPurchase(e.target.value)}
-        required
-      />
-      <Spacer y={1} />
-      <Input
-        type="number"
-        label="Nilai Diskon"
-        placeholder="Masukkan nilai diskon"
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        required
-      />
-      <Spacer y={1} />
-      <Select
-        label="Tipe Diskon"
-        value={discountType}
-        onChange={(e) => setDiscountType(e.target.value)}
-        fullWidth
-        required
-      >
-        <SelectItem key="FLAT" value="FLAT">
-          Nominal
-        </SelectItem>
-        <SelectItem key="PERCENTAGE" value="PERCENTAGE">
-          Persentase
-        </SelectItem>
-      </Select>
-
-      <Button type="submit" disabled={loading}>
-        {loading ? 'Mengirim...' : 'Buat Diskon'}
+        Tambah Diskon Min Purchase
       </Button>
-      <Spacer y={1} />
-      {message && <p>{message}</p>}
-    </form>
+
+      <Modal isOpen={isOpen} onClose={onClose} placement="top-center">
+        <ModalContent>
+          <ModalHeader>Buat Diskon Bersyarat</ModalHeader>
+          <ModalBody>
+            <Select
+              name="storeId"
+              isDisabled
+              label="Pilih Toko"
+              value={formData.storeId?.toString() || ''}
+              selectedKeys={[String(storeId)]}
+              onChange={(e) =>
+                setFormData({ ...formData, storeId: parseInt(e.target.value) })
+              }
+              fullWidth
+              required
+            >
+              {stores?.map((store) => (
+                <SelectItem key={store.id} value={store.id.toString()}>
+                  {store.name}
+                </SelectItem>
+              ))}
+            </Select>
+            <Spacer y={1} />
+            <Select
+              label="Pilih Produk"
+              value={formData.productId.toString()}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  productId: parseInt(e.target.value),
+                })
+              }
+              fullWidth
+              required
+            >
+              {products.map((product) => (
+                <SelectItem key={product.id} value={product.id.toString()}>
+                  {product.name}
+                </SelectItem>
+              ))}
+            </Select>
+            <Spacer y={1} />
+            <Input
+              label="Minimal Pembelian"
+              type="number"
+              placeholder="Masukkan minimal pembelian"
+              value={formData.minPurchase}
+              onChange={(e) =>
+                setFormData({ ...formData, minPurchase: e.target.value })
+              }
+              fullWidth
+              required
+            />
+            <Spacer y={1} />
+            <Input
+              label="Nilai Diskon"
+              type="number"
+              placeholder="Masukkan nilai diskon"
+              value={formData.value}
+              onChange={(e) =>
+                setFormData({ ...formData, value: e.target.value })
+              }
+              fullWidth
+              required
+            />
+            <Spacer y={1} />
+            <Select
+              label="Tipe Diskon"
+              value={formData.discountType}
+              onChange={(e) =>
+                setFormData({ ...formData, discountType: e.target.value })
+              }
+              fullWidth
+              required
+            >
+              <SelectItem key="FLAT" value="FLAT">
+                Nominal
+              </SelectItem>
+              <SelectItem key="PERCENTAGE" value="PERCENTAGE">
+                Persentase
+              </SelectItem>
+            </Select>
+            {message && (
+              <p
+                style={{
+                  color: message.includes('berhasil') ? 'green' : 'red',
+                }}
+              >
+                {message}
+              </p>
+            )}
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              color="danger"
+              variant="flat"
+              onPress={onClose}
+              disabled={loading}
+            >
+              Tutup
+            </Button>
+            <Button color="primary" onClick={handleSubmit} disabled={loading}>
+              {loading ? 'Loading...' : 'Buat Diskon'}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
 
-export default CreateDiscountMInPurchase;
-
-// import { useEffect, useState } from 'react';
-// import {
-//   Modal,
-//   ModalContent,
-//   ModalHeader,
-//   ModalBody,
-//   ModalFooter,
-//   Button,
-//   Select,
-//   SelectItem,
-//   Input,
-// } from '@nextui-org/react';
-// import { PlusIcon } from '../icons/plusIcon';
-// import { getToken, getUserId } from '@/lib/server';
-// import { getAllStore } from '@/lib/store.handler';
-// import { createDiscountMinPur } from '@/lib/discount.handler';
-
-// const CreateDiscountMinPurchase: React.FC = () => {
-//   const [isOpen, setIsOpen] = useState(false);
-//   const [minPurchase, setMinPurchase] = useState<string>('');
-//   const [value, setValue] = useState<string>('');
-//   const [discountType, setDiscountType] = useState<string>('');
-//   const [storeId, setStoreId] = useState<number>(0);
-//   const [loading, setLoading] = useState<boolean>(false);
-//   const [message, setMessage] = useState<string>('');
-//   const [stores, setStores] = useState<any[]>([]);
-
-//   const onOpen = () => setIsOpen(true);
-//   const onClose = () => {
-//     setIsOpen(false);
-//     setMinPurchase('');
-//     setValue('');
-//     setDiscountType('');
-//     setStoreId(0);
-//     setMessage('');
-//   };
-
-//   useEffect(() => {
-//     const loadData = async () => {
-//       try {
-//         const token = await getToken();
-//         const [fetchedStores] = await Promise.all([getAllStore()]);
-//         const userId = await getUserId();
-
-//         const filterStores = fetchedStores.stores
-//           .map((store: any) => {
-//             return store.users.find((user: any) => user.id === Number(userId))
-//               ? store
-//               : null;
-//           })
-//           .filter((store: any) => store !== null);
-//         setStoreId(filterStores[0]?.id || 0);
-//         setStores(filterStores);
-//       } catch (error) {
-//         console.error('Error loading data:', error);
-//       }
-//     };
-
-//     loadData();
-//   }, []);
-
-//   const handleSubmit = async () => {
-//     setLoading(true);
-//     setMessage('');
-//     try {
-//       const token = await getToken();
-//       const { ok } = await createDiscountMinPur(
-//         {
-//           discountType,
-//           minPurchase: Number(minPurchase),
-//           storeId,
-//           value: Number(value),
-//         },
-//         token,
-//       );
-//       if (ok) {
-//         setMessage('Diskon bersyarat berhasil dibuat!');
-//         window.location.reload();
-//       } else {
-//         setMessage('Gagal membuat diskon.');
-//       }
-//     } catch (error) {
-//       console.error(error);
-//       setMessage('Gagal membuat diskon.');
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   return (
-//     <>
-//       <Button
-//         onPress={onOpen}
-//         variant="flat"
-//         endContent={<PlusIcon />}
-//         size="sm"
-//       >
-//         Create Min Purchase Discount
-//       </Button>
-//       <Modal isOpen={isOpen} onClose={onClose} placement="top-center">
-//         <ModalContent>
-//           <ModalHeader className="flex flex-col gap-1">
-//             Buat Diskon Bersyarat
-//           </ModalHeader>
-//           <ModalBody>
-//             <Select
-//               label="Select Store"
-//               value={storeId.toString()}
-//               onChange={(e) => setStoreId(Number(e.target.value))}
-//               className="max-w-xs"
-//               disabled
-//               required
-//             >
-//               {stores.map((store) => (
-//                 <SelectItem key={store.id} value={store.id.toString()}>
-//                   {store.name}
-//                 </SelectItem>
-//               ))}
-//             </Select>
-//             <Input
-//               type="number"
-//               label="Min Purchase"
-//               placeholder="Masukkan minimal pembelian"
-//               value={minPurchase}
-//               onChange={(e) => setMinPurchase(e.target.value)}
-//               className="mt-4"
-//               required
-//             />
-//             <Input
-//               type="number"
-//               label="Nilai Diskon"
-//               placeholder="Masukkan nilai diskon"
-//               value={value}
-//               onChange={(e) => setValue(e.target.value)}
-//               className="mt-4"
-//               required
-//             />
-//             <Select
-//               label="Tipe Diskon"
-//               value={discountType}
-//               onChange={(e) => setDiscountType(e.target.value)}
-//               className="max-w-xs mt-4"
-//               required
-//             >
-//               <SelectItem key="FLAT" value="FLAT">
-//                 Nominal
-//               </SelectItem>
-//               <SelectItem key="PERCENTAGE" value="PERCENTAGE">
-//                 Persentase
-//               </SelectItem>
-//             </Select>
-//             {message && <p className="text-red-500 mt-2">{message}</p>}
-//           </ModalBody>
-//           <ModalFooter>
-//             <Button
-//               color="danger"
-//               variant="flat"
-//               onPress={onClose}
-//               disabled={loading}
-//             >
-//               Batal
-//             </Button>
-//             <Button color="primary" onPress={handleSubmit} disabled={loading}>
-//               {loading ? 'Mengirim...' : 'Buat Diskon'}
-//             </Button>
-//           </ModalFooter>
-//         </ModalContent>
-//       </Modal>
-//     </>
-//   );
-// };
-
-// export default CreateDiscountMinPurchase;
+export default CreateDiscountMinPurchase;

@@ -180,6 +180,7 @@ export class UserController {
           email: existingUser.email,
           avatarUrl: existingUser.avatarUrl,
           address: existingUser.address,
+          storeId: existingUser.storeId,
         },
       });
     } catch (err) {

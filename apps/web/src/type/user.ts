@@ -23,6 +23,7 @@ export interface IUserState {
   email: string;
   role: string;
   avatarUrl: string;
+  storeId?: string;
   address:
     | {
         label: string;

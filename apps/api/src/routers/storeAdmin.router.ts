@@ -30,6 +30,12 @@ export class StoreAdminRouter {
       checkSuperAdmin,
       this.storeAdminController.deleteStoreAdmin,
     );
+    this.router.put(
+      '/:id',
+      verifyToken,
+      checkSuperAdmin,
+      this.storeAdminController.updateStoreAdmin,
+    );
   }
 
   getRouter(): Router {

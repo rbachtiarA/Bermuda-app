@@ -24,8 +24,11 @@ export interface IStockDel {
 
 export interface StockHistory {
   id: number;
+  changeType?: string;
+  stock?: { product: { name: string } };
   stockId: number;
   quantity: number;
+  orderItems?: any;
   action: string;
   createdAt: string;
 }

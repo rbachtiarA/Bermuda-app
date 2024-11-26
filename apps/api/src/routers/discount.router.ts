@@ -1,6 +1,7 @@
 import { DiscountController } from '@/controllers/discount.controller';
 import { verifyToken } from '@/middleware/token';
 import { Router } from 'express';
+import { checkStoreAdmin } from '../middleware/token';
 
 export class DiscountRouter {
   private router: Router;
@@ -13,11 +14,6 @@ export class DiscountRouter {
   }
 
   private initializeRoutes(): void {
-    // this.router.get(
-    //   '/',
-    //   verifyToken,
-    //   this.discountController.getAvailableDiscount,
-    // );
     this.router.get('/', this.discountController.getDiscount);
     this.router.get(
       '/store/:storeId',
@@ -25,13 +21,22 @@ export class DiscountRouter {
       this.discountController.getAvailableDiscountOnCheckout,
     );
     this.router.get('/address', this.discountController.updateProvince);
-    this.router.post('/manual', this.discountController.createManualDiscount);
+    this.router.post(
+      '/manual',
+      verifyToken,
+      checkStoreAdmin,
+      this.discountController.createManualDiscount,
+    );
     this.router.post(
       '/conditional',
+      verifyToken,
+      checkStoreAdmin,
       this.discountController.createConditionalDiscount,
     );
     this.router.post(
       '/bogo',
+      verifyToken,
+      checkStoreAdmin,
       this.discountController.createBuyOneGetOneDiscount,
     );
   }

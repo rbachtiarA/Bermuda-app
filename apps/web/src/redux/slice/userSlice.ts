@@ -10,7 +10,7 @@ const initialState: IUserState = {
   address: null,
   location: undefined,
   isLoggedIn: false,
-  selectedAddress: undefined
+  selectedAddress: undefined,
 };
 
 export const userSlice = createSlice({
@@ -25,9 +25,10 @@ export const userSlice = createSlice({
       state.email = email;
       state.role = role;
       state.avatarUrl = avatarUrl;
-      state.address = address
+      state.address = address;
       state.isLoggedIn = true;
-      state.selectedAddress = address?.find((address) => address.isPrimary === true) || address?.[0];
+      state.selectedAddress =
+        address?.find((address) => address.isPrimary === true) || address?.[0];
     },
     logoutAction: (state) => {
       state.id = 0;
@@ -39,17 +40,29 @@ export const userSlice = createSlice({
       state.isLoggedIn = false;
       state.selectedAddress = undefined;
     },
-    setLocation: (state, action: PayloadAction<{ latitude: number; longitude: number }>) => {
+    setLocation: (
+      state,
+      action: PayloadAction<{ latitude: number; longitude: number }>,
+    ) => {
       state.location = action.payload;
     },
-    selectAddress: (state, action: PayloadAction<IUserState["selectedAddress"]>) => {
+    selectAddress: (
+      state,
+      action: PayloadAction<IUserState['selectedAddress']>,
+    ) => {
       state.selectedAddress = action.payload;
     },
-    updateAvatar: (state, action: PayloadAction<IUserState["avatarUrl"]>) => {
+    updateAvatar: (state, action: PayloadAction<IUserState['avatarUrl']>) => {
       state.avatarUrl = action.payload;
     },
   },
 });
 
-export const { loginAction, logoutAction, setLocation, selectAddress, updateAvatar } = userSlice.actions;
-export default userSlice.reducer; 
+export const {
+  loginAction,
+  logoutAction,
+  setLocation,
+  selectAddress,
+  updateAvatar,
+} = userSlice.actions;
+export default userSlice.reducer;

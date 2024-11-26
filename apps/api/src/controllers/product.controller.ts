@@ -37,7 +37,7 @@ export class ProductController {
         prisma.product.findMany({
           where: filter,
           orderBy: { createdAt: 'desc' },
-          include: { categories: true },
+          include: { categories: true, store: true },
           skip: (pageNumber - 1) * pageSizeNumber,
           take: pageSizeNumber,
         }),
@@ -155,6 +155,19 @@ export class ProductController {
         isRecommended = false,
         categories,
       } = JSON.parse(req.body.data);
+
+      const existingProduct = await prisma.product.findUnique({
+        where: {
+          name,
+        },
+      });
+
+      if (existingProduct) {
+        return res.status(400).send({
+          status: 'error',
+          msg: 'A product with this name already exists.',
+        });
+      }
 
       const product = await prisma.product.create({
         data: {

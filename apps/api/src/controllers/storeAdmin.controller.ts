@@ -5,6 +5,7 @@ import path from 'path';
 import fs from 'fs';
 import handlebars from 'handlebars';
 import { transporter } from '@/helpers/nodemailer';
+import { hash } from 'bcrypt';
 
 export class StoreAdminController {
   async createStoreAdmin(req: Request, res: Response) {
@@ -133,6 +134,84 @@ export class StoreAdminController {
       res.status(200).send({
         status: 'ok',
         msg: 'Store Admin deleted successfully',
+      });
+    } catch (err) {
+      res.status(500).send({
+        status: 'error',
+        msg: 'Internal server error',
+      });
+    }
+  }
+
+  async updateStoreAdmin(req: Request, res: Response) {
+    try {
+      const requesterRole = req.user?.role;
+      if (requesterRole !== 'SUPER_ADMIN') {
+        return res.status(403).send({
+          status: 'error',
+          msg: 'Unauthorized access',
+        });
+      }
+
+      const id = parseInt(req.params.id, 10);
+
+      if (isNaN(id)) {
+        return res.status(400).send({
+          status: 'error',
+          msg: 'Invalid ID format',
+        });
+      }
+
+      const storeAdmin = await prisma.user.findUnique({
+        where: { id },
+        select: { role: true },
+      });
+
+      if (!storeAdmin || storeAdmin.role !== 'STORE_ADMIN') {
+        return res.status(404).send({
+          status: 'error',
+          msg: 'Store Admin not found',
+        });
+      }
+
+      const { email, name, password } = req.body;
+
+      // Validasi input
+      if (!email && !name && !password) {
+        return res.status(400).send({
+          status: 'error',
+          msg: 'No data provided for update',
+        });
+      }
+
+      const updateData: any = {};
+      if (email) {
+        const existingUser = await prisma.user.findUnique({ where: { email } });
+        if (existingUser && existingUser.id !== id) {
+          return res.status(400).send({
+            status: 'error',
+            msg: 'Email already in use',
+          });
+        }
+        updateData.email = email;
+      }
+      if (name) {
+        updateData.name = name;
+      }
+      if (password) {
+        // Hash the password
+        const hashedPassword = await hash(password, 10);
+        updateData.password = hashedPassword;
+      }
+
+      await prisma.user.update({
+        where: { id },
+        data: updateData,
+      });
+
+      res.status(200).send({
+        status: 'ok',
+        msg: 'Store Admin updated successfully',
       });
     } catch (err) {
       res.status(500).send({

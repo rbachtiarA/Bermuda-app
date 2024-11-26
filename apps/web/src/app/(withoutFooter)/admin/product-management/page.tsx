@@ -10,16 +10,16 @@ import {
   Selection,
   SortDescriptor,
 } from '@nextui-org/react';
+import { IProduct } from '@/type/product';
+import { columns, INITIAL } from '@/components/product/columnProduct';
 import BottomContent from '@/components/bottomContent';
 import { classNames } from '@/components/classNames';
-import { getProducts } from '@/lib/product.handler';
-import { IProduct } from '@/type/product';
-import RenderProduct from '@/components/product/renderProduct';
-import { columns, INITIAL } from '@/components/product/columnProduct';
-import TopProduct from '@/components/product/topProduct';
 import { useAppSelector } from '@/redux/hook';
+import { getStoreAdminProducts, getStoreProducts } from '@/lib/store.handler';
+import TopProduct from '@/components/product/topProduct';
+import RenderProduct from '@/components/product/renderProduct';
 
-export default function DiscountManagement() {
+export default function ProductManagement() {
   const [filterValue, setFilterValue] = useState('');
   const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
   const [visibleColumns, setVisibleColumns] = useState<Selection>(
@@ -32,26 +32,19 @@ export default function DiscountManagement() {
   });
   const [page, setPage] = useState(1);
   const [products, setProducts] = useState<IProduct[]>([]);
-  const [categories, setCategories] = useState('all');
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
-  const [totalPages, setTotalPages] = useState(0);
-
   const user = useAppSelector((state) => state.user);
   const role = user?.role;
 
-  const fetcProducts = useCallback(async () => {
-    setLoading(true);
+  const fetchProducts = useCallback(async () => {
     try {
-      const {
-        products: fetchedProducts,
-        pagination,
-        ok,
-      } = await getProducts(filterValue, page, rowsPerPage, categories);
-
-      if (ok && fetchedProducts) {
-        setProducts(fetchedProducts);
-        setTotalPages(pagination.totalPages || 1);
+      const products =
+        role === 'SUPER_ADMIN'
+          ? await getStoreProducts()
+          : await getStoreAdminProducts();
+      if (products && Array.isArray(products)) {
+        setProducts(products);
       } else {
         setError('Gagal mengambil data produk');
       }
@@ -60,17 +53,45 @@ export default function DiscountManagement() {
     } finally {
       setLoading(false);
     }
-  }, [filterValue, page, rowsPerPage, categories]);
+  }, []);
 
   useEffect(() => {
-    fetcProducts();
-  }, [fetcProducts]);
+    fetchProducts();
+  }, [fetchProducts]);
+
+  const pages = Math.ceil(products.length / rowsPerPage);
+  const hasSearchFilter = Boolean(filterValue);
 
   const headerColumns = React.useMemo(() => {
     return role === 'SUPER_ADMIN'
       ? columns
       : columns.filter((column) => column.uid !== 'actions');
   }, [role]);
+
+  const filteredItems = React.useMemo(() => {
+    let filteredProducts = [...products];
+    if (hasSearchFilter) {
+      filteredProducts = filteredProducts.filter((product) =>
+        product.name.toLowerCase().includes(filterValue.toLowerCase()),
+      );
+    }
+    return filteredProducts;
+  }, [products, filterValue]);
+
+  const items = React.useMemo(() => {
+    const start = (page - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    return filteredItems.slice(start, end);
+  }, [page, filteredItems, rowsPerPage]);
+
+  const sortedItems = React.useMemo(() => {
+    return [...items].sort((a: IProduct, b: IProduct) => {
+      const first = a[sortDescriptor.column as keyof IProduct] as number;
+      const second = b[sortDescriptor.column as keyof IProduct] as number;
+      const cmp = first < second ? -1 : first > second ? 1 : 0;
+      return sortDescriptor.direction === 'descending' ? -cmp : cmp;
+    });
+  }, [sortDescriptor, items]);
 
   const onRowsPerPageChange = React.useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -81,8 +102,12 @@ export default function DiscountManagement() {
   );
 
   const onSearchChange = React.useCallback((value?: string) => {
-    setFilterValue(value || '');
-    setPage(1);
+    if (value) {
+      setFilterValue(value);
+      setPage(1);
+    } else {
+      setFilterValue('');
+    }
   }, []);
 
   return (
@@ -97,18 +122,18 @@ export default function DiscountManagement() {
           <Table
             isCompact
             removeWrapper
-            aria-label="Product Table"
-            className="min-w-full"
+            aria-label="Product Management Table"
             bottomContent={
               <BottomContent
                 selectedKeys={selectedKeys}
-                itemsLength={products.length}
+                itemsLength={filteredItems.length}
                 page={page}
-                pages={totalPages}
-                hasSearchFilter={Boolean(filterValue)}
+                pages={pages}
+                hasSearchFilter={hasSearchFilter}
                 onPageChange={setPage}
               />
             }
+            bottomContentPlacement="outside"
             checkboxesProps={{
               classNames: {
                 wrapper:
@@ -128,9 +153,10 @@ export default function DiscountManagement() {
                 usersLength={products.length}
                 onRowsPerPageChange={onRowsPerPageChange}
                 rowsPerPage={rowsPerPage}
-                hasSearchFilter={Boolean(filterValue)}
+                hasSearchFilter={hasSearchFilter}
               />
             }
+            topContentPlacement="outside"
             onSelectionChange={setSelectedKeys}
             onSortChange={setSortDescriptor}
           >
@@ -145,10 +171,7 @@ export default function DiscountManagement() {
                 </TableColumn>
               )}
             </TableHeader>
-            <TableBody
-              emptyContent={loading ? 'Loading...' : 'No products found'}
-              items={products}
-            >
+            <TableBody emptyContent={'No products found'} items={sortedItems}>
               {(item) => (
                 <TableRow key={item.id}>
                   {(columnKey) => (
@@ -156,7 +179,7 @@ export default function DiscountManagement() {
                       <RenderProduct
                         product={item}
                         columnKey={columnKey}
-                        onDeleted={fetcProducts}
+                        onDeleted={fetchProducts}
                       />
                     </TableCell>
                   )}

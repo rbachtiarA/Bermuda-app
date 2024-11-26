@@ -33,10 +33,7 @@ export class StockRouter {
       checkSuperAdmin,
       this.stockController.deleteStock,
     );
-    this.router.get(
-      '/history/:stockId/:userId',
-      this.stockController.getReportSales,
-    );
+    this.router.get('/history/:userId', this.stockController.getReportSales);
   }
 
   getRouter(): Router {
