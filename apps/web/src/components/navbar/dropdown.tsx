@@ -90,8 +90,8 @@ export default function DropdownNav() {
           onPress={() =>
             router.push(
               role === 'SUPER_ADMIN' || role === 'STORE_ADMIN'
-                ? '/admin'
-                : `/account/${user.id}`,
+                ? "/admin"
+                : "/account"
             )
           }
           key="Account"
