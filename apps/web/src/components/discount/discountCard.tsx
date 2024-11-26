@@ -26,16 +26,17 @@ export default function DiscountCard({
       <CardBody>
         <div>
           <p>{discount.discountType}</p>
-          <p>
-            Discount cut :{' '}
-            {discount.discountType !== 'PERCENTAGE' &&
-            discount.discountType !== 'BUY_ONE_GET_ONE'
-              ? currencyRupiah(discount.value)
-              : discount.discountType !== 'BUY_ONE_GET_ONE'
-                ? `${discount.value}%`
-                : `${discount.value}`}
-          </p>
-          <p>Minimum purchase: {currencyRupiah(discount.minPurchase!)}</p>
+          {
+            discount.discountType !== 'BUY_ONE_GET_ONE' && 
+            <>
+              <p>
+                Discount cut :{' '}
+                {discount.discountType !== 'PERCENTAGE'? currencyRupiah(discount.value): `${discount.value}%` }
+              </p>
+              <p>Minimum purchase: {currencyRupiah(discount.minPurchase!)}</p>
+            </>
+          }
+          {discount.products && <p>{discount.products?.name}</p>}
         </div>
       </CardBody>
     </Card>

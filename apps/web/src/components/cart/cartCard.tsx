@@ -109,22 +109,6 @@ export default function CartCard({
                 <p className="text-balance max-w-[200px] md:max-w-none line-clamp-2 break-words">
                   {product?.name || 'Product Name Null'}
                 </p>
-                {product?.discounts?.some(
-                  (discount) => discount.discountType === 'FLAT',
-                ) ? (
-                  <>
-                    <h3 className="text-gray-400 font-bold">
-                      <del>{currencyRupiah(product?.price)}</del>
-                    </h3>
-                    <h3 className="text-primary font-bold">
-                      {currencyRupiah(product?.price - discountType())}
-                    </h3>
-                  </>
-                ) : (
-                  <h3 className="text-primary font-bold">
-                    {currencyRupiah(product?.price || 0)}
-                  </h3>
-                )}
                 <p className="font-extrabold">
                   {currencyRupiah(product?.price!) || 'Product Price Null'}
                 </p>
