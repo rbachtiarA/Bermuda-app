@@ -1,4 +1,3 @@
-
 import UserDetails from "@/components/userProfile/userDetails";
 import { Metadata } from "next";
 
@@ -10,6 +9,8 @@ export const metadata: Metadata = {
 };
 export default function page() {
   return (
-    <UserDetails />
+    <div  className="flex flex-col max-w-[600px] mx-auto">
+      <UserDetails />
+    </div>
   )
 }
