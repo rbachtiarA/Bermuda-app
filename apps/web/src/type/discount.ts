@@ -30,7 +30,7 @@ export interface IDiscount {
   storeId?: number;
   userId?: number;
   value: number;
-  products: IProduct;
+  products?: IProduct;
 }
 
 export interface IDiscountMinPur {
