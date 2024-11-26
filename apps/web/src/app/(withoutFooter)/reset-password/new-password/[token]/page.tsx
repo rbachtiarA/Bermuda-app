@@ -87,7 +87,7 @@ const VerifyUserRegister: React.FC<object> = () => {
                   type="submit"
                   className="mt-6 w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 focus:outline-none focus:bg-red-700"
                 >
-                  Buat Akun
+                  Reset Password
                 </button>
 
                 {verificationError && (
