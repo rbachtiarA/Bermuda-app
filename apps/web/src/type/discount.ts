@@ -1,3 +1,5 @@
+import { IProduct } from "./product";
+
 export interface IDiscountAll {
   id: number;
   name: string;
@@ -28,6 +30,7 @@ export interface IDiscount {
   storeId?: number;
   userId?: number;
   value: number;
+  products?: IProduct;
 }
 
 export interface IDiscountMinPur {

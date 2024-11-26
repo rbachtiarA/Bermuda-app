@@ -20,6 +20,7 @@ import { CitySearchInput } from '../address/citySearchInput';
 interface NewAddressModalProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
+  initialData?: ICreateAddress | null;
 }
 
 const validationSchema = Yup.object().shape({
@@ -31,18 +32,18 @@ const validationSchema = Yup.object().shape({
   addressLine: Yup.string().required(
     'Masukkan nama jalan/nama bangunan/lantai/nomor rumah atau unit',
   ),
-  // latitude: Yup.number().required("Pilih lokasi pada peta"),
-  // longitude: Yup.number().required("Pilih lokasi pada peta"),
+  
 });
+
 export const NewAddressModal: React.FC<NewAddressModalProps> = ({
   isOpen,
-  onOpenChange,
+  onOpenChange, initialData,
 }) => {
   const [cities, setCities] = useState<IFetchCity[]>([]);
   const [showMap, setShowMap] = useState(false);
   const [markerAddress, setMarkerAddress] = useState('');
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
-  const initialValues: ICreateAddress = {
+  const initialValues: ICreateAddress = initialData || {
     label: '',
     recipient: '',
     phoneNumber: '',
@@ -75,9 +76,12 @@ export const NewAddressModal: React.FC<NewAddressModalProps> = ({
     action: FormikHelpers<ICreateAddress>,
   ) => {
     try {
-      console.log('Data yang diterima: ', values);
+      if (initialData) {
+        console.log("Edit data:", values)
+      } else {
+        console.log("Tambah data:", values)
+      } 
       const response = await createAddressHandler(values);
-      console.log('Response:', response);
       action.resetForm();
       setMarkerAddress('');
       setIsFormSubmitted(true);
@@ -99,7 +103,7 @@ export const NewAddressModal: React.FC<NewAddressModalProps> = ({
       className="overflow-auto"
     >
       <ModalContent>
-        <ModalHeader className="flex flex-col gap-1">Tambah Alamat</ModalHeader>
+        <ModalHeader className="flex flex-col gap-1">{initialData ? 'Edit Alamat' : 'Tambah Alamat'}</ModalHeader>
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}

@@ -107,14 +107,15 @@ export const AddressSelector: React.FC = () => {
               </ModalHeader>
               <ModalBody>
                 {addressList && addressList.length > 0 ? (
-                  addressList.map((address, index) => (
+                  addressList.map((address) => (
                     <AddressCard
-                      key={index}
+                      key={address.id}
                       address={address}
                       onSelect={() => {
                         dispatch(selectAddress(address));
                         onClose();
                       }}
+                      onDeleteSuccess={getData}
                     />
                   ))
                 ) : (

@@ -87,12 +87,9 @@ export const GoogleMapPicker: React.FC<GoogleMapPickerProps> = ({onConfirm}) => 
     if(!isLoaded) return <p>Loading map...</p>
     return (
         <div className="flex flex-col gap-3">
-            <div className="relative mb-3">
-                <Input ref={inputRef} type="text" placeholder="Cari alamat..." className="absolute top-0 left-0 w-full p-2" />
+            <div className="relative mb-1">
+                <Input ref={inputRef} type="text" placeholder="Cari alamat..." className=" top-0 left-0 w-full" />
                 
-            </div>
-            <div>
-              <p className="font-bold">Tandai titik lokasi anda</p>  
             </div>
             <GoogleMap
                 mapContainerStyle={containerStyle}
