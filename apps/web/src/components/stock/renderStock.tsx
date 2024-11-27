@@ -1,11 +1,5 @@
 import React from 'react';
-import { User } from '@nextui-org/react';
-import { EyeIcon } from '@/components/icons/eyeIcon';
-import { EditIcon } from '@/components/icons/editIcon';
 import { Tooltip } from '@nextui-org/react';
-import DelCategory from './deleteStock';
-import { ICategory } from '@/type/category';
-import UpdateCategory from './updateStock';
 import { IStock } from '@/type/stock';
 import UpdateStock from './updateStock';
 import DelStock from './deleteStock';

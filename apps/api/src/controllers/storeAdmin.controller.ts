@@ -5,7 +5,7 @@ import path from 'path';
 import fs from 'fs';
 import handlebars from 'handlebars';
 import { transporter } from '@/helpers/nodemailer';
-import { hash } from 'bcrypt';
+import { genSalt, hash } from 'bcrypt';
 
 export class StoreAdminController {
   async createStoreAdmin(req: Request, res: Response) {
@@ -86,6 +86,42 @@ export class StoreAdminController {
     }
   }
 
+  async getStoreAdminById(req: Request, res: Response) {
+    try {
+      const id = parseInt(req.params.id, 10);
+
+      if (isNaN(id)) {
+        return res.status(400).send({
+          status: 'error',
+          msg: 'Invalid Store Admin ID!',
+        });
+      }
+
+      const storeAdmin = await prisma.user.findUnique({
+        where: { id },
+      });
+
+      if (!storeAdmin) {
+        return res.status(404).send({
+          status: 'error',
+          msg: 'Store Admin not found!',
+        });
+      }
+
+      res.status(200).send({
+        status: 'ok',
+        storeAdmin,
+      });
+    } catch (err) {
+      console.error(err);
+
+      res.status(500).send({
+        status: 'error',
+        msg: err instanceof Error ? err.message : 'Server error',
+      });
+    }
+  }
+
   async deleteStoreAdmin(req: Request, res: Response) {
     try {
       const requesterRole = req.user?.role;
@@ -145,78 +181,61 @@ export class StoreAdminController {
 
   async updateStoreAdmin(req: Request, res: Response) {
     try {
-      const requesterRole = req.user?.role;
-      if (requesterRole !== 'SUPER_ADMIN') {
-        return res.status(403).send({
-          status: 'error',
-          msg: 'Unauthorized access',
-        });
-      }
-
       const id = parseInt(req.params.id, 10);
-
       if (isNaN(id)) {
         return res.status(400).send({
           status: 'error',
           msg: 'Invalid ID format',
         });
       }
-
-      const storeAdmin = await prisma.user.findUnique({
-        where: { id },
-        select: { role: true },
-      });
-
-      if (!storeAdmin || storeAdmin.role !== 'STORE_ADMIN') {
-        return res.status(404).send({
-          status: 'error',
-          msg: 'Store Admin not found',
-        });
-      }
-
       const { email, name, password } = req.body;
 
-      // Validasi input
-      if (!email && !name && !password) {
-        return res.status(400).send({
+      // Periksa apakah user dengan ID tersebut ada
+      const existingUser = await prisma.user.findUnique({
+        where: { id },
+      });
+      if (!existingUser) {
+        return res.status(404).send({
           status: 'error',
-          msg: 'No data provided for update',
+          message: 'Store admin tidak ditemukan',
         });
       }
 
-      const updateData: any = {};
-      if (email) {
-        const existingUser = await prisma.user.findUnique({ where: { email } });
-        if (existingUser && existingUser.id !== id) {
+      // Periksa apakah email sudah digunakan oleh user lain
+      if (email && email !== existingUser.email) {
+        const emailInUse = await prisma.user.findUnique({
+          where: { email },
+        });
+        if (emailInUse) {
           return res.status(400).send({
             status: 'error',
-            msg: 'Email already in use',
+            message: 'Email sudah digunakan oleh user lain',
           });
         }
-        updateData.email = email;
-      }
-      if (name) {
-        updateData.name = name;
-      }
-      if (password) {
-        // Hash the password
-        const hashedPassword = await hash(password, 10);
-        updateData.password = hashedPassword;
       }
 
-      await prisma.user.update({
+      const salt = await genSalt(10);
+      const hasPassword = await hash(password, salt);
+
+      // Update data store admin
+      const updatedUser = await prisma.user.update({
         where: { id },
-        data: updateData,
+        data: {
+          email: email || existingUser.email,
+          name: name || existingUser.name,
+          password: hasPassword,
+        },
       });
 
       res.status(200).send({
         status: 'ok',
-        msg: 'Store Admin updated successfully',
+        message: 'Store admin berhasil diperbarui',
+        data: updatedUser,
       });
     } catch (err) {
-      res.status(500).send({
+      res.status(400).send({
         status: 'error',
-        msg: 'Internal server error',
+        message: err,
       });
     }
   }

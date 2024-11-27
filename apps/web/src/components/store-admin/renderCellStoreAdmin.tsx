@@ -5,6 +5,7 @@ import { Tooltip } from '@nextui-org/react';
 import { IUserState } from '@/type/user';
 import DelStoreAdmin from './deleteStoreAdmin';
 import UpdateStoreAdmin from './updateStoreAdmin';
+// import UpdateStoreAdmin from './updateStoreAdmin';
 
 interface StoreAdminCellProps {
   user: IUserState;
@@ -46,7 +47,7 @@ const RenderCellStoreAdmin: React.FC<StoreAdminCellProps> = ({
         <div className="relative flex items-center gap-2 justify-center">
           <Tooltip content="Edit user">
             <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-              <UpdateStoreAdmin storeAdminId={0} />
+              <UpdateStoreAdmin storeAdminId={user.id} onUpdate={onDeleted} />
             </span>
           </Tooltip>
           <Tooltip color="danger" content="Delete user">

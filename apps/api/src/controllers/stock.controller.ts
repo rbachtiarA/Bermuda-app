@@ -22,6 +22,14 @@ export class StockController {
         },
       });
 
+      await prisma.stockHistory.create({
+        data: {
+          stockId: newStock.id,
+          changeType: 'INCREASE',
+          quantity: Math.abs(quantity - newStock.quantity),
+        },
+      });
+
       res.status(201).json({
         message: 'Stock created successfully',
         data: newStock,
@@ -229,7 +237,11 @@ export class StockController {
             include: {
               stock: {
                 include: {
-                  product: true,
+                  product: {
+                    include: {
+                      store: true,
+                    },
+                  },
                 },
               },
             },

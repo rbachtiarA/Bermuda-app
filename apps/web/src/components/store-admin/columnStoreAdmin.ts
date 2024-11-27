@@ -7,5 +7,5 @@ const columns = [
   { name: 'ACTIONS', uid: 'actions' },
 ];
 
-const INITIAL = ['name', 'role', 'storeId', 'actions'];
+const INITIAL = ['name', 'role', 'actions'];
 export { columns, INITIAL };
