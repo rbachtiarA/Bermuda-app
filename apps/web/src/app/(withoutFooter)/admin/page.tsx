@@ -1,101 +1,62 @@
-'use client';
-import { useAppSelector } from '@/redux/hook';
-import { Avatar, Button, Input, Textarea } from '@nextui-org/react';
-import { useState } from 'react';
+'use client'
+import { getUserProfile } from "@/lib/user.handler";
+import { useAppSelector } from "@/redux/hook";
+import { IUser } from "@/type/user";
+import { useEffect, useState } from "react";
+import { Button, Card } from "@nextui-org/react";
+import AvatarImage from "@/components/userProfile/avatar";
+import LoadingAdminDashboard from "@/app/(withoutFooter)/admin/loading";
 
-export default function ProfilePage() {
-  const user = useAppSelector((state) => state.user);
-  const [profileData, setProfileData] = useState({
-    name: user.name,
-    email: user.email,
-    address: user.address || '',
-  });
+export default function UserDetails() {
+    const user = useAppSelector(state => state.user)
+  const [data, setData] = useState<IUser | null>(null) 
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const data = await getUserProfile(String(user.id));
+        setData(data);
+      } catch (err: any) {
+        setError(err.message || 'Failed to fetch user profile');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    const { name, value } = e.target;
-    setProfileData((prev) => ({ ...prev, [name]: value }));
-  };
+    fetchUserProfile();
+  }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Updated Profile:', profileData);
-  };
+  if (loading) return <LoadingAdminDashboard />;
+  if (error) return <div>Error: {error}</div>;
+
+  if (!user) {
+    throw new Error('User is not defined');
+  }
 
   return (
-    <main className="flex-1 px-6 py-4">
-      <div className="flex flex-col bg-white p-4 h-full w-full">
-        <header className="flex items-center justify-between py-4 border-b">
-          <h1 className="text-xl font-semibold">Pengaturan Akun</h1>
-        </header>
-
-        <div className="flex flex-col lg:flex-row gap-8 py-8">
-          <div className="flex flex-col items-center">
-            <div className="h-24 w-24">
-              <Avatar
-                isBordered
-                radius="full"
-                src={user.avatarUrl}
-                alt="User Avatar"
-                size="lg"
-                className="h-24 w-24"
-              />
-            </div>
-            <Button
-              className="mt-4"
-              color="danger"
-              onClick={() => console.log('Ubah Foto')}
-            >
-              Ubah Foto
-            </Button>
-          </div>
-
-          <div className="flex-1">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <h2 className="text-lg font-bold mb-4">Data Diri</h2>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <Input
-                    label="Nama"
-                    type="text"
-                    name="name"
-                    value={profileData.name}
-                    onChange={handleInputChange}
-                    placeholder="Masukkan nama Anda"
-                  />
-                  <Input
-                    label="E-mail"
-                    type="email"
-                    name="email"
-                    value={profileData.email}
-                    onChange={handleInputChange}
-                    placeholder="Masukkan email Anda"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <h2 className="text-lg font-bold mb-4">Alamat</h2>
-                <Textarea
-                  label="Alamat"
-                  name="address"
-                  value={profileData.address.toString()}
-                  onChange={handleInputChange}
-                  placeholder="Masukkan alamat Anda"
-                  rows={4}
-                />
-              </div>
-
-              <div className="text-right">
-                <Button type="submit" color="danger">
-                  Simpan Perubahan
-                </Button>
-              </div>
-            </form>
-          </div>
+    <div className='p-4 '>
+      <h2 className="text-center font-bold text-xl p-5">ADMIN DASHBOARD</h2>
+      <Card className="flex flex-col max-w-[600px] mx-auto">
+      <div className='flex flex-col lg:flex-row p-4'>
+        <div className="p-4">
+          <AvatarImage avatarUrl={user.avatarUrl} />
+        </div>
+        <div className="flex flex-col justify-center items-center lg:items-start gap-2 p-4">
+          <h3 className="font-bold text-2xl">{user.name}</h3>
+          <p className="text-lg">{user.email}</p>
+          <Button
+            color={data?.isVerified ? 'success' : 'danger'}
+            size="sm"
+            variant="ghost"
+            radius="lg"
+          >
+            {data?.isVerified ? 'Verified' : 'Not Verified'}
+          </Button>
         </div>
       </div>
-    </main>
+    </Card>
+    </div>
   );
+    
 }

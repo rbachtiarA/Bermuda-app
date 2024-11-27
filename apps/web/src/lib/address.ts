@@ -70,3 +70,37 @@ export const getShippingCost = async (addressId: number, storeId: number) => {
   const { status, msg } = await res.json();
   return { status, msg };
 };
+
+export const updateAddressHandler = async (
+  addressId: number,
+  values: ICreateAddress,
+): Promise<void> => {
+  try {
+    const token = await getToken();
+    if (!token) {
+      throw new Error('Authorization token is missing');
+  }
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_API_URL}address/${addressId}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(values),
+      },
+    );
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Error response:', errorData);
+      throw new Error(`Failed to update address: ${errorData.message}`);
+    }
+    const data = await response.json();
+    console.log('Address updated successfully:', data);
+  } catch (error) {
+    console.error('Error updating address:', error);
+    throw new Error('Failed to update address');
+  }
+};

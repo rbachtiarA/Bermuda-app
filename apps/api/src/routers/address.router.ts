@@ -15,6 +15,7 @@ export class AddressRouter {
 
   private initializeRoutes(): void {
     this.router.post('/', verifyToken, this.addressController.createAddress);
+    this.router.put('/:id', verifyToken, this.addressController.updateAddress)
     this.router.get('/update', this.addressController.updateProvince);
     this.router.get('/cities', this.addressController.getCities);
     this.router.get('/shippingCost', this.addressController.getShippingCost);

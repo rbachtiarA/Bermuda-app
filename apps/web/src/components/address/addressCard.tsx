@@ -3,7 +3,8 @@ import { Button, Card, CardBody } from '@nextui-org/react';
 import { ReactNode, useState } from 'react';
 import EditAddress from './editAddress';
 import DeleteAddress from './deleteAddress';
-import { NewAddressModal } from '../modal/newAddressModal';
+import { NewAddressModal } from './newAddressModal';
+import { EditAddressModal } from './editAddressModal';
 
 export default function AddressCard({
   address,
@@ -39,7 +40,7 @@ export default function AddressCard({
           </div>
         </div>
       </Card>
-      <NewAddressModal isOpen={isEditModalOpen} onOpenChange={setIsEditModalOpen} initialData={editData}></NewAddressModal>
+      <EditAddressModal isOpen={isEditModalOpen} onOpenChange={setIsEditModalOpen} initialData={editData} onSubmitSuccess={onDeleteSuccess}></EditAddressModal>
     </>
   );
 }
