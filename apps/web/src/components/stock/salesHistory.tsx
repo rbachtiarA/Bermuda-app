@@ -251,7 +251,7 @@ const SalesHistoryPage: React.FC = () => {
                 {filteredHistory.map((history) => (
                   <TableRow key={history.id}>
                     <TableCell>{history.id}</TableCell>
-                    <TableCell>{history?.product?.store?.name}</TableCell>
+                    <TableCell>{history?.order?.Store?.name}</TableCell>
                     <TableCell>
                       {history.product?.name ?? 'No product name'}
                     </TableCell>

@@ -237,11 +237,8 @@ export class StockController {
             include: {
               stock: {
                 include: {
-                  product: {
-                    include: {
-                      store: true,
-                    },
-                  },
+                  product: true,
+                  store: true,
                 },
               },
             },
@@ -254,11 +251,16 @@ export class StockController {
                 storeId: Number(user?.storeId),
               },
             },
+            include: {
+              stock: {
+                include: {
+                  product: true,
+                  store: true,
+                },
+              },
+            },
             orderBy: {
               createdAt: 'desc',
-            },
-            include: {
-              stock: true,
             },
           });
         }

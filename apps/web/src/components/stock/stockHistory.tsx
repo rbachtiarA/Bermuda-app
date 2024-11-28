@@ -24,9 +24,7 @@ const StockHistoryPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedStore, setSelectedStore] = useState<string | null>(null);
   const [stores, setStores] = useState<any[]>([]); // Untuk daftar toko
-  const [filteredStockHistory, setFilteredStockHistory] = useState<
-    StockHistory[]
-  >([]);
+  const [filteredStockHistory, setFilteredStockHistory] = useState<any[]>([]);
   const user = useAppSelector((state) => state.user);
   const role = user?.role;
 
@@ -154,7 +152,7 @@ const StockHistoryPage: React.FC = () => {
                 {filteredStockHistory.map((history) => (
                   <TableRow key={history.id}>
                     <TableCell>{history.id}</TableCell>
-                    <TableCell>{history.stock?.product?.store?.name}</TableCell>
+                    <TableCell>{history.stock?.store?.name}</TableCell>
                     <TableCell>{history.changeType}</TableCell>
                     <TableCell>
                       {history.stock?.product?.name ?? 'No product name'}

@@ -223,11 +223,17 @@ export class OrderController {
                   include: {
                     store: true,
                     categories: true,
+                    stock: {
+                      where: {
+                        storeId: Number(user?.storeId),
+                      },
+                    },
                   },
                 },
                 order: {
                   include: {
                     discount: true,
+                    Store: true,
                   },
                 },
               },
@@ -252,6 +258,7 @@ export class OrderController {
                 order: {
                   include: {
                     discount: true,
+                    Store: true,
                   },
                 },
               },
