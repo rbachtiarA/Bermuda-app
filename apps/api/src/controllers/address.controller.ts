@@ -116,6 +116,78 @@ export class AddressController {
     }
   }
 
+  async updateAddress(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const userId = req.user?.id;
+      if (!userId) {
+        return res
+          .status(401)
+          .json({ message: 'Unauthorized: User ID is missing.' });
+      }
+  
+      const {
+        label,
+        recipient,
+        phoneNumber,
+        addressLine,
+        cityId,
+        state,
+        postalCode,
+        latitude,
+        longitude,
+        isPrimary,
+      } = req.body;
+  
+      if (isPrimary) {
+        const primaryExists = await prisma.address.findFirst({
+          where: { userId, isPrimary: true },
+        });
+  
+        if (primaryExists) {
+          await prisma.address.updateMany({
+            where: {
+              userId,
+              isPrimary: true,
+            },
+            data: {
+              isPrimary: false,
+            },
+          });
+        }
+      }
+  
+      const updatedAddress = await prisma.address.update({
+        where: { id: Number(id) },
+        data: {
+          label,
+          recipient,
+          phoneNumber,
+          addressLine,
+          cityId,
+          state,
+          postalCode,
+          latitude,
+          longitude,
+          isPrimary,
+        },
+      });
+  
+      return res.status(200).json({
+        status: 'ok',
+        message: 'Alamat berhasil diperbarui',
+        data: updatedAddress,
+      });
+    } catch (error) {
+      console.error('Error updating address', error);
+      return res.status(500).json({
+        status: 'error',
+        message: 'Terjadi kesalahan saat memperbarui alamat',
+      });
+    }
+  }
+  
+
   async getShippingCost(req: Request, res: Response) {
     try {
       const { addressId, storeId } = req.query;

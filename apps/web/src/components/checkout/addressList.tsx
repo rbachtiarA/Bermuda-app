@@ -5,7 +5,7 @@ import { IAddress } from "@/type/address"
 import { Button, Card, CardBody, CardFooter, CardHeader, useDisclosure } from "@nextui-org/react"
 import { useEffect, useState } from "react"
 import AddressCheckoutSelectorModal from "../modal/addressCheckoutSelectorModal"
-import { NewAddressModal } from "../modal/newAddressModal"
+import { NewAddressModal } from "../address/newAddressModal"
 
 export default function AddressessList({ selectedAddress, updateSelectedAddress }: 
     { selectedAddress:IAddress | null, updateSelectedAddress:(address: IAddress | undefined) => void  }) {

@@ -20,7 +20,6 @@ import { CitySearchInput } from '../address/citySearchInput';
 interface NewAddressModalProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
-  initialData?: ICreateAddress | null;
 }
 
 const validationSchema = Yup.object().shape({
@@ -32,18 +31,16 @@ const validationSchema = Yup.object().shape({
   addressLine: Yup.string().required(
     'Masukkan nama jalan/nama bangunan/lantai/nomor rumah atau unit',
   ),
-  
 });
-
 export const NewAddressModal: React.FC<NewAddressModalProps> = ({
   isOpen,
-  onOpenChange, initialData,
+  onOpenChange,
 }) => {
   const [cities, setCities] = useState<IFetchCity[]>([]);
   const [showMap, setShowMap] = useState(false);
   const [markerAddress, setMarkerAddress] = useState('');
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
-  const initialValues: ICreateAddress = initialData || {
+  const initialValues: ICreateAddress = {
     label: '',
     recipient: '',
     phoneNumber: '',
@@ -76,12 +73,9 @@ export const NewAddressModal: React.FC<NewAddressModalProps> = ({
     action: FormikHelpers<ICreateAddress>,
   ) => {
     try {
-      if (initialData) {
-        console.log("Edit data:", values)
-      } else {
-        console.log("Tambah data:", values)
-      } 
+      console.log('Data yang diterima: ', values);
       const response = await createAddressHandler(values);
+      console.log('Response:', response);
       action.resetForm();
       setMarkerAddress('');
       setIsFormSubmitted(true);
@@ -103,7 +97,7 @@ export const NewAddressModal: React.FC<NewAddressModalProps> = ({
       className="overflow-auto"
     >
       <ModalContent>
-        <ModalHeader className="flex flex-col gap-1">{initialData ? 'Edit Alamat' : 'Tambah Alamat'}</ModalHeader>
+        <ModalHeader className="flex flex-col gap-1">Tambah Alamat</ModalHeader>
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
