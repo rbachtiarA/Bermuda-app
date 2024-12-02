@@ -1,19 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// generator client {
+//   provider = "prisma-client-js"
+// }
+
+// datasource db {
+//   provider = "mysql"
+//   url      = env("DATABASE_URL")
+// }
+
+generator client {
+  provider = "prisma-client-js"
+  // output   = "./generated/client"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
 model User {
-  id                Int       @id @default(autoincrement())
+  id                Int        @id @default(autoincrement())
   name              String
-  email             String    @unique
-  password          String
-  role              UserRole
+  email             String     @unique
+  googleId          String?    @unique
+  password          String?
+  role              UserRole   @default(USER)
+  referralCode      String?    @unique
+  referredBy        User?      @relation("UserReferral", fields: [referredById], references: [id])
+  referredById      Int?
+  referredUsers     User[]     @relation("UserReferral") //Daftar user yang menggunakan referral kode user ini
   avatarUrl         String?
-  isVerified        Boolean   @default(false)
-  verificationToken String?
-  store             Store?    @relation(fields: [storeId], references: [id])
+  isVerified        Boolean    @default(false)
+  accessToken       String?
+  refreshToken      String?
+  store             Store?     @relation(fields: [storeId], references: [id])
   storeId           Int?
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  addresses         Address[] 
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+  address           Address[]
   orders            Order[]
+  givenReferrals    Discount[] @relation("ReferralGiver") //diskon untuk pemberi referal
+  receivedReferrals Discount[] @relation("ReferralUser") //diskon untuk pengguna referal
   cart              Cart?
+  checkout          Checkout?
 }
 
 model Store {
@@ -22,31 +54,35 @@ model Store {
   location     String
   latitude     Float
   longitude    Float
-  products     Product[]     @relation("ProductStores")
+  products     Product[]
   discounts    Discount[]
   salesReports SalesReport[]
   stockReports StockReport[]
-  users        User[] 
+  users        User[]
   stocks       Stock[]
+  Order        Order[]
+  city         City          @relation(fields: [cityId], references: [id])
+  cityId       Int           @default(55)
 }
 
 model Product {
   id            Int               @id @default(autoincrement())
-  name          String
-  description   String
-  price         Float
+  name          String            @unique
+  description   String            @db.Text
+  price         Int
   imageUrl      String?
   categories    ProductCategory[]
-  isRecommended Boolean
+  isRecommended Boolean           @default(false)
   slug          String
-  stores        Store[]           @relation("ProductStores") 
+  store         Store?            @relation(fields: [storeId], references: [id])
+  storeId       Int?
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
-  cariItems     CartItem[]
+  cartItems     CartItem[]
   stock         Stock[]
   orderItems    OrderItem[]
   stockReports  StockReport[]
-  discounts     Discount[]        @relation("ProductDiscounts") 
+  discounts     Discount[]        @relation("ProductDiscounts")
 }
 
 model ProductCategory {
@@ -60,27 +96,17 @@ model Discount {
   discountType DiscountType
   value        Float
   minPurchase  Float?
-  products     Product[]    @relation("ProductDiscounts") 
-  store        Store        @relation(fields: [storeId], references: [id])
+  products     Product?     @relation("ProductDiscounts", fields: [productId], references: [id])
+  productId    Int?
+  stores       Store        @relation(fields: [storeId], references: [id])
   storeId      Int
+  giver        User?        @relation("ReferralGiver", fields: [giverId], references: [id])
+  giverId      Int?
+  user         User?        @relation("ReferralUser", fields: [userId], references: [id])
+  userId       Int?
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
-}
-
-model Address {
-  id          Int     @id @default(autoincrement())
-  user        User    @relation(fields: [userId], references: [id])
-  userId      Int
-  addressLine String
-  city        String
-  state       String
-  postalCode  String
-  latitude    Float?
-  longitude   Float?
-  isPrimary   Boolean @default(false) 
-  orders      Order[] 
-
-  @@unique(fields: [userId], name: "only_one_primary_address_per_user")
+  Order        Order[]
 }
 
 model ShippingOption {
@@ -89,7 +115,7 @@ model ShippingOption {
   baseCost       Float
   additionalCost Float
   maxDistance    Float
-  orders         Order[] 
+  orders         Order[]
 }
 
 model Stock {
@@ -100,6 +126,24 @@ model Stock {
   product      Product        @relation(fields: [productId], references: [id])
   productId    Int
   stockHistory StockHistory[]
+}
+
+model Address {
+  id          Int     @id @default(autoincrement())
+  user        User    @relation(fields: [userId], references: [id])
+  userId      Int
+  label       String
+  recipient   String
+  phoneNumber String
+  addressLine String
+  city        City?   @relation(fields: [cityId], references: [id])
+  cityId      Int?
+  state       String
+  postalCode  String
+  latitude    Float?
+  longitude   Float?
+  isPrimary   Boolean @default(false)
+  orders      Order[]
 }
 
 model StockHistory {
@@ -137,35 +181,53 @@ model Cart {
   id        Int        @id @default(autoincrement())
   user      User       @relation(fields: [userId], references: [id])
   userId    Int        @unique
-  cartItems CartItem[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
+  CartItem  CartItem[]
 }
 
 model CartItem {
-  id        Int     @id @default(autoincrement())
-  cart      Cart    @relation(fields: [cartId], references: [id])
-  cartId    Int
-  product   Product @relation(fields: [productId], references: [id])
-  productId Int
-  quantity  Int
+  id         Int       @id @default(autoincrement())
+  cart       Cart      @relation(fields: [cartId], references: [id])
+  cartId     Int
+  product    Product   @relation(fields: [productId], references: [id])
+  productId  Int
+  quantity   Int
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  Checkout   Checkout? @relation(fields: [checkoutId], references: [id])
+  checkoutId Int?
+}
+
+model Checkout {
+  id       Int        @id @default(autoincrement())
+  user     User       @relation(fields: [userId], references: [id])
+  userId   Int        @unique
+  CartItem CartItem[]
 }
 
 model Order {
-  id               Int            @id @default(autoincrement())
-  user             User           @relation(fields: [userId], references: [id])
+  id               Int             @id @default(autoincrement())
+  user             User            @relation(fields: [userId], references: [id])
   userId           Int
-  address          Address        @relation(fields: [addressId], references: [id])
-  addressId        Int
-  shippingOption   ShippingOption @relation(fields: [shippingOptionId], references: [id])
-  shippingOptionId Int
+  shippingOption   ShippingOption? @relation(fields: [shippingOptionId], references: [id])
+  shippingOptionId Int?
   status           OrderStatus
   totalAmount      Float
   paymentProofUrl  String?
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
+  shippedAt        DateTime?
+  shippingCost     Float           @default(0)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
   orderItems       OrderItem[]
-  payments         Payment[] 
+  Address          Address         @relation(fields: [addressId], references: [id])
+  addressId        Int
+  Store            Store           @relation(fields: [storeId], references: [id])
+  Payment          Payment?
+  storeId          Int
+  discount         Discount?       @relation(fields: [discountId], references: [id])
+  discountId       Int?
+  discountAmount   Float           @default(0)
 }
 
 model OrderItem {
@@ -182,11 +244,28 @@ model OrderItem {
 model Payment {
   id            Int           @id @default(autoincrement())
   order         Order         @relation(fields: [orderId], references: [id])
-  orderId       Int
+  orderId       Int           @unique
   amountPaid    Float
   paymentMethod PaymentMethod
+  expiredDate   DateTime
+  token         String?
   isConfirmed   Boolean       @default(false)
   confirmedAt   DateTime?
+}
+
+model City {
+  id         Int       @id
+  name       String
+  Province   Province? @relation(fields: [provinceId], references: [id])
+  provinceId Int?
+  addresses  Address[]
+  Store      Store[]
+}
+
+model Province {
+  id     Int    @id
+  name   String
+  Cities City[]
 }
 
 enum UserRole {
@@ -199,6 +278,8 @@ enum DiscountType {
   FLAT
   PERCENTAGE
   BUY_ONE_GET_ONE
+  REFERRAL_GIVER // Diskon untuk pemberi referral
+  REFERRAL_USER // Diskon untuk pemakai referral
 }
 
 enum ChangeType {
@@ -208,7 +289,9 @@ enum ChangeType {
 
 enum OrderStatus {
   PendingPayment
+  Waiting
   Confirmed
+  Proccessed
   Shipped
   Completed
   Cancelled

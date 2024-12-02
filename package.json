@@ -7,12 +7,14 @@
     "test": "turbo run test",
     "serve": "turbo run serve",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "prepare": "husky install",
-    "postprepare": "bash -c 'chmod ug+x .husky/*'"
+    "prepare": "husky install || true",
+    "postprepare": "bash -c 'chmod ug+x .husky/*' || true"
   },
   "devDependencies": {
     "@commitlint/cli": "^18.4.2",
     "@commitlint/config-conventional": "^18.4.2",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
     "eslint": "^8.48.0",
     "husky": "^8.0.0",
     "lint-staged": "^15.1.0",
@@ -34,6 +36,8 @@
   },
   "dependencies": {
     "@types/axios": "^0.14.0",
-    "axios": "^1.7.2"
+    "axios": "^1.7.2",
+    "cliui": "^8.0.1",
+    "string-width": "^7.2.0"
   }
 }

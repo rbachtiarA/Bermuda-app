@@ -1,18 +1,40 @@
+// {
+//   "compilerOptions": {
+//     "target": "es2015",                            
+//     "module": "commonjs",                            
+//     "strict": true,                                      
+//     "esModuleInterop": true,                             
+//     "skipLibCheck": true,
+//     "forceConsistentCasingInFileNames": true,
+//     "outDir": "./dist",
+//     "baseUrl": ".",
+//     "paths": {
+//       "@/*": ["./src/*"]
+//       },
+//     "types": ["./src/types/custom.d.ts"],
+//     "allowJs": true,
+//   },
+
+//   "include": ["**/*.ts"],
+//   "exclude": ["node_modules"]
+// }
 {
   "compilerOptions": {
-    "target": "ES2015",
-    "module": "commonjs",
+    "target": "ES6",
+    "module": "CommonJS",
     "strict": true,
+    "rootDir": "./src",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
     "baseUrl": ".",
+    "types": ["./src/types/custom.d.ts"],
     "paths": {
-      "@/*": ["./src/*"]
-    }
+      "@/*": ["src/*"]
+    },
+    "allowJs": true
   },
-  // "include": ["src/**/*"],
-  "include": ["**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }
