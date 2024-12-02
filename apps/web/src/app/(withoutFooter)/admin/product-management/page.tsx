@@ -27,7 +27,7 @@ export default function ProductManagement() {
   );
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
-    column: 'id',
+    column: 'price',
     direction: 'ascending',
   });
   const [page, setPage] = useState(1);
@@ -63,10 +63,21 @@ export default function ProductManagement() {
   const hasSearchFilter = Boolean(filterValue);
 
   const headerColumns = React.useMemo(() => {
-    return role === 'SUPER_ADMIN'
-      ? columns
-      : columns.filter((column) => column.uid !== 'actions');
-  }, [role]);
+    if (visibleColumns === 'all' && role === 'SUPER_ADMIN') {
+      return columns;
+    }
+
+    return columns.filter((column) => {
+      const isVisible = Array.from(visibleColumns).includes(column.uid);
+      const isActionColumn = column.uid === 'actions';
+
+      if (isActionColumn && role !== 'SUPER_ADMIN') {
+        return false;
+      }
+
+      return isVisible;
+    });
+  }, [visibleColumns, role]);
 
   const filteredItems = React.useMemo(() => {
     let filteredProducts = [...products];
@@ -150,7 +161,7 @@ export default function ProductManagement() {
                 visibleColumns={visibleColumns}
                 onSearchChange={onSearchChange}
                 setVisibleColumns={setVisibleColumns}
-                usersLength={products.length}
+                productsLength={products.length}
                 onRowsPerPageChange={onRowsPerPageChange}
                 rowsPerPage={rowsPerPage}
                 hasSearchFilter={hasSearchFilter}

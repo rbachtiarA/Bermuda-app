@@ -40,7 +40,6 @@ export default function App() {
       try {
         const token = await getToken();
         const { result, ok } = await getAllUsers(token);
-        console.log(result, '********');
 
         if (ok && result && Array.isArray(result.users)) {
           setUsers(result.users);

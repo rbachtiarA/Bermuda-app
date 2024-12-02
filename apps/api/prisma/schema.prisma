@@ -43,7 +43,7 @@ model Store {
   location     String
   latitude     Float
   longitude    Float
-  products     Product[]
+  products     Product[]     @relation("ProductStores")
   discounts    Discount[]
   salesReports SalesReport[]
   stockReports StockReport[]
@@ -63,8 +63,7 @@ model Product {
   categories    ProductCategory[]
   isRecommended Boolean           @default(false)
   slug          String
-  store         Store?            @relation(fields: [storeId], references: [id])
-  storeId       Int?
+  stores        Store[]           @relation("ProductStores")
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
   cartItems     CartItem[]
@@ -115,6 +114,7 @@ model Stock {
   product      Product        @relation(fields: [productId], references: [id])
   productId    Int
   stockHistory StockHistory[]
+  isDeleted    Boolean        @default(false)
 }
 
 model Address {
@@ -274,6 +274,7 @@ enum DiscountType {
 enum ChangeType {
   INCREASE
   DECREASE
+  DELETED
 }
 
 enum OrderStatus {

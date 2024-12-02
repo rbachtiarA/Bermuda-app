@@ -48,9 +48,7 @@ const RenderProduct: React.FC<ProductCellProps> = ({
       return (
         <div className="relative flex items-center gap-2 justify-center">
           <Tooltip content="Details">
-            <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-              {/* <EyeIcon /> */}
-            </span>
+            <span className="text-lg text-default-400 cursor-pointer active:opacity-50"></span>
           </Tooltip>
           <Tooltip content="Edit product">
             <span className="text-lg text-default-400 cursor-pointer active:opacity-50">

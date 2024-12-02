@@ -7,7 +7,7 @@ export const createProduct = async (
     price: number;
     slug: string;
     isRecommended: boolean;
-    categories: number[];
+    categories: string[];
   },
   file: File | undefined,
   token: string | undefined,
@@ -71,7 +71,6 @@ export const updateProduct = async (
       body: formData,
       headers: {
         Authorization: `Bearer ${token}`,
-        // 'Content-Type': 'application/json',
       },
     },
   );

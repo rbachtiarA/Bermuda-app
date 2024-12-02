@@ -173,6 +173,55 @@ export class StockController {
     }
   }
 
+  // async deleteStock(req: Request, res: Response) {
+  //   try {
+  //     const id = parseInt(req.params.id, 10);
+
+  //     if (isNaN(id)) {
+  //       return res.status(400).json({
+  //         status: 'error',
+  //         msg: 'Invalid Stock ID.',
+  //       });
+  //     }
+
+  //     const stock = await prisma.stock.findUnique({
+  //       where: { id },
+  //       select: { id: true, isDeleted: true },
+  //     });
+
+  //     if (!stock) {
+  //       return res.status(404).json({
+  //         status: 'error',
+  //         msg: 'Stock not found.',
+  //       });
+  //     }
+
+  //     if (stock.isDeleted) {
+  //       return res.status(400).json({
+  //         status: 'error',
+  //         msg: 'Stock already marked as deleted.',
+  //       });
+  //     }
+
+  //     // Mark stock as deleted
+  //     await prisma.stock.update({
+  //       where: { id },
+  //       data: { isDeleted: true },
+  //     });
+
+  //     return res.status(200).json({
+  //       status: 'ok',
+  //       msg: `Stock "${stock.id}" successfully marked as deleted.`,
+  //     });
+  //   } catch (error) {
+  //     console.error('Error deleting stock:', error);
+  //     return res.status(500).json({
+  //       status: 'error',
+  //       msg: 'An error occurred while marking the stock as deleted.',
+  //     });
+  //   }
+  // }
+
   async deleteStock(req: Request, res: Response) {
     try {
       const id = parseInt(req.params.id, 10);
@@ -186,7 +235,7 @@ export class StockController {
 
       const stock = await prisma.stock.findUnique({
         where: { id },
-        select: { id: true },
+        select: { id: true, isDeleted: true, quantity: true },
       });
 
       if (!stock) {
@@ -196,19 +245,37 @@ export class StockController {
         });
       }
 
-      await prisma.stock.delete({
+      if (stock.isDeleted) {
+        return res.status(400).json({
+          status: 'error',
+          msg: 'Stock already marked as deleted.',
+        });
+      }
+
+      // Mark stock as deleted
+      await prisma.stock.update({
         where: { id },
+        data: { isDeleted: true },
+      });
+
+      // Add entry to stockHistory with changeType "DELETED"
+      await prisma.stockHistory.create({
+        data: {
+          stockId: stock.id,
+          changeType: 'DELETED',
+          quantity: 0, // No quantity change, but marking as deleted
+        },
       });
 
       return res.status(200).json({
         status: 'ok',
-        msg: `Stock "${stock.id}" successfully deleted.`,
+        msg: `Stock "${stock.id}" successfully marked as deleted.`,
       });
     } catch (error) {
       console.error('Error deleting stock:', error);
       return res.status(500).json({
         status: 'error',
-        msg: 'An error occurred while deleting the stock.',
+        msg: 'An error occurred while marking the stock as deleted.',
       });
     }
   }

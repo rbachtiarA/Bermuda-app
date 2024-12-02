@@ -147,7 +147,7 @@ export default function ProductManagement() {
                 visibleColumns={visibleColumns}
                 onSearchChange={onSearchChange}
                 setVisibleColumns={setVisibleColumns}
-                usersLength={categories.length}
+                categoriesLength={categories.length}
                 onRowsPerPageChange={onRowsPerPageChange}
                 rowsPerPage={rowsPerPage}
                 hasSearchFilter={hasSearchFilter}

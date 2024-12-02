@@ -20,7 +20,7 @@ interface TopContentProps {
   visibleColumns: Selection;
   onSearchChange: (value?: string) => void;
   setVisibleColumns: (newVisibleColumns: Selection) => void;
-  usersLength: number;
+  categoriesLength: number;
   onRowsPerPageChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   rowsPerPage: number;
   hasSearchFilter: boolean;
@@ -31,7 +31,7 @@ const TopCategory: React.FC<TopContentProps> = ({
   visibleColumns,
   onSearchChange,
   setVisibleColumns,
-  usersLength,
+  categoriesLength,
   onRowsPerPageChange,
 }) => {
   const user = useAppSelector((state) => state.user);
@@ -93,7 +93,7 @@ const TopCategory: React.FC<TopContentProps> = ({
       </div>
       <div className="flex justify-between items-center">
         <span className="text-default-400 text-small">
-          Total {usersLength} stores
+          Total {categoriesLength} categories
         </span>
         <label className="flex items-center text-default-400 text-small">
           Rows per page:

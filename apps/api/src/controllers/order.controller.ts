@@ -221,7 +221,7 @@ export class OrderController {
               include: {
                 product: {
                   include: {
-                    store: true,
+                    stores: true,
                     categories: true,
                     stock: {
                       where: {
@@ -251,7 +251,7 @@ export class OrderController {
               include: {
                 product: {
                   include: {
-                    store: true,
+                    stores: true,
                     categories: true,
                   },
                 },

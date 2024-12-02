@@ -6,6 +6,7 @@ export interface IStock {
   store?: Object;
   storeId: number;
   quantity: number;
+  isDeleted: Boolean;
 }
 interface Object {
   id: number;
