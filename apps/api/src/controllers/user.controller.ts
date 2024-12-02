@@ -7,6 +7,7 @@ import { generateReferralCode } from '@/helpers/referral';
 import path from 'path';
 import fs from 'fs';
 import handlebars from 'handlebars';
+import { cloudinaryUpload } from '@/middleware/cloudinary';
 
 export class UserController {
   async getUsers(req: Request, res: Response) {
@@ -236,7 +237,10 @@ export class UserController {
   async editAvatar(req: Request, res: Response) {
     try {
       if (!req.file) throw 'no file uploaded';
-      const link = `${process.env.BASE_URL_BE}public/avatar/${req.file?.filename}`;
+
+      const { secure_url } = await cloudinaryUpload(req.file, 'avatar')
+      const link = secure_url;
+      // const link = `${process.env.BASE_URL_BE}public/avatar/${req.file?.filename}`;
       console.log(link);
       await prisma.user.update({
         data: { avatarUrl: link },

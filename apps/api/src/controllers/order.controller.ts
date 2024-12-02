@@ -2,13 +2,16 @@ import { Request, Response } from 'express';
 import midtrans from '../services/midtrans.js';
 import prisma from '@/prisma';
 import cancelOrder from '@/helpers/cancelOrder';
+import { cloudinaryUpload } from '@/middleware/cloudinary';
 
 export class OrderController {
   async updatePaymentProof(req: Request, res: Response) {
     try {
       const { orderId } = req.body;
       if (!req?.file) throw 'Please upload validated file';
-      const imgLink = `${process.env.BASE_URL_BE}public/paymentProof/${req.file.filename}`;
+      const { secure_url } = await cloudinaryUpload(req.file, 'paymentProof')
+      const imgLink = secure_url;
+      // const imgLink = `${process.env.BASE_URL_BE}public/paymentProof/${req.file.filename}`;
 
       const updatedOrder = await prisma.order.update({
         where: { id: +orderId! },

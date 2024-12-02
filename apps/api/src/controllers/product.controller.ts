@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import prisma from '@/prisma';
 import { Prisma } from '@prisma/client';
+import { cloudinaryUpload } from '@/middleware/cloudinary';
 
 export class ProductController {
   async getProducts(req: Request, res: Response) {
@@ -145,7 +146,9 @@ export class ProductController {
     try {
       if (!req.file) throw new Error('No file uploaded');
 
-      const link = `${process.env.BASE_URL_BE}public/product/${req.file.filename}`;
+      // const link = `${process.env.BASE_URL_BE}public/product/${req.file.filename}`;
+      const { secure_url } = await cloudinaryUpload(req.file, 'product')
+      const link = secure_url;
 
       const {
         name,
@@ -217,7 +220,9 @@ export class ProductController {
 
       let link: string = '';
       if (req?.file) {
-        link = `${process.env.BASE_URL_BE}public/product/${req?.file?.filename}`;
+        const { secure_url } = await cloudinaryUpload(req.file, 'product')
+        link = secure_url;
+        // link = `${process.env.BASE_URL_BE}public/product/${req?.file?.filename}`;
       } else {
         link = imageUrl;
       }

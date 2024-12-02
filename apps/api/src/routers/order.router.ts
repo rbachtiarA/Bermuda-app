@@ -42,7 +42,7 @@ export class OrderRouter {
     );
     this.router.patch(
       '/paymentProof',
-      uploader('paymentProof-', '/paymentProof').single('paymentProof'),
+      uploader('memoryStorage', 'paymentProof-', '/paymentProof').single('paymentProof'),
       this.orderController.updatePaymentProof,
     );
   }
