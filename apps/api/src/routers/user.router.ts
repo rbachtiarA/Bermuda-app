@@ -21,7 +21,7 @@ export class UserRouter {
     this.router.post('/login', this.userController.loginUser);
     this.router.get('/generate-dummy', this.userController.createUsersDummy);
     this.router.get('/userAddress/:userId', this.userController.getUserAddressess);
-    this.router.patch('/avatar', verifyToken, uploader("avatar", "/avatar").single('avatar'), this.userController.editAvatar);
+    this.router.patch('/avatar', verifyToken, uploader('memoryStorage', "avatar", "/avatar").single('avatar'), this.userController.editAvatar);
   }
 
   getRouter(): Router {

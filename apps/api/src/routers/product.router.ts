@@ -17,14 +17,14 @@ export class ProductRouter {
     this.router.get('/', this.productController.ProdutSearch);
     this.router.post(
       '/create',
-      uploader('product-', '/product').single('file'),
+      uploader('memoryStorage', 'product-', '/product').single('file'),
       verifyToken,
       checkSuperAdmin,
       this.productController.createProduct,
     );
     this.router.put(
       '/:id',
-      uploader('product-', '/product').single('file'),
+      uploader('memoryStorage', 'product-', '/product').single('file'),
       verifyToken,
       checkSuperAdmin,
       this.productController.updateProduct,
