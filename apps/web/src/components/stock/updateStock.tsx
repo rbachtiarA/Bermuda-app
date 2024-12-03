@@ -199,7 +199,6 @@ export default function UpdateStock({ stockId }: { stockId: number }) {
             {stockH && (
               <div className="w-full max-w-4xl">
                 <Card style={{ padding: '20px' }}>
-                  {/* <h3>Stock History for ID: {setStockH?.stock[0].id}</h3> */}
                   <Table
                     aria-label="Stock History Table"
                     style={{ marginTop: '20px' }}

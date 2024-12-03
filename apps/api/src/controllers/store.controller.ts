@@ -144,7 +144,7 @@ export class StoreController {
         storeProducts = await prisma.product.findMany({
           include: {
             categories: true,
-            store: true,
+            stores: true,
           },
           orderBy: { createdAt: 'desc' },
         });
@@ -158,7 +158,9 @@ export class StoreController {
 
         storeProducts = await prisma.product.findMany({
           where: {
-            storeId: admin?.storeId!,
+            stores: {
+              some: { id: admin.storeId },
+            },
           },
           include: {
             categories: true,
@@ -197,7 +199,7 @@ export class StoreController {
         storeProducts = await prisma.stock.findMany({
           include: {
             product: {
-              include: { categories: true },
+              include: { categories: true, stock: true },
             },
           },
           orderBy: { id: 'asc' },
@@ -216,7 +218,7 @@ export class StoreController {
           },
           include: {
             product: {
-              include: { categories: true },
+              include: { categories: true, stock: true },
             },
           },
           orderBy: { id: 'asc' },

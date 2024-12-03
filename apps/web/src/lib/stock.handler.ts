@@ -90,25 +90,6 @@ export const getStockById = async (data: { id: number; name: string }) => {
   return { result, ok: res.ok };
 };
 
-// export const getStockHistory = async (
-//   stockId: number,
-//   userId: number,
-//   token: string | undefined,
-// ) => {
-//   const res = await fetch(
-//     `${process.env.NEXT_PUBLIC_BASE_API_URL}stock/history/${stockId}/${userId}`,
-//     {
-//       method: 'GET',
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//         'Content-Type': 'application/json',
-//       },
-//     },
-//   );
-//   const result = await res.json();
-//   return { result, ok: res.ok };
-// };
-
 export const getStockHistory = async (
   stockId: number,
   userId: number,

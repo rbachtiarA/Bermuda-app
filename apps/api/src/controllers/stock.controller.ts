@@ -22,6 +22,14 @@ export class StockController {
         },
       });
 
+      await prisma.stockHistory.create({
+        data: {
+          stockId: newStock.id,
+          changeType: 'INCREASE',
+          quantity: Math.abs(quantity - newStock.quantity),
+        },
+      });
+
       res.status(201).json({
         message: 'Stock created successfully',
         data: newStock,
@@ -178,7 +186,7 @@ export class StockController {
 
       const stock = await prisma.stock.findUnique({
         where: { id },
-        select: { id: true },
+        select: { id: true, isDeleted: true, quantity: true },
       });
 
       if (!stock) {
@@ -188,19 +196,35 @@ export class StockController {
         });
       }
 
-      await prisma.stock.delete({
+      if (stock.isDeleted) {
+        return res.status(400).json({
+          status: 'error',
+          msg: 'Stock already marked as deleted.',
+        });
+      }
+
+      await prisma.stock.update({
         where: { id },
+        data: { isDeleted: true },
+      });
+
+      await prisma.stockHistory.create({
+        data: {
+          stockId: stock.id,
+          changeType: 'DELETED',
+          quantity: 0,
+        },
       });
 
       return res.status(200).json({
         status: 'ok',
-        msg: `Stock "${stock.id}" successfully deleted.`,
+        msg: `Stock "${stock.id}" successfully marked as deleted.`,
       });
     } catch (error) {
       console.error('Error deleting stock:', error);
       return res.status(500).json({
         status: 'error',
-        msg: 'An error occurred while deleting the stock.',
+        msg: 'An error occurred while marking the stock as deleted.',
       });
     }
   }
@@ -230,6 +254,7 @@ export class StockController {
               stock: {
                 include: {
                   product: true,
+                  store: true,
                 },
               },
             },
@@ -242,11 +267,16 @@ export class StockController {
                 storeId: Number(user?.storeId),
               },
             },
+            include: {
+              stock: {
+                include: {
+                  product: true,
+                  store: true,
+                },
+              },
+            },
             orderBy: {
               createdAt: 'desc',
-            },
-            include: {
-              stock: true,
             },
           });
         }

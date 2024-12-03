@@ -47,6 +47,7 @@ export default function DiscountManagement() {
 
     try {
       const discountsData = await getStoreDiscounts();
+      console.log(discounts, 'discount');
 
       if (Array.isArray(discountsData)) {
         setDiscounts(discountsData);
@@ -62,6 +63,7 @@ export default function DiscountManagement() {
 
   useEffect(() => {
     fetchDiscounts();
+    console.log('masuk');
   }, [fetchDiscounts]);
 
   const pages = Math.ceil(discounts.length / rowsPerPage);

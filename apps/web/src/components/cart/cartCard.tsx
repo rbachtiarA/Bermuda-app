@@ -3,7 +3,7 @@ import { ICartItem } from '@/type/cart';
 import {
   Button,
   Checkbox,
-  Skeleton,
+  Image,
   Tooltip,
   useDisclosure,
 } from '@nextui-org/react';
@@ -11,7 +11,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Card, CardBody } from '@nextui-org/react';
 import { useAppDispatch } from '@/redux/hook';
 import { removedFromCart } from '@/redux/slice/cartSlice';
-import Image from 'next/image';
 import { deleteCartItem } from '@/lib/cart';
 import CartQuantityInput from './cartQuantityInput';
 import currencyRupiah from '@/lib/rupiahCurrency';

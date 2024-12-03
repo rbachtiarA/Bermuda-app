@@ -1,5 +1,5 @@
 import { StoreController } from '@/controllers/store.controller';
-import { checkAdmin, verifyToken } from '@/middleware/token';
+import { checkAdmin, checkStoreAdmin, verifyToken } from '@/middleware/token';
 import { Router } from 'express';
 
 export class StoreRouter {
@@ -28,7 +28,7 @@ export class StoreRouter {
     this.router.get(
       '/discounts',
       verifyToken,
-      checkAdmin,
+      checkStoreAdmin,
       this.storeController.getStoreDiscounts,
     );
     this.router.get(

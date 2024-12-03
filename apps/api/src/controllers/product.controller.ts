@@ -38,7 +38,7 @@ export class ProductController {
         prisma.product.findMany({
           where: filter,
           orderBy: { createdAt: 'desc' },
-          include: { categories: true, store: true },
+          include: { categories: true, stores: true },
           skip: (pageNumber - 1) * pageSizeNumber,
           take: pageSizeNumber,
         }),

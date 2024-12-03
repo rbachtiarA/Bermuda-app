@@ -20,6 +20,8 @@ export default function ProductDetail({ productId }: { productId: number }) {
   const [error, setError] = useState<string | null>(null);
   const cart = useAppSelector((state) => state.cart);
   const user = useAppSelector((state) => state.user);
+  const store = useAppSelector((state) => state.store);
+
   const [quantity, setQuantity] = useState<number>(1);
 
   const hasDiscountType = (type: string) =>
@@ -103,10 +105,13 @@ export default function ProductDetail({ productId }: { productId: number }) {
 
   const getAvailableStock = (): number => {
     if (Array.isArray(product?.stock)) {
-      return product.stock.reduce(
-        (total, stockItem) => total + stockItem.quantity,
-        0,
-      );
+      return product.stock.reduce((total, stockItem) => {
+        const quantity =
+          stockItem.quantity && stockItem.storeId == store.id
+            ? stockItem.quantity
+            : 0;
+        return total + quantity;
+      }, 0);
     }
     return typeof product?.stock === 'number' ? product.stock : 0;
   };
