@@ -24,6 +24,12 @@ export class StoreAdminRouter {
       checkSuperAdmin,
       this.storeAdminController.getStoreAdmin,
     );
+    this.router.get(
+      '/:id',
+      verifyToken,
+      checkSuperAdmin,
+      this.storeAdminController.getStoreAdminById,
+    );
     this.router.delete(
       '/:id',
       verifyToken,

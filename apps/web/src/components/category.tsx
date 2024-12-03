@@ -1,19 +1,19 @@
 'use client';
+
 import { getCategories } from '@/lib/category.handler';
 import { ICategory } from '@/type/category';
 import { useEffect, useState } from 'react';
 import CategoryIcon from './icon/categoryIcon';
+import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from '@nextui-org/react';
 
 const CategoryDropdown: React.FC = () => {
   const [categories, setCategories] = useState<ICategory[]>([]);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const { result, ok } = await getCategories();
-        setCategories(result.allCategory);
-        console.log('haloooo', result);
+        const { result } = await getCategories();
+        setCategories(result.allCategory || []);
       } catch (error) {
         console.error('Error fetching categories:', error);
       }
@@ -22,37 +22,18 @@ const CategoryDropdown: React.FC = () => {
   }, []);
 
   return (
-    <div
-      className="relative inline-block text-left container"
-      onMouseEnter={() => setIsDropdownOpen(true)}
-      onMouseLeave={() =>
-        isDropdownOpen ? setIsDropdownOpen(true) : setIsDropdownOpen(false)
-      }
-      onClick={() => {
-        isDropdownOpen ? setIsDropdownOpen(false) : setIsDropdownOpen(true);
-      }}
-    >
-      <button className="px-4 py-2 text-sm font-medium text-gray-700 bg-white rounded-md hover:bg-gray-100 flex items-center gap-2">
-        <CategoryIcon size={20}/>
-        <span>
+    <Dropdown>
+      <DropdownTrigger>
+        <Button color="default" variant="light" startContent={<CategoryIcon size={20} />}>
           Kategori
-        </span>
-      </button>
-      {isDropdownOpen && (
-        <div className="order-1 absolute left-0 w-48 mt-2 origin-top-left bg-white border border-gray-200 rounded-md shadow-lg">
-          <ul className="py-1">
-            {categories?.map((category) => (
-              <li
-                key={category.id}
-                className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-              >
-                {category.name}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </div>
+        </Button>
+      </DropdownTrigger>
+      <DropdownMenu aria-label="Category List">
+        {categories.map((category) => (
+          <DropdownItem key={category.id}>{category.name}</DropdownItem>
+        ))}
+      </DropdownMenu>
+    </Dropdown>
   );
 };
 

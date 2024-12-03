@@ -77,18 +77,21 @@ export default function SiteNavbar() {
 
   return (
     <>
-      <Navbar isBordered maxWidth='full' className="shadow-sm hidden md:flex">
-        <div className='flex container px-4'>
-          <NavbarBrand className="w-full justify-start">
-            <Link color="foreground" href="/">
-              <SiteLogo />
-            </Link>
-          </NavbarBrand>
-          
-          <NavbarContent justify='center' className='ml-2'>
+      <Navbar isBordered maxWidth="full" className="shadow-sm hidden md:flex">
+        <NavbarBrand className="w-full justify-start">
+          <Link color="foreground" href="/">
+            <SiteLogo />
+          </Link>
+        </NavbarBrand>
+
+        <NavbarContent justify="center" className="ml-2">
           <NavbarItem>
-            <Button color='default' variant='light' onPress={() => router.push('/product')}>
-              <ProductIcon size={20}/>
+            <Button
+              color="default"
+              variant="light"
+              onPress={() => router.push('/product')}
+            >
+              <ProductIcon size={20} />
               Product
             </Button>
           </NavbarItem>
@@ -96,7 +99,7 @@ export default function SiteNavbar() {
             <Category />
           </NavbarItem>
 
-          <NavbarItem className='lg:w-full lg:min-w-[400px]'>
+          <NavbarItem className="lg:w-full lg:min-w-[400px]">
             <SearchNav
               search={search}
               setSearch={setSearch}
@@ -104,30 +107,39 @@ export default function SiteNavbar() {
             />
           </NavbarItem>
         </NavbarContent>
-          
 
-          <NavbarContent justify='end' className='flex gap-10'>
-            <NavbarItem className='flex-shrink-0 md:hidden lg:flex'>
-                <Badge content={cart.length} color='primary'>
-                  <LinkButtonBottomNavbar label='' href="/cart" imgsrc="/icon-shopping-cart.svg" imgalt="cart" component={<></>}/>
-                </Badge>
-            </NavbarItem>
-            <NavbarItem>
-                {token ? (
-                  <DropdownNav />
-                ) : (
-                  <div className="flex gap-2">
-                    <Button onPress={() => router.push('/register')} color="primary" variant="ghost">
-                      Register
-                    </Button>
-                    <Button onPress={() => router.push('/login')} color="primary">
-                      Login
-                    </Button>
-                  </div>
-                )}
-            </NavbarItem>
-          </NavbarContent>
-        </div>
+        <NavbarContent justify="end">
+          <NavbarItem className="flex-shrink-0 md:hidden lg:flex">
+            <Badge content={cart.length} color="primary">
+              <LinkButtonBottomNavbar
+                label=""
+                href="/cart"
+                imgsrc="/icon-shopping-cart.svg"
+                imgalt="cart"
+                component={<></>}
+              />
+            </Badge>
+          </NavbarItem>
+
+          <NavbarItem>
+            {token ? (
+              <DropdownNav />
+            ) : (
+              <div className="flex gap-2">
+                <Button
+                  onPress={() => router.push('/register')}
+                  color="primary"
+                  variant="ghost"
+                >
+                  Register
+                </Button>
+                <Button onPress={() => router.push('/login')} color="primary">
+                  Login
+                </Button>
+              </div>
+            )}
+          </NavbarItem>
+        </NavbarContent>
       </Navbar>
 
       {/* Mobile Nav */}

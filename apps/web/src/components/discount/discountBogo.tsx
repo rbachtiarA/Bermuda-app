@@ -74,7 +74,10 @@ const CreateBuyOneGetOneDiscount: React.FC = () => {
     setMessage('');
     try {
       const token = await getToken();
-      const { result, ok } = await createDiscountBogo(formData, token);
+      const { result, ok } = await createDiscountBogo(
+        { ...formData, storeId },
+        token,
+      );
       if (ok) {
         setMessage('Diskon BOGO berhasil dibuat.');
         setFormData({

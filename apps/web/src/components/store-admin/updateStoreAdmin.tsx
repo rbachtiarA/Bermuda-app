@@ -1,130 +1,143 @@
-import { useState } from 'react';
+import { getToken } from '@/lib/server';
+import { getStoreAdminById, updateStoreAdmin } from '@/lib/storeAdmin';
 import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
   Button,
   Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
   Tooltip,
 } from '@nextui-org/react';
-import { getToken } from '@/lib/server';
+import { useEffect, useState } from 'react';
 import { EditIcon } from '../icons/editIcon';
-
-interface UpdateStoreAdminProps {
-  storeAdminId: number;
-}
+import { IStoreAdmin } from '@/type/storeAdmin';
+import { MailIcon } from '../icons/mailIcon';
+import { toast } from 'react-toastify';
 
 export default function UpdateStoreAdmin({
   storeAdminId,
-}: UpdateStoreAdminProps) {
+  onUpdate,
+}: {
+  storeAdminId: number;
+  onUpdate: () => Promise<void>;
+}) {
   const [isOpen, setIsOpen] = useState(false);
-  const [email, setEmail] = useState('');
+  const [user, setUser] = useState<IStoreAdmin>();
   const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
 
-  const onOpen = () => setIsOpen(true);
   const onClose = () => {
     setIsOpen(false);
-    setEmail('');
     setName('');
+    setEmail('');
     setPassword('');
     setMessage('');
   };
 
-  const handleUpdate = async () => {
-    // Validate input fields
-    if (!email && !name && !password) {
-      setMessage('At least one field must be provided for update.');
-      return;
-    }
+  console.log(storeAdminId, 'STOREID');
 
+  const fetchUserById = async (id: number) => {
     try {
-      const token = await getToken();
+      const res = await getStoreAdminById(storeAdminId);
 
-      const response = await fetch(`/api/storeadmin/${storeAdminId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          email,
-          name,
-          password,
-        }),
-      });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        setMessage('Store Admin updated successfully!');
-        onClose();
-        window.location.reload(); // Refresh the page to fetch updated data
+      console.log(res, 'RESS');
+      if (res) {
+        const data = res;
+        setUser(data);
+        setName(data.name);
+        setEmail(data.email);
+        setPassword('');
+        setIsOpen(true);
       } else {
-        setMessage(result?.msg || 'Failed to update Store Admin.');
+        setMessage('User not found');
       }
     } catch (error) {
-      setMessage('An error occurred while updating the Store Admin.');
+      setMessage('Terjadi kesalahan saat mengambil data.');
+    }
+  };
+
+  const handleUpdate = async () => {
+    const data = {
+      id: storeAdminId || 0,
+      name: name || '',
+      email: email || '',
+      password: password || '',
+    };
+    try {
+      const token = await getToken();
+      const { result, ok } = await updateStoreAdmin(data, token);
+
+      if (ok && result) {
+        toast.success('Data berhasil diperbarui');
+        setMessage('Data berhasil diperbarui');
+        setIsOpen(false);
+        // await onUpdate();
+      } else {
+        setMessage('Error occurred!');
+      }
+
+      onClose();
+    } catch (error) {
+      setMessage('Failed to updated product!');
     }
   };
 
   return (
     <>
-      <Tooltip color="primary" content="Edit Store Admin">
+      <Tooltip color="secondary" content="Edit Store Admin">
         <span
           className="text-lg text-primary cursor-pointer active:opacity-50"
-          onClick={onOpen}
+          onClick={() => fetchUserById(storeAdminId)}
         >
           <EditIcon />
         </span>
       </Tooltip>
-
       <Modal isOpen={isOpen} onClose={onClose} placement="top-center">
         <ModalContent>
           <ModalHeader className="flex flex-col gap-1">
-            Update Store Admin
+            Create Store Admin
           </ModalHeader>
           <ModalBody>
             <Input
+              autoFocus
+              endContent={
+                <MailIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+              }
               label="Email"
-              placeholder="Enter new email"
+              placeholder="Enter your email"
               variant="bordered"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
+            {message && <p className="text-red-500">{message}</p>}
             <Input
+              autoFocus
               label="Name"
-              placeholder="Enter new name"
+              placeholder="Enter your name"
               variant="bordered"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
+            {message && <p className="text-red-500">{message}</p>}
             <Input
-              label="Password"
-              type="password"
-              placeholder="Enter new password"
+              autoFocus
+              label="password"
+              placeholder="Enter your New Password"
               variant="bordered"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            {message && (
-              <p
-                className={`text-${
-                  message.includes('successfully') ? 'green' : 'red'
-                }-500`}
-              >
-                {message}
-              </p>
-            )}
+            {message && <p className="text-red-500">{message}</p>}
           </ModalBody>
           <ModalFooter>
             <Button color="danger" variant="flat" onPress={onClose}>
               Close
             </Button>
-            <Button color="primary" onPress={handleUpdate}>
+            <Button type="button" color="primary" onPress={handleUpdate}>
               Update
             </Button>
           </ModalFooter>

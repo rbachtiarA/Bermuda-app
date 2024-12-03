@@ -9,10 +9,8 @@ import {
   Input,
 } from '@nextui-org/react';
 import { MailIcon } from '../icons/mailIcon';
-import { LockIcon } from '../icons/lockIcon';
 import { PlusIcon } from '../icons/plusIcon';
 import { getToken } from '@/lib/server';
-import UserPlusIcon from '../icons/userPlusIcon';
 import { createStoreAdmin } from '@/lib/storeAdmin';
 
 export default function ModalCreateStoreAdmin() {
@@ -45,7 +43,7 @@ export default function ModalCreateStoreAdmin() {
       if (ok) window.location.reload();
       onClose();
     } catch (error) {
-      setMessage('Gagal membuat Store Admin!');
+      setMessage('Email sudah digunakan!');
     }
   };
 

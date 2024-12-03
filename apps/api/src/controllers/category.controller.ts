@@ -4,7 +4,9 @@ import { Request, Response } from 'express';
 export class CategoryController {
   async getCategory(req: Request, res: Response) {
     try {
-      const allCategory = await prisma.productCategory.findMany();
+      const allCategory = await prisma.productCategory.findMany({
+        include: { products: true },
+      });
 
       res.status(200).send({
         status: 'ok',
