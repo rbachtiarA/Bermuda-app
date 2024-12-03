@@ -157,7 +157,6 @@ exports.Prisma.ProductScalarFieldEnum = {
   imageUrl: 'imageUrl',
   isRecommended: 'isRecommended',
   slug: 'slug',
-  storeId: 'storeId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -192,7 +191,8 @@ exports.Prisma.StockScalarFieldEnum = {
   id: 'id',
   quantity: 'quantity',
   storeId: 'storeId',
-  productId: 'productId'
+  productId: 'productId',
+  isDeleted: 'isDeleted'
 };
 
 exports.Prisma.AddressScalarFieldEnum = {
@@ -337,7 +337,8 @@ exports.DiscountType = exports.$Enums.DiscountType = {
 
 exports.ChangeType = exports.$Enums.ChangeType = {
   INCREASE: 'INCREASE',
-  DECREASE: 'DECREASE'
+  DECREASE: 'DECREASE',
+  DELETED: 'DELETED'
 };
 
 exports.OrderStatus = exports.$Enums.OrderStatus = {
