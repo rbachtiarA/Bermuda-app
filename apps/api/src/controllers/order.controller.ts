@@ -207,15 +207,73 @@ export class OrderController {
   async getUserOrderReport(req: Request, res: Response) {
     try {
       const userId = req.user?.id;
-      const userOrder = await prisma.order.findMany({
-        include: {
-          Payment: true,
-          orderItems: true,
-        },
-        orderBy: {
-          createdAt: 'desc',
+      const user = await prisma.user.findUnique({
+        where: {
+          id: +userId!,
         },
       });
+      let userOrder: any[] = [];
+      if (user?.role != 'SUPER_ADMIN') {
+        userOrder = await prisma.order.findMany({
+          where: {
+            storeId: Number(user?.storeId),
+          },
+          include: {
+            Payment: true,
+            orderItems: {
+              include: {
+                product: {
+                  include: {
+                    stores: true,
+                    categories: true,
+                    stock: {
+                      where: {
+                        storeId: Number(user?.storeId),
+                      },
+                    },
+                  },
+                },
+                order: {
+                  include: {
+                    discount: true,
+                    Store: true,
+                  },
+                },
+              },
+            },
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+        });
+      } else {
+        userOrder = await prisma.order.findMany({
+          include: {
+            Payment: true,
+            orderItems: {
+              include: {
+                product: {
+                  include: {
+                    stores: true,
+                    categories: true,
+                  },
+                },
+                order: {
+                  include: {
+                    discount: true,
+                    Store: true,
+                  },
+                },
+              },
+            },
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+        });
+      }
+      console.log(userId, 'USERID');
+
       if (!userOrder) throw 'User doesnt have any order';
 
       return res.status(200).send({

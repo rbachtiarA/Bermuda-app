@@ -1,4 +1,5 @@
-import { IStoreAdminReg } from '@/type/storeAdmin';
+import { IStoreAdmin, IStoreAdminReg } from '@/type/storeAdmin';
+import { getToken } from './server';
 
 export const createStoreAdmin = async (
   data: IStoreAdminReg,
@@ -34,16 +35,45 @@ export const getAllStoreAdmin = async (token: string | undefined) => {
   return { result, ok: res.ok };
 };
 
+export const getStoreAdminById = async (
+  id: number,
+): Promise<IStoreAdmin | null> => {
+  try {
+    const token = await getToken();
+
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_API_URL}storeadmin/${id}`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.msg || 'Failed to fetch product');
+    }
+    const data = await res.json();
+    return data.storeAdmin;
+  } catch (err) {
+    console.error('Error fetching product:', err);
+    throw err;
+  }
+};
+
 export const updateStoreAdmin = async (
-  data: { id: number; email: string },
+  data: { id: number; name: string; email: string; password: string },
   token: string | undefined,
 ) => {
-  const { id, email } = data;
+  const { id, name, email, password } = data;
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_API_URL}storeadmin/${id}`,
     {
       method: 'PUT',
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ name, email, password }),
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',

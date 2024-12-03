@@ -6,6 +6,7 @@ export interface IStock {
   store?: Object;
   storeId: number;
   quantity: number;
+  isDeleted: Boolean;
 }
 interface Object {
   id: number;
@@ -25,7 +26,7 @@ export interface IStockDel {
 export interface StockHistory {
   id: number;
   changeType?: string;
-  stock?: { product: { name: string } };
+  stock?: { product: { name: string; store: { name: string; id: string } } };
   stockId: number;
   quantity: number;
   orderItems?: any;

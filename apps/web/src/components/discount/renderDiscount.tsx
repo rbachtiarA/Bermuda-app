@@ -12,6 +12,7 @@ interface DiscountCellProps {
 const RenderDiscount: React.FC<DiscountCellProps> = ({
   discount,
   columnKey,
+  onDeleted,
 }) => {
   const cellValue = discount[columnKey as keyof IDiscountAll];
 

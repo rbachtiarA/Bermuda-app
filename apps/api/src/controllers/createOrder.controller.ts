@@ -29,10 +29,13 @@ export class CreateOrderController {
         })
         if(!checkoutItem) throw 'Checkout is invalid'
 
-        const discountBOGO = await prisma.discount.findFirst({
-            where: { id: +discountId, discountType: 'BUY_ONE_GET_ONE' },
-            include: { products: true }
-        })
+        let discountBOGO = null
+        if(discountId) {
+            discountBOGO = await prisma.discount.findFirst({
+                where: { id: +discountId, discountType: 'BUY_ONE_GET_ONE' },
+                include: { products: true }
+            })
+        }
         //convert checkout item to array of {productId, quantity, price, }
         const orderItem = checkoutItem?.CartItem.map((item) => {
             if(discountBOGO) {
@@ -113,9 +116,9 @@ export class CreateOrderController {
             })
             
             //creating midtrans item details
-            const itemDetails = checkoutItem.CartItem.map((item) => {
-                return { id: item.productId, name: item.product.name.substring(0,49), quantity: item.quantity, price: item.product.price }
-            })
+                // const itemDetails = checkoutItem.CartItem.map((item) => {
+                //     return { id: item.productId, name: item.product.name.substring(0,49), quantity: item.quantity, price: item.product.price }
+                // })
 
             //if methodPayment is Gateway, generate token midtrans
             if(order && methodPayment === 'Gateway') {

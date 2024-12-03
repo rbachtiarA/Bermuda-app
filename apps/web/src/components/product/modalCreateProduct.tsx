@@ -8,6 +8,8 @@ import {
   Button,
   Select,
   SelectItem,
+  Input,
+  Checkbox,
 } from '@nextui-org/react';
 import { PlusIcon } from '../icons/plusIcon';
 import { getToken } from '@/lib/server';
@@ -23,7 +25,7 @@ export default function ModalCreateProduct() {
   const [price, setPrice] = useState(0);
   const [slug, setSlug] = useState('');
   const [isRecommended, setIsRecommended] = useState(false);
-  const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
   const [file, setFile] = useState<File | undefined>(undefined);
   const [message, setMessage] = useState('');
@@ -47,7 +49,7 @@ export default function ModalCreateProduct() {
       price,
       slug,
       isRecommended,
-      categories: selectedCategories,
+      categories: selectedCategories || [],
     };
     try {
       const token = await getToken();
@@ -84,15 +86,8 @@ export default function ModalCreateProduct() {
     }
   }, [isOpen]);
 
-  const handleCategoryChange = (
-    event: React.ChangeEvent<HTMLSelectElement>,
-  ) => {
-    if (!event.target.selectedOptions) return;
-
-    const categoryIds = Array.from(event.target.selectedOptions, (option) =>
-      parseInt(option.value, 10),
-    );
-    setSelectedCategories(categoryIds);
+  const handleSelectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCategories(e.target.value.split(','));
   };
 
   return (
@@ -103,82 +98,62 @@ export default function ModalCreateProduct() {
         endContent={<PlusIcon />}
         size="sm"
       >
-        Add New Product
+        Add New
       </Button>
       <Modal isOpen={isOpen} onClose={onClose} placement="top-center">
         <ModalContent>
           <ModalHeader>Create Product</ModalHeader>
           <ModalBody>
-            <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Name
-              </label>
-              <input
-                id="name"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                placeholder="Enter product name"
-                required
-              />
-            </div>
-            <div className="mt-4">
-              <label
-                htmlFor="description"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Description
-              </label>
-              <input
-                id="description"
-                type="text"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                placeholder="Enter product description"
-                required
-              />
-            </div>
-            <div className="mt-4">
-              <label
-                htmlFor="price"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Price
-              </label>
-              <input
-                id="price"
-                type="number"
-                value={price}
-                onChange={(e) => setPrice(Number(e.target.value))}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                placeholder="Enter product price"
-                required
-                min="0"
-              />
-            </div>
-            <div className="mt-4">
-              <label
-                htmlFor="slug"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Slug
-              </label>
-              <input
-                id="slug"
-                type="text"
-                value={slug}
-                onChange={(e) => setSlug(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                placeholder="Enter product slug"
-                required
-              />
-            </div>
-            <div className="mt-4">
+            <Input
+              id="name"
+              type="text"
+              label="Name"
+              value={name}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setName(e.target.value)
+              }
+              placeholder="Enter product name"
+              required
+            />
+            <Input
+              id="description"
+              type="text"
+              label="Description"
+              value={description}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setDescription(e.target.value)
+              }
+              placeholder="Enter product description"
+              required
+            />
+            <Input
+              id="price"
+              type="number"
+              label="Price"
+              value={price.toString()}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setPrice(Number(e.target.value))
+              }
+              startContent={
+                <div className="pointer-events-none flex items-center">
+                  <span className="text-black-400 text-small">Rp</span>
+                </div>
+              }
+              placeholder="0.000"
+              required
+            />
+            <Input
+              id="slug"
+              type="text"
+              label="Slug"
+              value={slug}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setSlug(e.target.value)
+              }
+              placeholder="Enter product slug"
+              required
+            />
+            {/* <div className="mt-4">
               <label
                 htmlFor="isRecommended"
                 className="inline-flex items-center"
@@ -192,31 +167,26 @@ export default function ModalCreateProduct() {
                 />
                 <span className="ml-2 text-sm">Is Recommended</span>
               </label>
-            </div>
-            <div className="mt-4">
-              <Select
-                multiple
-                aria-label="Select Categories"
-                value={selectedCategories.map(String)}
-                onChange={handleCategoryChange}
-              >
-                {categories?.length > 0 ? (
-                  categories.map((category) => (
-                    <SelectItem
-                      key={category.id}
-                      value={category.id.toString()}
-                    >
-                      {category.name}
-                    </SelectItem>
-                  ))
-                ) : (
-                  <SelectItem key="no-categories" isDisabled value="">
-                    No categories available
+            </div> */}
+            <Select
+              selectionMode="multiple"
+              label="Select Categories"
+              selectedKeys={selectedCategories}
+              onChange={handleSelectionChange}
+            >
+              {categories?.length > 0 ? (
+                categories.map((category) => (
+                  <SelectItem key={category.id} value={category.id.toString()}>
+                    {category.name}
                   </SelectItem>
-                )}
-              </Select>
-            </div>
-            <div className="mt-4">
+                ))
+              ) : (
+                <SelectItem key="no-categories" isDisabled value="">
+                  No categories available
+                </SelectItem>
+              )}
+            </Select>
+            {/* <div className="mt-4">
               <label
                 htmlFor="file"
                 className="block text-sm font-medium text-gray-700"
@@ -231,7 +201,41 @@ export default function ModalCreateProduct() {
                 accept="image/*"
                 required
               />
+            </div> */}
+
+            <div className="mt-4">
+              <label
+                htmlFor="file-input"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Upload Product Image
+              </label>
+              <Button
+                as="label"
+                htmlFor="file-input"
+                className="mt-2"
+                color="primary"
+              >
+                Choose File
+              </Button>
+              <Input
+                id="file-input"
+                type="file"
+                onChange={(e) => setFile(e.target.files?.[0])}
+                className="hidden"
+                accept="image/*"
+                required
+              />
             </div>
+
+            <Checkbox
+              isSelected={isRecommended}
+              onChange={(e) => setIsRecommended(e.target.checked)}
+              size="lg"
+              color="primary"
+            >
+              <span className="ml-2 text-sm">Is Recommended</span>
+            </Checkbox>
 
             {message && <p className="text-red-500 mt-2">{message}</p>}
           </ModalBody>

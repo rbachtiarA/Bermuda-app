@@ -42,7 +42,10 @@ export default function StockManagement() {
       const { result, ok } = await getStocks();
 
       if (ok && result && Array.isArray(result.data)) {
-        setStocks(result.data);
+        const activeStocks = result.data.filter(
+          (stock: IStock) => !stock.isDeleted,
+        );
+        setStocks(activeStocks);
       } else {
         setError('Gagal mengambil data pengguna');
       }
@@ -68,15 +71,11 @@ export default function StockManagement() {
 
   const filteredItems = React.useMemo(() => {
     let filteredstocks = [...stocks];
-    console.log(filterValue, 'USER');
-
     if (hasSearchFilter) {
       filteredstocks = filteredstocks.filter((stock: IStock) =>
         stock?.product?.name.toLowerCase().includes(filterValue.toLowerCase()),
       );
     }
-    console.log(filteredstocks, 'USER');
-
     return filteredstocks;
   }, [stocks, filterValue]);
 
