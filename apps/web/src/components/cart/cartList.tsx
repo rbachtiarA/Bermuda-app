@@ -1,7 +1,7 @@
 'use client';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import CartCard from './cartCard';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { deleteCartItem, getAllCartItems, postCheckoutItems } from '@/lib/cart';
 import {
   removedFromCart,
@@ -22,11 +22,13 @@ import {
   useDisclosure,
 } from '@nextui-org/react';
 import ConfirmationModal from '../modal/confirmationModal';
+import SkeletonCartItemCard from '../skeleton/skeletonCartItemCard';
 export default function CartList() {
   const user = useAppSelector((state) => state.user);
   const cart = useAppSelector((state) => state.cart);
   const store = useAppSelector((state) => state.store);
   const checkout = useAppSelector((state) => state.checkout);
+  const [isLoading, setIsLoading] = useState(false)
   const dispatch = useAppDispatch();
   const router = useRouter();
   const { isOpen, onOpenChange, onOpen } = useDisclosure();
@@ -74,8 +76,10 @@ export default function CartList() {
 
   useEffect(() => {
     const getData = async () => {
+      setIsLoading(true)
       const data = await getAllCartItems(user.id, store.id);
       dispatch(updatedCartFromDatabase(data));
+      setIsLoading(false)
     };
     dispatch(resetCheckout());
     getData();
@@ -127,38 +131,44 @@ export default function CartList() {
             </CardBody>
           </Card>
         </div>
-        {cart.length === 0 && (
-          <div className="p-2">
-            <Card>
-              <CardBody>
-                <p>Cart is Empty</p>
-                <p>Please choose product at product page</p>
-              </CardBody>
-            </Card>
-          </div>
-        )}
-        {itemOnStock.length !== 0 && (
-          <ul className="grid grid-rows-[auto] gap-y-4 p-2">
-            {itemOnStock.map((cartItem, idx) => (
-              <CartCard key={idx} cart={cartItem} checkout={checkout} />
-            ))}
-          </ul>
-        )}
-        {itemSoldOut.length !== 0 && (
-          <div>
-            <h2 className="p-2 font-semibold">Product Sold Out</h2>
-            <ul className="grid grid-rows-[auto] gap-y-4 p-2">
-              {itemSoldOut.map((cartItem, idx) => (
-                <CartCard
-                  key={idx}
-                  cart={cartItem}
-                  checkout={checkout}
-                  soldOut
-                />
-              ))}
-            </ul>
-          </div>
-        )}
+        {
+          isLoading? 
+          <SkeletonCartItemCard /> :  
+          <>
+            {cart.length === 0 && (
+              <div className="p-2">
+                <Card>
+                  <CardBody>
+                    <p>Cart is Empty</p>
+                    <p>Please choose product at product page</p>
+                  </CardBody>
+                </Card>
+              </div>
+            )}
+            {itemOnStock.length !== 0 && (
+              <ul className="grid grid-rows-[auto] gap-y-4 p-2">
+                {itemOnStock.map((cartItem, idx) => (
+                  <CartCard key={idx} cart={cartItem} checkout={checkout} />
+                ))}
+              </ul>
+            )}
+            {itemSoldOut.length !== 0 && (
+              <div>
+                <h2 className="p-2 font-semibold">Product Sold Out</h2>
+                <ul className="grid grid-rows-[auto] gap-y-4 p-2">
+                  {itemSoldOut.map((cartItem, idx) => (
+                    <CartCard
+                      key={idx}
+                      cart={cartItem}
+                      checkout={checkout}
+                      soldOut
+                    />
+                  ))}
+                </ul>
+              </div>
+            )}
+          </>  
+        }
       </div>
       <div className="fixed md:sticky w-full bottom-[56px] md:bottom-[100vw]">
         <CartCheckout

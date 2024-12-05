@@ -35,19 +35,6 @@ export default function CartCard({
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const product = cart.product;
 
-  const discountType = () => {
-    const flatDiscount = product?.discounts?.find(
-      (discount) => discount.discountType === 'FLAT',
-    );
-
-    const percentageDiscount = product?.discounts?.find(
-      (discount) => discount.discountType === 'PERCENTAGE',
-    );
-
-    if (flatDiscount) {
-      return flatDiscount.value;
-    }
-  };
   const onPressedCard = () => {
     if (!isChecked) {
       dispatch(addSelectedCheckout(cart.id));
