@@ -12,7 +12,7 @@ import { PlusIcon } from '../icons/plusIcon';
 import { getToken } from '@/lib/server';
 import { createCategory } from '@/lib/category.handler';
 
-export default function ModalCreateCategory() {
+export default function ModalCreateCategory({fetchCategories}: {fetchCategories: () => Promise<void>}) {
   const [isOpen, setIsOpen] = useState(false);
   const [name, setName] = useState('');
   const [message, setMessage] = useState('');
@@ -36,7 +36,7 @@ export default function ModalCreateCategory() {
         ok ? 'Kategori berhasil dibuat!' : result.msg || 'Terjadi kesalahan!',
       );
 
-      if (ok) window.location.reload();
+      if (ok) fetchCategories()
       onClose();
     } catch (error) {
       setMessage('Gagal membuat kategori!');

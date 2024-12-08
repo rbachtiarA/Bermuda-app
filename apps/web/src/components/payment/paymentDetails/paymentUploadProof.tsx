@@ -19,7 +19,7 @@ const createSchema = yup.object({
         })
 })
 
-export default function PaymentUploadProof({data, setData,onClickCancelOrder}: {data:IOrder | null, setData:Dispatch<SetStateAction<IOrder | null>>, onClickCancelOrder:() => void}) {
+export default function PaymentUploadProof({data, isLoading, setData,onClickCancelOrder}: {data:IOrder | null,isLoading: boolean, setData:Dispatch<SetStateAction<IOrder | null>>, onClickCancelOrder:() => void}) {
     const onUploadFile = async (file: any, orderId: number) => {
         const { status, msg } = await uploadPaymentProof(file, orderId)
         
@@ -58,10 +58,10 @@ export default function PaymentUploadProof({data, setData,onClickCancelOrder}: {
                 {formik.errors.paymentProof && formik.touched.paymentProof ? (
                     <div className="text-sm text-danger">{`${formik.errors.paymentProof}`}</div>
                 ): null}
-                <Button type="submit" color="primary">Upload Payment Proof</Button>
+                <Button type="submit" color="primary" isDisabled={isLoading}>Upload Payment Proof</Button>
             </div>
         </form>    
-        <Button className='w-full' color="danger" variant="light" onPress={onClickCancelOrder}>Cancel Payment</Button> 
+        <Button className='w-full' color="danger" variant="light" onPress={onClickCancelOrder} isDisabled={isLoading}>Cancel Payment</Button> 
     </div>
   )
 }

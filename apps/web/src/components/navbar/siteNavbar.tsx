@@ -66,13 +66,14 @@ export default function SiteNavbar() {
     const getProductsSearch = async () => {
       const { products } = await getProducts(debounceSearch);
       setSearchData([...products]);
+      setIsLoading(false);
     };
     if (debounceSearch.length >= 3) {
       getProductsSearch();
     } else if (debounceSearch.length === 0) {
       setSearchData([]);
     }
-    setIsLoading(false);
+    
   }, [debounceSearch]);
 
   return (

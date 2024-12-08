@@ -9,8 +9,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hook";
 import { updatedCartQuantity } from "@/redux/slice/cartSlice";
 import { useDebounce } from "use-debounce";
 
-export default function CartQuantityInput({cart}: { cart: ICartItem}) {
-    const user = useAppSelector(state => state.user)
+export default function CartQuantityInput({cart, isLoading}: { cart: ICartItem, isLoading: 'DATA' | 'CHECKOUT' | null}) {
     const dispatch = useAppDispatch()
     //if product stock not in database yet, still readable for 0
     const productStock = cart.product?.stock![0] === undefined? 0 : cart.product?.stock![0].quantity!
@@ -80,11 +79,11 @@ export default function CartQuantityInput({cart}: { cart: ICartItem}) {
                 <p className="text-[10px]"><span>Sisa item: </span> {productStock}</p>
             </div>
             <div className="flex gap-1 w-full justify-end">
-                <Button size="sm" color={productStock < quantity? 'warning' : !isDebouncing? 'default': 'success'} isDisabled={quantity <= 1} isIconOnly onPress={() => onPressQuantityButton(-1)}><MinusIcon /></Button>
+                <Button size="sm" color={productStock < quantity? 'warning' : !isDebouncing? 'default': 'success'} isDisabled={quantity <= 1 || isLoading === 'CHECKOUT'} isIconOnly onPress={() => onPressQuantityButton(-1)}><MinusIcon /></Button>
                 <Input size="sm" type="number" color={!isDebouncing? 'default': 'success'}
-                    onChange={(e) => onChangeQuantityInput(e)} isDisabled={productStock === 0 } onBlur={onBlurQuantity}
+                    onChange={(e) => onChangeQuantityInput(e)} isDisabled={productStock === 0 || isLoading === 'CHECKOUT' } onBlur={onBlurQuantity}
                     value={`${quantity}`} min={1} className="w-[50px] no-arrow-input" />
-                <Button size="sm" color={!isDebouncing? 'default': 'success'} isDisabled={quantity >= productStock } isIconOnly onPress={() => onPressQuantityButton(1)}><PlusIcon /></Button>
+                <Button size="sm" color={!isDebouncing? 'default': 'success'} isDisabled={quantity >= productStock || isLoading === 'CHECKOUT'} isIconOnly onPress={() => onPressQuantityButton(1)}><PlusIcon /></Button>
             </div>
         </div>
     )

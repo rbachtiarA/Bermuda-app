@@ -151,6 +151,7 @@ export default function ProductManagement() {
                 onRowsPerPageChange={onRowsPerPageChange}
                 rowsPerPage={rowsPerPage}
                 hasSearchFilter={hasSearchFilter}
+                fetchCategories={fetchCategories}
               />
             }
             topContentPlacement="outside"

@@ -37,9 +37,9 @@ export const postOrder = async (
     },
   });
 
-  const { status, order, msg, error } = await res.json();
+  const { status, msg } = await res.json();
 
-  return { status, order, msg };
+  return { status, msg };
 };
 
 export const getMidtransToken = async (orderId: number) => {

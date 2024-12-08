@@ -1,6 +1,5 @@
 import { Button, Card, CardBody, Checkbox, Image, Skeleton, Tooltip } from "@nextui-org/react";
-import CartQuantityInput from "../cart/cartQuantityInput";
-import SkeleteonCartQuantityInput from "./SkeletonCartQuantityInput";
+import SkeleteonCartQuantityInput from "./skeletonCartQuantityInput";
 
 export default function SkeletonCartItemCard() {
   return (
@@ -17,8 +16,8 @@ export default function SkeletonCartItemCard() {
             </div>
             <div className="flex flex-col w-full h-full justify-between">
               <div>
-                <Skeleton className="text-balance w-1/5 md:max-w-none line-clamp-2 break-words" />
-                <Skeleton className="text-balance w-1/5 md:max-w-none line-clamp-2 break-words" />
+                <Skeleton className="text-balance w-2/5 h-5 md:max-w-none line-clamp-2 break-words" />
+                <Skeleton className="text-balance w-2/5 h-5 md:max-w-none line-clamp-2 break-words" />
               </div>
               <div className="w-full grid grid-cols-2 items-end">
                 <Tooltip content="Remove item" delay={0}>

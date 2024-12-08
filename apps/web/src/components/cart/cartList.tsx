@@ -28,7 +28,7 @@ export default function CartList() {
   const cart = useAppSelector((state) => state.cart);
   const store = useAppSelector((state) => state.store);
   const checkout = useAppSelector((state) => state.checkout);
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState<"DATA" | "CHECKOUT" | null>(null)
   const dispatch = useAppDispatch();
   const router = useRouter();
   const { isOpen, onOpenChange, onOpen } = useDisclosure();
@@ -58,8 +58,10 @@ export default function CartList() {
   };
 
   const onCheckout = async () => {
-    const res = await postCheckoutItems(checkout);
+    setIsLoading("CHECKOUT")
+    await postCheckoutItems(checkout);
     router.push('/cart/checkout');
+    setIsLoading(null)
   };
 
   const deleteMultipleItemCart = async () => {
@@ -76,10 +78,10 @@ export default function CartList() {
 
   useEffect(() => {
     const getData = async () => {
-      setIsLoading(true)
+      setIsLoading("DATA")
       const data = await getAllCartItems(user.id, store.id);
       dispatch(updatedCartFromDatabase(data));
-      setIsLoading(false)
+      setIsLoading(null)
     };
     dispatch(resetCheckout());
     getData();
@@ -132,8 +134,11 @@ export default function CartList() {
           </Card>
         </div>
         {
-          isLoading? 
-          <SkeletonCartItemCard /> :  
+          isLoading === 'DATA'? 
+          <div className='p-2'>
+            <SkeletonCartItemCard /> 
+          </div>
+          :
           <>
             {cart.length === 0 && (
               <div className="p-2">
@@ -148,7 +153,7 @@ export default function CartList() {
             {itemOnStock.length !== 0 && (
               <ul className="grid grid-rows-[auto] gap-y-4 p-2">
                 {itemOnStock.map((cartItem, idx) => (
-                  <CartCard key={idx} cart={cartItem} checkout={checkout} />
+                  <CartCard key={idx} cart={cartItem} checkout={checkout} isLoading={isLoading}/>
                 ))}
               </ul>
             )}
@@ -158,6 +163,7 @@ export default function CartList() {
                 <ul className="grid grid-rows-[auto] gap-y-4 p-2">
                   {itemSoldOut.map((cartItem, idx) => (
                     <CartCard
+                      isLoading={null}
                       key={idx}
                       cart={cartItem}
                       checkout={checkout}
@@ -175,6 +181,7 @@ export default function CartList() {
           totalPayment={totalSelectedItemsAmount}
           checkout={checkout}
           onCheckout={onCheckout}
+          isLoading={isLoading}
         />
       </div>
     </section>

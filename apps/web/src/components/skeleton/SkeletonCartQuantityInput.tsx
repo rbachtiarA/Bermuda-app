@@ -6,7 +6,7 @@ export default function SkeleteonCartQuantityInput() {
   return (
     <div className="flex flex-col md:flex-row justify-center items-center">
         <div className="flex w-full justify-end">
-            <Skeleton className="w-1/5 h-[10px]" />
+            <Skeleton className="w-full h-[10px]" />
         </div>
         <div className="flex gap-1 w-full justify-end">
             <Button size="sm" isDisabled isIconOnly> <MinusIcon /></Button>

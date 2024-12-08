@@ -71,7 +71,7 @@ export default function ProductCard({ stock }: { stock: IStocks }) {
         </CardHeader>
         <CardBody>
           <div className="flex flex-col w-full justify-between h-full">
-            <h2>{product.name}</h2>
+            <h2 className='line-clamp-2'>{product.name}</h2>
 
             {product.discounts?.some(
               (discount) => discount.discountType === 'FLAT',

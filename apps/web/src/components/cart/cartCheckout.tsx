@@ -1,7 +1,7 @@
 import currencyRupiah from '@/lib/rupiahCurrency'
-import { Button, Card, CardBody, CardFooter, CardHeader, Divider } from '@nextui-org/react'
+import { Button, Card, CardBody, CardFooter, CardHeader, Divider, Spinner } from '@nextui-org/react'
 import CartCheckoutItem from './cartCheckoutItem'
-export default function CartCheckout({ totalPayment, checkout, onCheckout }: { totalPayment: number, checkout: number[], onCheckout: () => void }) {
+export default function CartCheckout({ totalPayment, checkout, isLoading, onCheckout }: { isLoading: 'DATA' | 'CHECKOUT' | null ,totalPayment: number, checkout: number[], onCheckout: () => void }) {
     
     const nextCardDesktop = 
     <div className='sticky top-2 hidden md:block'>
@@ -18,7 +18,9 @@ export default function CartCheckout({ totalPayment, checkout, onCheckout }: { t
                 </div>
             </CardBody>
             <CardFooter className='flex w-full justify-end'>
-                <Button color='primary' size='md' isDisabled={checkout.length === 0} onPress={onCheckout}>Checkout</Button>
+                    <Button color='primary' size='md' isDisabled={checkout.length === 0 || !!isLoading} spinner={<Spinner color='default'/>} isLoading={isLoading === 'CHECKOUT'} onPress={onCheckout}>
+                        Checkout
+                    </Button>
             </CardFooter>
         </Card>
     </div>
@@ -32,7 +34,9 @@ export default function CartCheckout({ totalPayment, checkout, onCheckout }: { t
                         <p>Total : </p>
                         <p>{currencyRupiah(totalPayment)}</p>
                     </div>
-                    <Button color='primary' size='md' isDisabled={checkout.length === 0} onPress={onCheckout}>Checkout</Button>
+                    <Button color='primary' size='md' isDisabled={checkout.length === 0 || !!isLoading} spinner={<Spinner color='default'/>} isLoading={isLoading === 'CHECKOUT'} onPress={onCheckout}>
+                        Checkout
+                    </Button>
                 </div>
             </CardBody>
         </Card>
