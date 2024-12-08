@@ -14,6 +14,7 @@ export default function OrderList({}) {
     const [pages, setPages] = useState<number>(1)
     const [dateMinFilter, setDateMinFilter] = useState<number|null>(null)
     const [orderNameFilter, setOrderNameFilter] = useState('')
+    const [isLoading, setIsLoading] = useState(false)
     const filterOrder = useMemo(() => {
         let filteredData = data
         
@@ -44,12 +45,14 @@ export default function OrderList({}) {
 
     useEffect(() => {
         const getData = async () => {
+            setIsLoading(true)
             const res = await getUserOrders()
             const order = res.order
             
             if(order.length !== 0) {
                 setData([...order])
             }
+            setIsLoading(false)
         }
 
         getData()
@@ -61,7 +64,7 @@ export default function OrderList({}) {
                     <DateFilter setDateFilter={setDateMinFilter} />
                 </div>
             <div className='w-full'>
-                <OrderTable data={filterOrder.slice(10*(page - 1), page*10)} onReceive={onReceive}/>
+                <OrderTable isLoading={isLoading} data={filterOrder.slice(10*(page - 1), page*10)} onReceive={onReceive}/>
             </div>
             <div className='flex justify-end'>
                 <Pagination size='sm' showControls total={pages} initialPage={page} page={page} onChange={setPage}/>

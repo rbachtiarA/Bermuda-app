@@ -24,6 +24,7 @@ interface TopContentProps {
   onRowsPerPageChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   rowsPerPage: number;
   hasSearchFilter: boolean;
+  fetchCategories: () => Promise<void>
 }
 
 const TopCategory: React.FC<TopContentProps> = ({
@@ -33,6 +34,7 @@ const TopCategory: React.FC<TopContentProps> = ({
   setVisibleColumns,
   categoriesLength,
   onRowsPerPageChange,
+  fetchCategories
 }) => {
   const user = useAppSelector((state) => state.user);
   const role = user?.role;
@@ -87,7 +89,7 @@ const TopCategory: React.FC<TopContentProps> = ({
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <ModalCreateCategory />
+            <ModalCreateCategory fetchCategories={fetchCategories}/>
           </div>
         )}
       </div>

@@ -24,10 +24,12 @@ export default function CartCard({
   cart,
   checkout,
   soldOut,
+  isLoading
 }: {
   cart: ICartItem;
   checkout: number[];
   soldOut?: boolean;
+  isLoading: "DATA" | "CHECKOUT" | null
 }) {
   const dispatch = useAppDispatch();
   const checkRef = useRef<HTMLInputElement>(null);
@@ -80,13 +82,12 @@ export default function CartCard({
           />
           <div className="flex w-full gap-x-2 justify-center items-center">
             <div className="">
-              {/* <Skeleton className="rounded-lg w-[50px] h-[50px] md:w-[150px] md:h-[150px]" /> */}
               <Image
                 src={product?.imageUrl || `/default-product-image.png`}
                 alt={`${product?.name}`}
-                width={50}
-                height={50}
-                sizes="100vw"
+                // width={50}
+                // height={50}
+                // sizes="100vw"
                 className="rounded-lg w-[50px] h-[50px] md:w-[150px] md:h-[150px]"
               />
             </div>
@@ -101,7 +102,7 @@ export default function CartCard({
               </div>
               <div className="w-full grid grid-cols-2 items-end">
                 <Tooltip content="Remove item" delay={0}>
-                  <Button color="danger" onPress={onOpen} size="sm" isIconOnly>
+                  <Button color="danger" onPress={onOpen} size="sm" isIconOnly isDisabled={isLoading === 'CHECKOUT'}>
                     <Image
                       src={'/icon-trashcan.svg'}
                       alt="delete"
@@ -117,7 +118,7 @@ export default function CartCard({
                   title="Remove item from cart"
                   content={`Are you sure want to remove ${cart.product?.name} from your cart ?`}
                 />
-                <CartQuantityInput cart={cart} />
+                <CartQuantityInput cart={cart} isLoading={isLoading}/>
               </div>
             </div>
           </div>

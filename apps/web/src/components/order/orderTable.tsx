@@ -1,14 +1,14 @@
 'use client'
 import currencyRupiah from "@/lib/rupiahCurrency";
 import { IOrder } from "@/type/order";
-import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tooltip } from "@nextui-org/react";
+import { Spinner, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tooltip } from "@nextui-org/react";
 import { Key, useCallback, useEffect } from "react";
 import StatusCell from "./tableCell/statusCell";
 import PaymentMethodCell from "./tableCell/paymentMethodCell";
 import AdminActionsCell from "./tableCell/AdminActionsCell";
 import UserActionsCell from "./tableCell/UserActionsCell";
 
-export default function OrderTable({data, admin, onAccept, onCancel, onDeny, onShip, onReceive}:{admin?:boolean, data: IOrder[],
+export default function OrderTable({data, admin,isLoading, onAccept, onCancel, onDeny, onShip, onReceive}:{admin?:boolean, data: IOrder[], isLoading: boolean,
 	onDeny?:(orderId: number) => void, onAccept?:(orderId: number) => void, onCancel?:(orderId: number) => void, onShip?:(orderId: number) => void, onReceive?:(orderId: number) => void 
 }) {
 	const COLUMN_TABLE_USER = [
@@ -102,7 +102,10 @@ export default function OrderTable({data, admin, onAccept, onCancel, onDeny, onS
 					</TableColumn>
 				)}
 			</TableHeader>
-			<TableBody>
+			<TableBody
+				isLoading={isLoading}
+				loadingContent={<Spinner color="default" label="Fetching data..."/>}
+			>
 				{
 					data.map((item) => (
 						<TableRow key={item.id}>

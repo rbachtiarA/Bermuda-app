@@ -10,10 +10,10 @@ export default function SkeletonCheckoutItemCard() {
                 <div className={`flex gap-2 items-center w-full`}>
                     <Skeleton className="w-[80px] h-[80px] rounded-lg" />
                     <div className={`flex flex-col justify-evenly md:h-full w-full`}>
-                        <Skeleton className="w-1/5" />
-                        <div className="flex justify-between">
-                            <Skeleton className="w-1/5" />
-                            <Skeleton className="w-1/5" />
+                        <Skeleton className="w-2/5 h-4" />
+                        <div className="flex justify-between flex-col md:flex-row">
+                            <Skeleton className="w-2/5 h-4" />
+                            <Skeleton className="w-2/5 h-4" />
                         </div>
                     </div>
                 </div>
