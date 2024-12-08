@@ -138,7 +138,7 @@ export default function CartList() {
           <div className='p-2'>
             <SkeletonCartItemCard /> 
           </div>
-          :  
+          :
           <>
             {cart.length === 0 && (
               <div className="p-2">
