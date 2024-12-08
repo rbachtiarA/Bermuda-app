@@ -26,7 +26,7 @@ export class ProductController {
 
       let filter: Prisma.ProductWhereInput = {};
       if (search) {
-        filter.name = { contains: search as string };
+        filter.name = { contains: search as string, mode: 'insensitive' };
       }
       if (categories && categories !== 'all') {
         filter.categories = {

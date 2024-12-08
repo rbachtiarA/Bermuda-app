@@ -1,33 +1,52 @@
 import { Request, Response } from 'express';
 import prisma from '@/prisma';
 import { formatDateMidtrans } from '@/helpers/midtrans-dateformat';
-import  midtrans  from '../services/midtrans.js'
+import  midtrans  from '../services/midtrans'
 
 export class CreateOrderController {
   async createNewOrder(req: Request, res: Response) {
-    let codeError;
+    let codeError = {code: 'SERVER_ERROR', details: 'Something is wrong, please try again later'}
+    //expiredDate
+    const HOURS_EXPIRED = 1
+    const HOURS_EXPIRED_IN_MS = 60 * 60 * HOURS_EXPIRED * 1000
     try {
         const { totalAmount, shippingCost, addressId, methodPayment, storeId, discountId, discountAmount } = req.body
         const userId = req.user?.id
-        //get user data
+        
+        //get user data & checkout items
         const user = await prisma.user.findUnique({
-            where: { id: +userId! }
-            
-        })
-        if(!user) throw 'User is invalid'
-
-        //get user checkout item
-        const checkoutItem = await prisma.checkout.findUnique({
-            where: { userId: userId },
+            where: { id: +userId! },
             include: {
-                CartItem: {
+                checkout: {
                     include: {
-                        product: true
+                        CartItem: {
+                            include: {
+                                product: {
+                                    include: {
+                                        stock: {
+                                            where: {
+                                                storeId: +storeId
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                orders: {
+                    where: {
+                        status: 'PendingPayment'
                     }
                 }
             }
         })
-        if(!checkoutItem) throw 'Checkout is invalid'
+        
+        if(!user) throw 'User is invalid'
+        if(user.orders.length !== 0) {
+            codeError = { code: 'ACTIVE_PAYMENT' , details: 'You have order that need to be paid first, select "Account" then go to "Active Payment"'}
+            throw 'Pending order found'
+        }
 
         let discountBOGO = null
         if(discountId) {
@@ -37,7 +56,7 @@ export class CreateOrderController {
             })
         }
         //convert checkout item to array of {productId, quantity, price, }
-        const orderItem = checkoutItem?.CartItem.map((item) => {
+        const orderItem = user.checkout?.CartItem?.map((item) => {
             if(discountBOGO) {
                 if(item.productId === discountBOGO.productId) {
                     item.quantity++
@@ -48,46 +67,41 @@ export class CreateOrderController {
         
         if(!orderItem) throw 'Order is Invalid'
 
-        
-        const order = await prisma.$transaction(async (tx) => {
-            //expiredDate
-            const HOURS_EXPIRED = 1
-            const HOURS_EXPIRED_IN_MS = 60 * 60 * HOURS_EXPIRED * 1000
-
+        const { order, token } = await prisma.$transaction(async (tx) => {
+            
             //reduce quantity stock
             for (const item of orderItem) {
-                const existStock = await tx.stock.findFirst({
-                    where: {
-                        AND: {
-                            productId: item.productId,
-                            storeId: +storeId
-                        }
-                    },
-                    include: {
-                        product: true
-                    }
-                })
+                
+                //select user checkout item stock from store origins
+                const existStock = user.checkout?.CartItem.find((item) => item.product.stock[0].storeId === storeId)
+
+                //check if item stock exist in store
                 if(!existStock) {
                     codeError = {code: 'ITEM_INSUFFICIENT', details: `store doesnt have stock`}
                     throw 'Some product stock is invalid'
                 }
-                if(existStock!.quantity - item.quantity < 0) {
-                    codeError = {code: 'ITEM_INSUFFICIENT', details: `${existStock.product.name} is insuffficient`}
-                    throw 'Insufficient product stock'
-                } 
 
-                await tx.stock.update({
+                //update stock with decrement of item quantity
+                const stock = await tx.stock.update({
                     where: {
-                        id: existStock!.id
+                        id: existStock.product.stock[0].id
                     },
                     data: {
-                        quantity: existStock!.quantity - item.quantity
+                        quantity: {
+                            decrement: item.quantity
+                        }
                     }
-                })   
+                })
+                
+                //check is stock sufficient
+                if(stock.quantity < 0) {
+                    codeError = {code: 'ITEM_INSUFFICIENT', details: `${existStock.product.name} is insuffficient`}
+                    throw 'Insufficient product stock'
+                }
             }
 
             //create order, payment, and orderItem
-            const order = await tx.order.create({
+            const neworder = await tx.order.create({
                 data: {
                     userId: user.id,
                     addressId,
@@ -114,19 +128,15 @@ export class CreateOrderController {
                     }
                 }
             })
-            
-            //creating midtrans item details
-                // const itemDetails = checkoutItem.CartItem.map((item) => {
-                //     return { id: item.productId, name: item.product.name.substring(0,49), quantity: item.quantity, price: item.product.price }
-                // })
 
             //if methodPayment is Gateway, generate token midtrans
-            if(order && methodPayment === 'Gateway') {
+            let token = null
+            if(neworder && methodPayment === 'Gateway') {
                 
                 //midtrans body
                 const parameter = {
                     transaction_details: {
-                        order_id: `${process.env.PREFIX_ORDERNAME_MIDTRANS}${order.id}`,
+                        order_id: `${process.env.PREFIX_ORDERNAME_MIDTRANS}${neworder.id}`,
                         gross_amount: totalAmount
                     },
                     customer_details: {
@@ -140,30 +150,32 @@ export class CreateOrderController {
                 }
                 
                 const midtransTransaction = await midtrans.snap.createTransaction(parameter)
-                
-                if(!midtransTransaction) throw 'error on creating midtrans token'
-                const payment = await tx.payment.update({
+                if(!midtransTransaction) {
+                    codeError = {code: 'SERVER_ERROR', details:'Something Wrong, please try again'}
+                    throw 'error on creating midtrans token'
+                }
+                token = midtransTransaction.token
+                await tx.payment.update({
                     where: {
-                        orderId: order.id
+                        orderId: neworder.id
                     },
                     data: {
                         token: midtransTransaction.token
                     }
                 })
-            }
-
-            return { order }
+            }            
+            return { order: neworder, token: token }
         })
         
         return res.status(201).send({
-            status: 'order success',
-            order
+            status: 'ok',
+            msg: methodPayment === 'Gateway'? token : 'Success create new order'
         })
     } catch (error) {
         return res.status(400).send({
             status: 'error',
             msg: codeError,
-            error: `${error}`
+            // error: `${error}`
         })
     }
 }

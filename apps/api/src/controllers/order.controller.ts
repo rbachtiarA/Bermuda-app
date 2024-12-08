@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import midtrans from '../services/midtrans.js';
+import midtrans from '../services/midtrans';
 import prisma from '@/prisma';
 import cancelOrder from '@/helpers/cancelOrder';
 import { cloudinaryUpload } from '@/middleware/cloudinary';
@@ -163,11 +163,12 @@ export class OrderController {
 
       const existOrder = await prisma.order.findFirst({
         where: {
-          AND: {
             id: +orderId,
             userId: +userId!,
+            status: {
+              not: 'Cancelled'
+            }
           },
-        },
         include: {
           Payment: true,
           Store: true,
@@ -190,7 +191,7 @@ export class OrderController {
       if (existOrder.paymentProofUrl !== null)
         throw 'You already have uploaded payment proof';
 
-      await cancelOrder(orderId);
+      await cancelOrder(existOrder.id);
 
       return res.status(200).send({
         status: 'ok',
