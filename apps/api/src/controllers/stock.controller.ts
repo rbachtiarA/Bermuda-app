@@ -15,6 +15,9 @@ export class StockController {
       }
 
       const newStock = await prisma.stock.create({
+        include: {
+          product: true
+        },
         data: {
           storeId: Number(storeId),
           productId: Number(productId),

@@ -1,7 +1,7 @@
 import cancelOrder from "@/helpers/cancelOrder";
 import prisma from "@/prisma";
 import { Request, Response } from "express";
-import midtrans from '../services/midtrans.js'
+import midtrans from '../services/midtrans'
 import confirmedOrder from "@/helpers/confirmedOrder";
 export class MidtransController {
     // get midtrans transaction status, from 'orderId', 
