@@ -1,5 +1,5 @@
 import { Button, Card, CardBody, Checkbox, Image, Skeleton, Tooltip } from "@nextui-org/react";
-import SkeleteonCartQuantityInput from "./tempskeletonCartQuantityInput";
+import SkeleteonCartQuantityInput from "./skeletonCartQuantityInput";
 
 export default function SkeletonCartItemCard() {
   return (
