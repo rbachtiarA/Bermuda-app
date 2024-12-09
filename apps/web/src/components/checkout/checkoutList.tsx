@@ -6,6 +6,7 @@ import { ICartItem } from "@/type/cart"
 import { Card, CardBody, CardHeader, Image, Skeleton } from "@nextui-org/react"
 import { useEffect, useMemo, useState } from "react"
 import SkeletonCheckoutItemCard from "../skeleton/skeletonCheckoutItemCard"
+
 export default function CheckoutList({ updateItemTotalPayment }: { updateItemTotalPayment: (totalPayment: number) => void }) {
     const store = useAppSelector(state => state.store)
     const [checkoutItems, setCheckoutItems] = useState<ICartItem[]>([])

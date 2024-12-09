@@ -1,5 +1,4 @@
 'use client';
-
 import { getCategories } from '@/lib/category.handler';
 import { ICategory } from '@/type/category';
 import { useEffect, useState } from 'react';
