@@ -7,6 +7,7 @@ import PaymentSuccess from "./paymentSuccess"
 import PaymentCancel from "./paymentCancel"
 import PaymentEmpty from "./paymentEmpty"
 import PaymentCardDetails from "./paymentCardDetails"
+import { toast } from "react-toastify"
 
 export default function PaymentCard() {
     const [data, setData] = useState<IOrder | null>(null)
@@ -21,8 +22,9 @@ export default function PaymentCard() {
     
     const onClickCancelOrder = async () => {
         setIsLoading(true)
-        const { msg } = await cancelOrder(data?.id!)
-        if(msg === 'FOUND') {
+        const { status, msg } = await cancelOrder(data?.id!)
+        if(status === 'error') toast.error(msg)
+        if(status === 'ok') {
             setData({...data!, status:"Cancelled"})
         }
         setIsLoading(false)

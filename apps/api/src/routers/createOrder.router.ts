@@ -1,4 +1,3 @@
-import { CategoryController } from "@/controllers/category.controller";
 import { CreateOrderController } from "@/controllers/createOrder.controller";
 import { verifyToken } from "@/middleware/token";
 import { Router } from "express";

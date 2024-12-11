@@ -38,7 +38,7 @@ export const postOrder = async (
   });
 
   const { status, msg } = await res.json();
-
+  
   return { status, msg };
 };
 
@@ -60,7 +60,7 @@ export const getMidtransToken = async (orderId: number) => {
   return msg;
 };
 
-export const getMidtransStatus = async (orderId: number) => {
+export const getMidtransStatusAPI = async (orderId: number) => {
   const token = await getToken();
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_API_URL}midtrans/status/${orderId}`,
@@ -74,16 +74,21 @@ export const getMidtransStatus = async (orderId: number) => {
   );
   const {
     status,
-    midtrans,
+    msg,
+    data,
   }: {
-    status: 'ok' | 'NOT_FOUND';
-    midtrans: 'pending' | 'expire' | 'settlement' | null;
+    status: 'ok' | 'NOT_FOUND' | 'error';
+    msg: string;
+    data: string;
     error: string;
   } = await res.json();
 
-  // status = NOT_FOUND || ok, midtrans = 'pending' | 'expire' | 'settlement' | null
-  return { status, midtrans };
+  // status = NOT_FOUND || ok, data = 'pending' | 'expire' | 'settlement' | null
+  return { status, msg, data };
 };
+
+
+
 export const getOrderPendingPayment = async () => {
   const token = await getToken();
   const res = await fetch(
@@ -148,7 +153,7 @@ export const cancelOrder = async (orderId: number) => {
   );
 
   const { status, msg, error } = await res.json();
-  return { status, msg, error };
+  return { status, msg };
 };
 
 export const uploadPaymentProof = async (values: any, orderId: number) => {
