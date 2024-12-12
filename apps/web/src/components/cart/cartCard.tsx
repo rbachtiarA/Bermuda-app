@@ -46,11 +46,10 @@ export default function CartCard({
   };
 
   const onRemovedItem = async (cartItemId: number) => {
-    const checked = false;
     const { data } = await deleteCartItem([cartItemId]);
     dispatch(removedFromCart(data));
     dispatch(removeSelectedCheckout(data));
-    setIsChecked(checked);
+    setIsChecked((checked) => !checked);
   };
 
   useEffect(() => {
@@ -63,31 +62,18 @@ export default function CartCard({
       <CardBody>
         <div className="flex gap-4">
           <Checkbox
-            size="sm"
+            size="md"
             ref={checkRef}
             value={`${cart.productId}`}
             isDisabled={soldOut}
             isSelected={isChecked}
             onClick={onPressedCard}
-            className="md:hidden"
-          />
-          <Checkbox
-            size="lg"
-            ref={checkRef}
-            value={`${cart.productId}`}
-            isDisabled={soldOut}
-            isSelected={isChecked}
-            onClick={onPressedCard}
-            className="hidden md:block"
           />
           <div className="flex w-full gap-x-2 justify-center items-center">
             <div className="">
               <Image
                 src={product?.imageUrl || `/default-product-image.png`}
                 alt={`${product?.name}`}
-                // width={50}
-                // height={50}
-                // sizes="100vw"
                 className="rounded-lg w-[50px] h-[50px] md:w-[150px] md:h-[150px]"
               />
             </div>
