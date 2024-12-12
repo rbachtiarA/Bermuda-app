@@ -17,12 +17,17 @@ export default function CartQuantityInput({cart, isLoading}: { cart: ICartItem, 
     const [debouncedQuantity] = useDebounce(quantity, 1000)
     // isDebouncing for css purpose, when isDebounce it will change input bg color till debouncing finish
     const [isDebouncing, setIsDebouncing] = useState(false)
+    //prevent useEffect first render to reduce needless API call    
+    const [isFirstRender, setIsFirstRender] = useState(true)
     
     const updatedQuantity = async (qty: number) => {
         const productId = cart.product?.id
-        if(productId) {
+        if(productId && !isFirstRender) {
             await updateCartItem(productId, qty)
             dispatch(updatedCartQuantity({productId, quantity: debouncedQuantity}))
+        }
+        if(isFirstRender) {
+            setIsFirstRender(false)
         }
         setIsDebouncing(false)
     }
