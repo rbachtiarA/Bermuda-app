@@ -1,7 +1,6 @@
-import { ICreateAddress, IFetchCity, ILocation } from '@/type/address';
+'use server'
+import { ICreateAddress, IFetchCity } from '@/type/address';
 import { getToken } from './server';
-import { useAppDispatch } from '@/redux/hook';
-import { setLocation } from '@/redux/slice/userSlice';
 
 export const getUserAddressess = async (userId: number) => {
   const res = await fetch(
@@ -9,7 +8,8 @@ export const getUserAddressess = async (userId: number) => {
     { next: { revalidate: 1 } },
   );
   const { status, data } = await res.json();
-
+  console.log('Server components?');
+  
   return data;
 };
 

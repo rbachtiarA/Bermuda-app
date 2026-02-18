@@ -11,6 +11,7 @@ export default function CheckoutList({ updateItemTotalPayment }: { updateItemTot
     const store = useAppSelector(state => state.store)
     const [checkoutItems, setCheckoutItems] = useState<ICartItem[]>([])
     const [isLoading, setIsLoading] = useState(false)
+    
     const productStockNotReady = useMemo(() => {
         const stocks = checkoutItems.map((item) => item.product?.stock)
         const stocksInStore = stocks.map((stock) => stock?.find((item) => item.storeId === store.id))
@@ -24,19 +25,18 @@ export default function CheckoutList({ updateItemTotalPayment }: { updateItemTot
         const rslt = productNotReady.map((item) => item.productId) 
         return rslt
     }, [store.id])
-    const getData = async () => {
-        setIsLoading(true)
-        const data:  ICartItem[] = await getCheckoutItems()
-        
-        setCheckoutItems([...data])
-        const total = data.reduce((total, item) => total+item.quantity*item.product?.price! ,0)
-        updateItemTotalPayment(total)
-        setIsLoading(false)        
-    }
 
     useEffect(() => {
+        const getData = async () => {
+            setIsLoading(true)
+            const data:  ICartItem[] = await getCheckoutItems()
+            
+            setCheckoutItems([...data])
+            const total = data.reduce((total, item) => total+item.quantity*item.product?.price! ,0)
+            updateItemTotalPayment(total)
+            setIsLoading(false)        
+        }
         getData()        
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
     return (
         <>

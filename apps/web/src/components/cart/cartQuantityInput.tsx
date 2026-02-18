@@ -1,6 +1,6 @@
 'use client'
 import { Button, Input } from "@nextui-org/react";
-import { ChangeEvent, ReactNode, useEffect, useState } from "react";
+import { ChangeEvent, ReactNode, useCallback, useEffect, useState } from "react";
 import PlusIcon from "../icon/PlusIcon";
 import MinusIcon from "../icon/MinusIcon";
 import { updateCartItem } from "@/lib/cart";
@@ -21,27 +21,29 @@ export default function CartQuantityInput({cart, isLoading}: { cart: ICartItem, 
     const [isFirstRender, setIsFirstRender] = useState(true)
     
     const updatedQuantity = async (qty: number) => {
-        const productId = cart.product?.id
-        if(productId && !isFirstRender) {
-            await updateCartItem(productId, qty)
-            dispatch(updatedCartQuantity({productId, quantity: debouncedQuantity}))
+            const productId = cart.product?.id
+            if(productId && !isFirstRender) {
+                await updateCartItem(productId, qty)
+                dispatch(updatedCartQuantity({productId, quantity: debouncedQuantity}))
+            }
+            if(isFirstRender) {
+                setIsFirstRender(false)
+            }
+            setIsDebouncing(false)
         }
-        if(isFirstRender) {
-            setIsFirstRender(false)
-        }
-        setIsDebouncing(false)
-    }
 
     // minus / plus button is pressed add value to quantity
-    const onPressQuantityButton = (val:number) => {
-        const tempQuantity = quantity+val
-        //if quantity > productStock, instant change quantity to product stock
-        if(tempQuantity > productStock) {
-            setQuantity(productStock)
-        }else if(tempQuantity > 0) {
-            setQuantity(tempQuantity)
-        } 
-    }
+    const onPressQuantityButton = useCallback(
+        (val:number) => {
+            const tempQuantity = quantity+val
+            //if quantity > productStock, instant change quantity to product stock
+            if(tempQuantity > productStock) {
+                setQuantity(productStock)
+            }else if(tempQuantity > 0) {
+                setQuantity(tempQuantity)
+            } 
+        },[quantity]
+    ) 
 
     // if input change manually
     const onChangeQuantityInput = (e: ChangeEvent<HTMLInputElement>) => {
@@ -71,16 +73,17 @@ export default function CartQuantityInput({cart, isLoading}: { cart: ICartItem, 
 
     useEffect(() => {
         if(productStock < quantity && productStock !== 0) {
-            updatedQuantity(productStock)
+            updatedQuantity(productStock !== 0 ? productStock : 1)
             setQuantity(productStock)
         }
+        setIsDebouncing(false)
     },[])
 
     function ButtonControl({children, quantityControl, isDisabled}: {children: ReactNode, quantityControl: number, isDisabled: boolean}) {
         return (
             <Button size="sm" 
-                color={!isDebouncing? 'default': 'success'} 
-                isDisabled={isDisabled || isLoading === 'CHECKOUT'} isIconOnly 
+                color={isDebouncing? 'success': 'default'} 
+                isDisabled={isDisabled || isLoading === 'CHECKOUT' || productStock === 0} isIconOnly 
                 onPress={() => onPressQuantityButton(quantityControl)}>
                     {children}
             </Button>

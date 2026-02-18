@@ -1,24 +1,45 @@
-'use client'
+'use client';
 import { BreadcrumbItem, Breadcrumbs } from '@nextui-org/react';
-import { usePathname, useRouter } from 'next/navigation'
-import React from 'react'
+import { usePathname, useRouter } from 'next/navigation';
+import React from 'react';
 
-export default function TitleBreadcrumbs({ title, ...props }: {title:string, className?: string}) {
-    const pathName = usePathname()
-    const router = useRouter()
-    const splitPath = pathName.split('/')
-    
+interface Props {
+  title: string;
+  label?: string;
+  className?: string;
+}
+
+export default function TitleBreadcrumbs({ title, label, ...props }: Props) {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const segments = pathname.split('/').filter(Boolean);
+
   return (
     <div {...props}>
-        <Breadcrumbs size='lg'>
-            {pathName.split('/').map((val, idx) => (
-                <BreadcrumbItem 
-                  className='font-bold' size='lg' key={`${val}${idx}`} 
-                  onPress={() => router.push(splitPath.slice(0, idx+1).length !== 1? splitPath.slice(0, idx+1).join('/') :'/')}>
-                    {idx === 0? 'Home ' : `${splitPath[idx].slice(0,1).toUpperCase()+splitPath[idx].slice(1)} `}
-                  </BreadcrumbItem>
-            ))}
-        </Breadcrumbs>
+      <Breadcrumbs size="lg">
+        <BreadcrumbItem className="font-bold" onPress={() => router.push('/')}>
+          Home
+        </BreadcrumbItem>
+
+        {segments.map((segment, idx) => {
+          const isLast = idx === segments.length - 1;
+
+          const href = '/' + segments.slice(0, idx + 1).join('/');
+
+          const formatted = segment.charAt(0).toUpperCase() + segment.slice(1);
+
+          return (
+            <BreadcrumbItem
+              key={`${segment}-${idx}`}
+              className="font-bold"
+              onPress={() => !isLast && router.push(href)}
+            >
+              {isLast && label ? label : formatted}
+            </BreadcrumbItem>
+          );
+        })}
+      </Breadcrumbs>
     </div>
-  )
+  );
 }

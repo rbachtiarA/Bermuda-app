@@ -18,10 +18,11 @@ export default function CartCheckout({isLoading, setIsLoading, checkout, cart}:
     const onCheckout = async () => {
         setIsLoading("CHECKOUT")
         const res = await postCheckoutItems(checkout);
-        if(res.ok) {
+        if(!res.ok) {
+            setIsLoading(null)
+        } else {
             router.push('/cart/checkout');
         }
-        setIsLoading(null)
     };
     
     function CardDesktopComponents() {

@@ -12,16 +12,25 @@ export default function PaymentTotalList(
         discount: IDiscount | null, discountCut: number, itemTotalPayment:number, travelPayment: number | null, isLoading: boolean, methodPayment: 'Transfer' | 'Gateway' | null, isPaymentInvalid: boolean,
         isError:string | null,updateMethodPayment: (paymentMethod:string) => void, onBuy: () => void, onDiscount: (discount: IDiscount| null) => void
     }) {
-    
+    const totalTransaction = (itemTotalPayment? itemTotalPayment : 0) + (travelPayment? travelPayment : 0) - (discountCut? discountCut : 0)
     const paymentMethodOptions = () => {
         return (
             <select className={`p-2 w-full bg-slate-100 rounded-sm`} onChange={(e) => updateMethodPayment(e.currentTarget.value)}>
                 <option value={''}>- Choose payment method -</option>
-                <option value={'Transfer'}>Transfer</option>
+                <option value={'Transfer'}>Manual</option>
                 <option value={'Gateway'}>Payment Gateway</option>
             </select>
         )
     }
+
+    function ItemDetails({label, price, className, ...props}: {label: string, price: number | null, className?: string}) {
+        return (
+            <div className={`flex gap-4 justify-between ${className}`} {...props}>
+                <p>{label}</p>
+                <p>{price? currencyRupiah(price): '-'}</p>
+            </div>
+        )
+    } 
 
     return (
         <Card className="md:sticky top-2">
@@ -30,23 +39,11 @@ export default function PaymentTotalList(
             </CardHeader>
 
             <CardBody>
-                <div className="flex gap-4 justify-between">
-                    <p>Total items price</p>
-                    <p>{itemTotalPayment? currencyRupiah(itemTotalPayment): '-'}</p>
-                </div>
-                <div className="flex justify-between gap-4">
-                    <p>Discount cut</p>
-                    <p>{discountCut? `- ${currencyRupiah(discountCut)}` : '-'}</p>
-                </div>
-                <div className="flex justify-between gap-4">
-                    <p>Shipping Cost</p>
-                    <p>{travelPayment? currencyRupiah(travelPayment) : '-'}</p>
-                </div>
+                <ItemDetails label="Total items price" price={itemTotalPayment} />
+                <ItemDetails label="Discount Cut" price={-discountCut} />
+                <ItemDetails label="Shipping Cost" price={travelPayment} />
                 <Divider />
-                <div className="flex gap-4 justify-between font-bold my-2">
-                    <p>Total Transaction</p>
-                    <p>{currencyRupiah((itemTotalPayment? itemTotalPayment : 0) + (travelPayment? travelPayment : 0) - (discountCut? discountCut : 0))}</p>
-                </div>
+                <ItemDetails label="Total Transaction" price={totalTransaction} className="font-bold my-2"/>
                 <Divider />
             </CardBody>
             <CardFooter className="flex flex-col gap-1">
@@ -59,7 +56,7 @@ export default function PaymentTotalList(
                         <Divider />    
                     </div>
                         {isError !== null && <p className="text-danger text-wrap md:max-w-[270px]">{isError}</p>}
-                        <Button color="primary" className="my-2" onPress={onBuy} fullWidth isDisabled={isPaymentInvalid || isLoading}>{isLoading? <Spinner color="default"/> :'Buy now' }</Button>
+                        <Button color="primary" className="my-2" onPress={onBuy} spinner={<Spinner color="default" />} fullWidth isDisabled={isPaymentInvalid} isLoading={isLoading}>{isLoading? 'Creating...' :'Buy now' }</Button>
             </CardFooter>
         </Card>
     )
