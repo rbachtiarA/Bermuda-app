@@ -130,6 +130,32 @@ export const getProductById = async (
   }
 };
 
+export const getProductBySlug = async (
+  slug: string,
+): Promise<IProduct | null> => {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_API_URL}product/slug/${slug}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.msg || 'Failed to fetch product');
+    }
+    const data = await res.json();
+    return data.product;
+  } catch (err) {
+    console.error('Error fetching product:', err);
+    throw err;
+  }
+};
+
 export const deleteProduct = async (
   data: { id: number },
   token: string | undefined,

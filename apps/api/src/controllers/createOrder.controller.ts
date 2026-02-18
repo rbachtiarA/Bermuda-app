@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import prisma from '@/prisma';
 import { formatDateMidtrans } from '@/helpers/midtrans-dateformat';
-import  midtrans  from '../services/midtrans'
+import { createMidtransTransaction } from '@/services/midtransAPI';
 
 export class CreateOrderController {
   async createNewOrder(req: Request, res: Response) {
@@ -41,7 +41,6 @@ export class CreateOrderController {
                 }
             }
         })
-        
         if(!user) throw 'User is invalid'
         if(user.orders.length !== 0) {
             codeError = { code: 'ACTIVE_PAYMENT' , details: 'You have order that need to be paid first, select "Account" then go to "Active Payment"'}
@@ -67,8 +66,8 @@ export class CreateOrderController {
         
         if(!orderItem) throw 'Order is Invalid'
 
-        const { order, token } = await prisma.$transaction(async (tx) => {
-            
+        const { order, token  } = await prisma.$transaction(async (tx) => {
+            let tempToken = null
             //reduce quantity stock
             for (const item of orderItem) {
                 
@@ -130,7 +129,6 @@ export class CreateOrderController {
             })
 
             //if methodPayment is Gateway, generate token midtrans
-            let token = null
             if(neworder && methodPayment === 'Gateway') {
                 
                 //midtrans body
@@ -144,27 +142,24 @@ export class CreateOrderController {
                     },
                     expiry: {
                         start_time: formatDateMidtrans(new Date(Date.now())),
-                        unit: "hour",
+                        unit: 'hour',
                         duration: HOURS_EXPIRED
                     }
                 }
                 
-                const midtransTransaction = await midtrans.snap.createTransaction(parameter)
-                if(!midtransTransaction) {
-                    codeError = {code: 'SERVER_ERROR', details:'Something Wrong, please try again'}
-                    throw 'error on creating midtrans token'
-                }
-                token = midtransTransaction.token
+                const {token, redirect_url} = await createMidtransTransaction(parameter)
                 await tx.payment.update({
                     where: {
                         orderId: neworder.id
                     },
                     data: {
-                        token: midtransTransaction.token
+                        token: token
                     }
                 })
+                tempToken = token
+                
             }            
-            return { order: neworder, token: token }
+            return { order: neworder, token: tempToken }
         })
         
         return res.status(201).send({

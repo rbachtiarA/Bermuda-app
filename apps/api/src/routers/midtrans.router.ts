@@ -13,7 +13,7 @@ export class MidtransRouter {
     }
 
     private initializeRoutes(): void {
-        this.router.get('/status/:orderId', verifyToken, this.midtransController.getMidtransStatus);
+        this.router.get('/status/:orderId',verifyToken, this.midtransController.getMidtransStatusAPI);
     }
 
     getRouter(): Router {

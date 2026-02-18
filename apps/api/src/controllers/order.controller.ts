@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import midtrans from '../services/midtrans';
 import prisma from '@/prisma';
 import cancelOrder from '@/helpers/cancelOrder';
 import { cloudinaryUpload } from '@/middleware/cloudinary';
+import { postCancelMidtransAPI } from '@/services/midtransAPI';
 
 export class OrderController {
   async updatePaymentProof(req: Request, res: Response) {
@@ -180,16 +180,12 @@ export class OrderController {
         Date.parse(String(existOrder.Payment?.expiredDate)) < Date.now();
       if (existOrder.Payment?.paymentMethod === 'Gateway' && !isExpired) {
         //cancel midtrans
-        try {
-          const midtransStatus = await midtrans.snap.transaction.cancel(
-            `${process.env.PREFIX_ORDERNAME_MIDTRANS}${existOrder.id}`,
-          );
-        } catch (error) {
-          return res.status(200).send({ status: 'ok', msg: 'NOT_FOUND' });
-        }
+        const order_name = `${process.env.PREFIX_ORDERNAME_MIDTRANS}${existOrder.id}`
+        const midtransTransaction = await postCancelMidtransAPI(order_name)
+        if(midtransTransaction.code !== 201) throw midtransTransaction.msg
       }
-      if (existOrder.paymentProofUrl !== null)
-        throw 'You already have uploaded payment proof';
+
+      if (existOrder.paymentProofUrl !== null && existOrder.Payment?.paymentMethod === 'Transfer') throw 'You already have uploaded payment proof';
 
       await cancelOrder(existOrder.id);
 

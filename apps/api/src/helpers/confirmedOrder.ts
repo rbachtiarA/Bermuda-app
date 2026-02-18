@@ -1,40 +1,52 @@
 import prisma from "@/prisma"
 
 export default async function confirmedOrder(orderId: number) {
-
-    await prisma.$transaction(async (tx) => {
-        //const order status
-        const existOrder = await tx.order.findUnique({
-            where: {id: +orderId},
-            include: {orderItems: true}
-        })
-        if(!existOrder) throw 'Order not exist'
-        // code for update store quantity with cancelled order Items
-        const cancelledOrderItems = existOrder.orderItems.map((item) => {
-            return { productId: item.productId, quantity: item.quantity }
-        })
-        
-        // update all quantity stock back to store and update Stock history
-        for (const item of cancelledOrderItems) {
-            const existStock = await tx.stock.findFirst({
+        await prisma.$transaction(async (tx) => {
+            //const order status
+            const updatedOrder = await tx.order.update({
                 where: {
-                    AND: {
-                        productId: item.productId,
-                        storeId: existOrder.storeId
+                    id: orderId
+                },
+                data: {
+                    status: 'Proccessed',
+                    Payment: {
+                        update: {
+                            confirmedAt: new Date(Date.now()),
+                            isConfirmed: true
+                        }
                     }
+                },
+                include: {
+                    orderItems: true
                 }
             })
-            if(!existStock) throw 'Something wrong when addedd product quantity to store'
-
-            if(existOrder?.status === 'Proccessed') {
-                await tx.stockHistory.create({
-                    data: {
-                        changeType: 'DECREASE',
-                        stockId: existStock.id,
-                        quantity: item.quantity
+            if(!updatedOrder) throw 'Order not exist'
+            // code for update store quantity with confirmed order Items
+            const cancelledOrderItems = updatedOrder.orderItems.map((item) => {
+                return { productId: item.productId, quantity: item.quantity }
+            })
+            
+            // update all quantity stock to reduce sold item and update Stock history
+            for (const item of cancelledOrderItems) {
+                const existStock = await tx.stock.findFirst({
+                    where: {
+                        AND: {
+                            productId: item.productId,
+                            storeId: updatedOrder.storeId
+                        }
                     }
                 })
-            }
-        }        
-    })
+                if(!existStock) throw 'Something wrong when creating product quantity to store stock history' 
+    
+                if(updatedOrder?.status === 'Proccessed') {
+                    await tx.stockHistory.create({
+                        data: {
+                            changeType: 'DECREASE',
+                            stockId: existStock.id,
+                            quantity: item.quantity
+                        }
+                    })
+                }
+            }        
+        })    
 }

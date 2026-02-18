@@ -22,10 +22,8 @@ export default function AddressessList({ selectedAddress, updateSelectedAddress 
         if(!user.selectedAddress) updateSelectedAddress(data.find((item) => item.isPrimary))
     }
 
-    //load data when rendered
     useEffect(() => {
         getData()           
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(() => {

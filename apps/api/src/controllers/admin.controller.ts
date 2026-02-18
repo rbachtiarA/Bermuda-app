@@ -59,21 +59,6 @@ export class AdminController {
             const { orderId } = req.body
             const existOrder = await getExistingOrder(orderId)
             if(!existOrder) throw 'Order is invalid'
-
-            await prisma.order.update({
-                where: {
-                    id: existOrder.id
-                },
-                data: {
-                    status: 'Proccessed',
-                    Payment: {
-                        update: {
-                            confirmedAt: new Date(Date.now()),
-                            isConfirmed: true
-                        }
-                    }
-                }
-            })
             
             await confirmedOrder(orderId)
             

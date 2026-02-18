@@ -1,6 +1,6 @@
 'use client'
 import ConfirmationModal from "@/components/modal/confirmationModal"
-import { getMidtransStatus } from "@/lib/order.handler"
+import { getMidtransStatusAPI } from "@/lib/order.handler"
 import { IOrder } from "@/type/order"
 import { Button, Spinner, useDisclosure } from "@nextui-org/react"
 import { Dispatch, SetStateAction, useState } from "react"
@@ -15,16 +15,17 @@ export default function PaymentRedirectMidtrans({token, orderId, data, setData, 
     }
     const onClickCheckStatus = async () => {
         setIsLoading(true)
-        const status = await getMidtransStatus(orderId)
+        const midtransTransaction = await getMidtransStatusAPI(orderId)
         
-        if(status.status === "NOT_FOUND") {
+        if(midtransTransaction.status === "NOT_FOUND") {
             setIsLoading(false)
             return setIsError("Please choose method in 'Pay with Gateway' first before 'check status'")
         } 
         
-        switch (status.midtrans) {
+        switch (midtransTransaction.data) {
             case "expire":
                 toast.error('your payment is Expired')
+                setData({...data!, status: "Cancelled"})
                 break;
             
             case "settlement":

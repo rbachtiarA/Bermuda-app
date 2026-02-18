@@ -113,6 +113,48 @@ export class ProductController {
     }
   }
 
+  async getProductBySlug(req: Request, res: Response) {
+    try {
+      const slug = req.params.slug;
+
+      const product = await prisma.product.findFirst({
+        where: { slug },
+        include: {
+          categories: true,
+          discounts: true,
+          stock: {
+            include: {
+              stockHistory: {
+                orderBy: {
+                  createdAt: 'desc',
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!product) {
+        return res.status(404).send({
+          status: 'error',
+          msg: 'Product not found!',
+        });
+      }
+
+      res.status(200).send({
+        status: 'ok',
+        product,
+      });
+    } catch (err) {
+      console.error(err);
+
+      res.status(500).send({
+        status: 'error',
+        msg: err instanceof Error ? err.message : 'Server error',
+      });
+    }
+  }
+
   async ProdutSearch(req: Request, res: Response) {
     try {
       const { search } = req.query;
@@ -147,7 +189,7 @@ export class ProductController {
       if (!req.file) throw new Error('No file uploaded');
 
       // const link = `${process.env.BASE_URL_BE}public/product/${req.file.filename}`;
-      const { secure_url } = await cloudinaryUpload(req.file, 'product')
+      const { secure_url } = await cloudinaryUpload(req.file, 'product');
       const link = secure_url;
 
       const {
@@ -220,7 +262,7 @@ export class ProductController {
 
       let link: string = '';
       if (req?.file) {
-        const { secure_url } = await cloudinaryUpload(req.file, 'product')
+        const { secure_url } = await cloudinaryUpload(req.file, 'product');
         link = secure_url;
         // link = `${process.env.BASE_URL_BE}public/product/${req?.file?.filename}`;
       } else {

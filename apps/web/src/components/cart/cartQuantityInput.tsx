@@ -1,6 +1,6 @@
 'use client'
 import { Button, Input } from "@nextui-org/react";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, ReactNode, useCallback, useEffect, useState } from "react";
 import PlusIcon from "../icon/PlusIcon";
 import MinusIcon from "../icon/MinusIcon";
 import { updateCartItem } from "@/lib/cart";
@@ -17,31 +17,38 @@ export default function CartQuantityInput({cart, isLoading}: { cart: ICartItem, 
     const [debouncedQuantity] = useDebounce(quantity, 1000)
     // isDebouncing for css purpose, when isDebounce it will change input bg color till debouncing finish
     const [isDebouncing, setIsDebouncing] = useState(false)
+    //prevent useEffect first render to reduce needless API call    
+    const [isFirstRender, setIsFirstRender] = useState(true)
     
     const updatedQuantity = async (qty: number) => {
-        const productId = cart.product?.id
-        if(productId) {
-            await updateCartItem(productId, qty)
-            dispatch(updatedCartQuantity({productId, quantity: debouncedQuantity}))
+            const productId = cart.product?.id
+            if(productId && !isFirstRender) {
+                await updateCartItem(productId, qty)
+                dispatch(updatedCartQuantity({productId, quantity: debouncedQuantity}))
+            }
+            if(isFirstRender) {
+                setIsFirstRender(false)
+            }
+            setIsDebouncing(false)
         }
-        
-    }
 
     // minus / plus button is pressed add value to quantity
-    const onPressQuantityButton = (val:number) => {
-        const tempQuantity = quantity+val
-        //if quantity > productStock, instant change quantity to product stock
-        if(tempQuantity > productStock) {
-            setQuantity(productStock)
-        }else if(tempQuantity > 0) {
-            setQuantity(tempQuantity)
-        } 
-    }
+    const onPressQuantityButton = useCallback(
+        (val:number) => {
+            const tempQuantity = quantity+val
+            //if quantity > productStock, instant change quantity to product stock
+            if(tempQuantity > productStock) {
+                setQuantity(productStock)
+            }else if(tempQuantity > 0) {
+                setQuantity(tempQuantity)
+            } 
+        },[quantity]
+    ) 
 
     // if input change manually
     const onChangeQuantityInput = (e: ChangeEvent<HTMLInputElement>) => {
-        const updatedQuantity = Number(e.target.value)
-        setQuantity(updatedQuantity)            
+        const updateQuantity = Number(e.target.value)
+        setQuantity(updateQuantity)            
     }
 
     // if input change manually into 0 or exceed stock, will reset to 1 when not focus
@@ -59,31 +66,45 @@ export default function CartQuantityInput({cart, isLoading}: { cart: ICartItem, 
     // every time quantity change, it will debounce for 500ms, then change debounceQuantity, 
     // then update database with current debouncedQuantity. if debounceQuantity 0, do not update database
     useEffect(() => {
-
         if(debouncedQuantity > 0 && debouncedQuantity <= productStock) {
            updatedQuantity(debouncedQuantity)
         }
-        setIsDebouncing(false)
-
     }, [debouncedQuantity])
 
     useEffect(() => {
         if(productStock < quantity && productStock !== 0) {
-            updatedQuantity(productStock)
+            updatedQuantity(productStock !== 0 ? productStock : 1)
             setQuantity(productStock)
         }
+        setIsDebouncing(false)
     },[])
+
+    function ButtonControl({children, quantityControl, isDisabled}: {children: ReactNode, quantityControl: number, isDisabled: boolean}) {
+        return (
+            <Button size="sm" 
+                color={isDebouncing? 'success': 'default'} 
+                isDisabled={isDisabled || isLoading === 'CHECKOUT' || productStock === 0} isIconOnly 
+                onPress={() => onPressQuantityButton(quantityControl)}>
+                    {children}
+            </Button>
+        )
+    }
+
     return (
         <div className="flex flex-col md:flex-row justify-center items-center">
             <div className="flex w-full justify-end">
                 <p className="text-[10px]"><span>Sisa item: </span> {productStock}</p>
             </div>
             <div className="flex gap-1 w-full justify-end">
-                <Button size="sm" color={productStock < quantity? 'warning' : !isDebouncing? 'default': 'success'} isDisabled={quantity <= 1 || isLoading === 'CHECKOUT'} isIconOnly onPress={() => onPressQuantityButton(-1)}><MinusIcon /></Button>
+                <ButtonControl isDisabled={quantity <= 1} quantityControl={-1}>
+                    <MinusIcon />
+                </ButtonControl>
                 <Input size="sm" type="number" color={!isDebouncing? 'default': 'success'}
                     onChange={(e) => onChangeQuantityInput(e)} isDisabled={productStock === 0 || isLoading === 'CHECKOUT' } onBlur={onBlurQuantity}
                     value={`${quantity}`} min={1} className="w-[50px] no-arrow-input" />
-                <Button size="sm" color={!isDebouncing? 'default': 'success'} isDisabled={quantity >= productStock || isLoading === 'CHECKOUT'} isIconOnly onPress={() => onPressQuantityButton(1)}><PlusIcon /></Button>
+                <ButtonControl isDisabled={quantity >= productStock} quantityControl={1}>
+                    <PlusIcon />
+                </ButtonControl>
             </div>
         </div>
     )
