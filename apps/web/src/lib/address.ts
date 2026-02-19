@@ -1,4 +1,4 @@
-'use server'
+'use server';
 import { ICreateAddress, IFetchCity } from '@/type/address';
 import { getToken } from './server';
 
@@ -8,8 +8,7 @@ export const getUserAddressess = async (userId: number) => {
     { next: { revalidate: 1 } },
   );
   const { status, data } = await res.json();
-  console.log('Server components?');
-  
+
   return data;
 };
 
@@ -79,7 +78,7 @@ export const updateAddressHandler = async (
     const token = await getToken();
     if (!token) {
       throw new Error('Authorization token is missing');
-  }
+    }
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_API_URL}address/${addressId}`,
       {
@@ -91,7 +90,7 @@ export const updateAddressHandler = async (
         body: JSON.stringify(values),
       },
     );
-    
+
     if (!response.ok) {
       const errorData = await response.json();
       console.error('Error response:', errorData);

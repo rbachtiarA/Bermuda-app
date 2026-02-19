@@ -2,7 +2,6 @@
 import useProductList from '../hooks/useProductList';
 import ProductCard from './Card';
 import GridBox from './GridBox';
-import GridCarousel from './GridCarousel';
 import { SkeletonProductListGridBox } from './skeleton/skeletonProductList';
 
 export default function ProductListGridBox() {

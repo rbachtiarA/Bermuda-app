@@ -7,10 +7,3 @@ export default function ProductPage() {
 
   return <ProductView slug={slug as string} />;
 }
-// export default function ProductPage() {
-//   const { productId } = useParams();
-
-//   if (!productId) return <div>Loading...</div>;
-
-//   return <ProductDetail productId={parseInt(productId as string, 10)} />;
-// }

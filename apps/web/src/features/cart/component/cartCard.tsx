@@ -1,35 +1,36 @@
 'use client';
+import ConfirmationModal from '@/features/shared/components/modal/confirmationModal';
+import { deleteCartItem } from '@/lib/cart';
+import currencyRupiah from '@/lib/rupiahCurrency';
+import { useAppDispatch } from '@/redux/hook';
+import { removedFromCart } from '@/redux/slice/cartSlice';
+import {
+  addSelectedCheckout,
+  removeSelectedCheckout,
+} from '@/redux/slice/checkoutSlice';
 import { ICartItem } from '@/type/cart';
 import {
   Button,
+  Card,
+  CardBody,
   Checkbox,
   Image,
   Tooltip,
   useDisclosure,
 } from '@nextui-org/react';
 import React, { useEffect, useRef, useState } from 'react';
-import { Card, CardBody } from '@nextui-org/react';
-import { useAppDispatch } from '@/redux/hook';
-import { removedFromCart } from '@/redux/slice/cartSlice';
-import { deleteCartItem } from '@/lib/cart';
 import CartQuantityInput from './cartQuantityInput';
-import currencyRupiah from '@/lib/rupiahCurrency';
-import {
-  addSelectedCheckout,
-  removeSelectedCheckout,
-} from '@/redux/slice/checkoutSlice';
-import ConfirmationModal from '../modal/confirmationModal';
 
 export default function CartCard({
   cart,
   checkout,
   soldOut,
-  isLoading
+  isLoading,
 }: {
   cart: ICartItem;
   checkout: number[];
   soldOut?: boolean;
-  isLoading: "DATA" | "CHECKOUT" | null
+  isLoading: 'DATA' | 'CHECKOUT' | null;
 }) {
   const dispatch = useAppDispatch();
   const checkRef = useRef<HTMLInputElement>(null);
@@ -88,7 +89,13 @@ export default function CartCard({
               </div>
               <div className="w-full grid grid-cols-2 items-end">
                 <Tooltip content="Remove item" delay={0}>
-                  <Button color="danger" onPress={onOpen} size="sm" isIconOnly isDisabled={isLoading === 'CHECKOUT'}>
+                  <Button
+                    color="danger"
+                    onPress={onOpen}
+                    size="sm"
+                    isIconOnly
+                    isDisabled={isLoading === 'CHECKOUT'}
+                  >
                     <Image
                       src={'/icon-trashcan.svg'}
                       alt="delete"
@@ -104,7 +111,7 @@ export default function CartCard({
                   title="Remove item from cart"
                   content={`Are you sure want to remove ${cart.product?.name} from your cart ?`}
                 />
-                <CartQuantityInput cart={cart} isLoading={isLoading}/>
+                <CartQuantityInput cart={cart} isLoading={isLoading} />
               </div>
             </div>
           </div>
