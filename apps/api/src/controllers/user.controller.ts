@@ -150,7 +150,7 @@ export class UserController {
         include: {
           cart: {
             select: {
-              CartItem: { include: { product: { include: { stock: true } } } },
+              CartItem: true,
             },
           },
           address: true,
@@ -238,7 +238,7 @@ export class UserController {
     try {
       if (!req.file) throw 'no file uploaded';
 
-      const { secure_url } = await cloudinaryUpload(req.file, 'avatar')
+      const { secure_url } = await cloudinaryUpload(req.file, 'avatar');
       const link = secure_url;
       // const link = `${process.env.BASE_URL_BE}public/avatar/${req.file?.filename}`;
       console.log(link);

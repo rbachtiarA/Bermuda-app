@@ -30,10 +30,11 @@ import NavbarMobileHamburger from './navbarMobile/navbarMobileHamburger';
 import LinkButtonBottomNavbar from '../bottomNavbar/LinkButton.BottomNavbar';
 import { useRouter } from 'next/navigation';
 import ProductIcon from '../icon/productIcon';
+import { cartArr } from '@/redux/selector/cartSelector';
 
 export default function SiteNavbar() {
   const dispatch = useAppDispatch();
-  const cart = useAppSelector((state) => state.cart);
+  const cart = useAppSelector(cartArr);
   const [token, setToken] = useState<string | null>(null);
   const [searchData, setSearchData] = useState<IProduct[]>([]);
   const [search, setSearch] = useState('');
@@ -73,7 +74,6 @@ export default function SiteNavbar() {
     } else if (debounceSearch.length === 0) {
       setSearchData([]);
     }
-    
   }, [debounceSearch]);
 
   return (
