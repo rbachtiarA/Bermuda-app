@@ -2,47 +2,55 @@
 import ConfirmationModal from '@/features/shared/components/modal/confirmationModal';
 import { deleteCartItem } from '@/lib/cart';
 import currencyRupiah from '@/lib/rupiahCurrency';
-import { useAppDispatch } from '@/redux/hook';
+import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import { removedFromCart } from '@/redux/slice/cartSlice';
 import {
   addSelectedCheckout,
   removeSelectedCheckout,
 } from '@/redux/slice/checkoutSlice';
 import { ICartItem } from '@/type/cart';
-import {
-  Button,
-  Card,
-  CardBody,
-  Checkbox,
-  Image,
-  Tooltip,
-  useDisclosure,
-} from '@nextui-org/react';
-import React, { useEffect, useRef, useState } from 'react';
-import CartQuantityInput from './cartQuantityInput';
+import { IProduct } from '@/type/product';
+import { Checkbox, useDisclosure } from '@nextui-org/react';
+import Image from 'next/image';
+import { ChangeEvent, useState } from 'react';
+import { useDebouncedCallback } from 'use-debounce';
 
-export default function CartCard({
+function CartCard({
   cart,
-  checkout,
   soldOut,
-  isLoading,
+  onUpdate,
 }: {
   cart: ICartItem;
-  checkout: number[];
   soldOut?: boolean;
-  isLoading: 'DATA' | 'CHECKOUT' | null;
+  onUpdate?: (cartItemId: number, productId: number, qty: number) => void;
 }) {
   const dispatch = useAppDispatch();
-  const checkRef = useRef<HTMLInputElement>(null);
-  const [isChecked, setIsChecked] = useState<boolean>(false);
+  const [quantity, setQuantity] = useState(cart.quantity);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const isChecked = useAppSelector(
+    (state) => !!state.checkout.items[cart.productId],
+  );
   const product = cart.product;
 
-  const onPressedCard = () => {
-    if (!isChecked) {
-      dispatch(addSelectedCheckout(cart.id));
+  const debounceUpdateQuantity = useDebouncedCallback((value: number) => {
+    if (onUpdate && value > 0) {
+      onUpdate(cart.id, cart.product!.id, value);
+    }
+  }, 1000);
+
+  const handleOnQuantityChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const value = Number(e.currentTarget.value);
+    if (value >= 0) {
+      setQuantity(value);
+      debounceUpdateQuantity(value);
+    }
+  };
+
+  const onPressedCheckboxElement = (checked: boolean) => {
+    if (checked) {
+      dispatch(addSelectedCheckout(cart.productId));
     } else {
-      dispatch(removeSelectedCheckout([cart.id]));
+      dispatch(removeSelectedCheckout([cart.productId]));
     }
   };
 
@@ -50,74 +58,188 @@ export default function CartCard({
     const { data } = await deleteCartItem([cartItemId]);
     dispatch(removedFromCart(data));
     dispatch(removeSelectedCheckout(data));
-    setIsChecked((checked) => !checked);
   };
 
-  useEffect(() => {
-    setIsChecked(checkout.includes(cart.id));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [checkout]);
+  return (
+    <li className="flex flex-col size-full items-center">
+      <div className="divider w-[99%] h-[1px] border-slate-200 border-t-1"></div>
 
-  const nextUICardV2: React.ReactNode = (
-    <Card isHoverable className="w-full">
-      <CardBody>
-        <div className="flex gap-4">
-          <Checkbox
-            size="md"
-            ref={checkRef}
-            value={`${cart.productId}`}
-            isDisabled={soldOut}
-            isSelected={isChecked}
-            onClick={onPressedCard}
-          />
-          <div className="flex w-full gap-x-2 justify-center items-center">
-            <div className="">
-              <Image
-                src={product?.imageUrl || `/default-product-image.png`}
-                alt={`${product?.name}`}
-                className="rounded-lg w-[50px] h-[50px] md:w-[150px] md:h-[150px]"
-              />
-            </div>
-            <div className="flex flex-col w-full h-full justify-between">
-              <div>
-                <p className="text-balance max-w-[200px] md:max-w-none line-clamp-2 break-words">
-                  {product?.name || 'Product Name Null'}
-                </p>
-                <p className="font-extrabold">
-                  {currencyRupiah(product?.price!) || 'Product Price Null'}
-                </p>
-              </div>
-              <div className="w-full grid grid-cols-2 items-end">
-                <Tooltip content="Remove item" delay={0}>
-                  <Button
-                    color="danger"
-                    onPress={onOpen}
-                    size="sm"
-                    isIconOnly
-                    isDisabled={isLoading === 'CHECKOUT'}
-                  >
-                    <Image
-                      src={'/icon-trashcan.svg'}
-                      alt="delete"
-                      width={24}
-                      height={24}
-                    />
-                  </Button>
-                </Tooltip>
-                <ConfirmationModal
-                  isOpen={isOpen}
-                  onOpenChange={onOpenChange}
-                  onConfirm={() => onRemovedItem(cart.id)}
-                  title="Remove item from cart"
-                  content={`Are you sure want to remove ${cart.product?.name} from your cart ?`}
+      <div className="flex size-full py-2">
+        <div className="relative size-full flex gap-2 items-start md:grid md:grid-cols-[50px_2fr_100px_80px_120px] md:items-center w-full">
+          {soldOut && (
+            <div className="absolute size-full bg-slate-300/30 w-[calc(100%-50px)] left-[50px]"></div>
+          )}
+          <div className="flex items-center justify-center w-[50px] h-full">
+            <Checkbox
+              type="checkbox"
+              size="sm"
+              value={`${cart.productId}`}
+              isDisabled={soldOut}
+              isSelected={isChecked}
+              onValueChange={onPressedCheckboxElement}
+            />
+          </div>
+
+          <div className="flex gap-2 flex-1">
+            <ProductImage
+              imageSrc={cart.product?.imageUrl!}
+              imageAlt={cart.product?.name!}
+            />
+            <div className="flex flex-col flex-1 gap-2">
+              <StockDetails soldOut={soldOut} name={product!.name} />
+              <div className="flex flex-col items-start md:hidden">
+                <ProductPrice product={product!} />
+                <BuyoutQuantity
+                  soldout={soldOut}
+                  cart={cart}
+                  qty={quantity}
+                  onQuantityChange={handleOnQuantityChange}
                 />
-                <CartQuantityInput cart={cart} isLoading={isLoading} />
               </div>
             </div>
           </div>
+
+          <div className="hidden md:block">
+            <ProductPrice product={product!} />
+          </div>
+
+          <div className="hidden md:block">
+            <BuyoutQuantity
+              soldout={soldOut}
+              cart={cart}
+              qty={quantity}
+              onQuantityChange={handleOnQuantityChange}
+            />
+          </div>
+
+          <div className="hidden md:block">
+            <TotalPrice product={product!} quantity={quantity} />
+          </div>
         </div>
-      </CardBody>
-    </Card>
+
+        <button
+          className="size-full rounded-r-xl w-[25px] bg-danger-400 items-center justify-center hover:bg-danger-400/90 hidden md:flex"
+          onClick={onOpen}
+        >
+          <Image
+            src={'/icon-trashcan.svg'}
+            alt="delete"
+            className="z-1"
+            width={50}
+            height={50}
+          />
+        </button>
+      </div>
+
+      <ConfirmationModal
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        onConfirm={() => onRemovedItem(cart.productId)}
+        title="Remove item from cart"
+        content={`Are you sure want to remove ${cart.product?.name} from your cart ?`}
+      />
+    </li>
   );
-  return <li className="flex flex-col gap-x-4">{nextUICardV2}</li>;
 }
+
+function ProductImage({
+  imageSrc,
+  imageAlt,
+}: {
+  imageSrc: string;
+  imageAlt: string;
+}) {
+  return (
+    <Image
+      src={imageSrc || `/default-product-image.png`}
+      alt={`${imageAlt}`}
+      className="rounded-lg max-w-[100px] max-h-[100px]"
+      width={100}
+      height={100}
+    />
+  );
+}
+
+function StockDetails({ name, soldOut }: { name: string; soldOut?: boolean }) {
+  return (
+    <div className="flex flex-col md:size-full justify-between py-1">
+      <span className="line-clamp-2">{name}</span>
+      <span className="text-xs hidden xl:inline">
+        {!soldOut ? 'In stock' : 'Sold out'}
+      </span>
+    </div>
+  );
+}
+
+function ProductPrice({ product }: { product: IProduct }) {
+  const priceInRupiah = currencyRupiah(product.price);
+  return <span>{priceInRupiah}</span>;
+}
+
+function BuyoutQuantity({
+  soldout,
+  qty,
+  onQuantityChange,
+}: {
+  soldout?: boolean;
+  cart: ICartItem;
+  qty: number;
+  onQuantityChange: (e: ChangeEvent<HTMLInputElement>) => void;
+}) {
+  return (
+    <div className="flex flex-col max-w-[100px]">
+      <input
+        type="number"
+        onChange={onQuantityChange}
+        min={1}
+        value={qty}
+        className={`bg-gray-100 px-1 focus:border-0 rounded-sm focus:outline-none ${soldout ? 'text-gray-400' : `ring-1 ring-black/70`}`}
+        disabled={soldout}
+      />
+    </div>
+  );
+}
+
+function TotalPrice({
+  product,
+  quantity,
+}: {
+  product: IProduct;
+  quantity: number;
+}) {
+  const priceInRupiah = currencyRupiah(product.price * quantity);
+  return <span className="font-semibold">{priceInRupiah}</span>;
+}
+
+function Grid() {
+  return (
+    <div className="grid md:grid-flow-col md:grid-cols-[50px_2fr_100px_80px_120px] w-full items-center gap-2">
+      {/* <div className="flex items-center justify-center w-[50px]">
+        <input
+          type="checkbox"
+          value={`${cart.productId}`}
+          disabled={soldOut}
+          checked={isChecked ?? false}
+          onChange={onPressedCheckboxElement}
+        />
+      </div>
+      <div className="flex gap-2 max-h-[100px] h-full">
+        <ProductImage
+          imageSrc={cart.product?.imageUrl!}
+          imageAlt={cart.product?.name!}
+        />
+        <StockDetails soldOut={soldOut} name={product!.name} />
+      </div>
+
+      <ProductPrice product={product!} />
+      <BuyoutQuantity
+        soldout={soldOut}
+        cart={cart}
+        qty={quantity}
+        onQuantityChange={handleOnQuantityChange}
+      />
+      <TotalPrice product={product!} quantity={quantity} /> */}
+    </div>
+  );
+}
+export default CartCard;

@@ -1,35 +1,50 @@
 import { getAllCartItems } from '@/lib/cart';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
-import { updatedCartFromDatabase } from '@/redux/slice/cartSlice';
 import { resetCheckout } from '@/redux/slice/checkoutSlice';
-import React, { useEffect, useState } from 'react';
+import { ICartItem } from '@/type/cart';
+import { useEffect, useMemo, useState } from 'react';
 
 export default function useCart() {
-  const user = useAppSelector((state) => state.user);
-  const cart = useAppSelector((state) => state.cart);
-  const store = useAppSelector((state) => state.store);
-  const checkout = useAppSelector((state) => state.checkout);
-  const [isLoading, setIsLoading] = useState<'DATA' | 'CHECKOUT' | null>(null);
+  const userId = useAppSelector((state) => state.user.id);
+  const storeId = useAppSelector((state) => state.store.id);
+  const [cart, setCart] = useState<ICartItem[]>([]);
+  const [isLoading, setIsLoading] = useState<'DATA' | 'CHECKOUT' | null>(
+    'DATA',
+  );
   const dispatch = useAppDispatch();
+  const { itemOnStock, itemOutStock } = useMemo(() => {
+    const itemOnStock = [];
+    const itemOutStock = [];
+
+    for (const item of cart) {
+      const stock = item.product?.stock;
+
+      if (stock && stock.length > 0 && stock[0].quantity > 0) {
+        itemOnStock.push(item);
+      } else {
+        itemOutStock.push(item);
+      }
+    }
+
+    return { itemOnStock, itemOutStock };
+  }, [cart]);
 
   useEffect(() => {
     const getData = async () => {
       setIsLoading('DATA');
-      const data = await getAllCartItems(user.id, store.id);
-      dispatch(updatedCartFromDatabase(data));
+      const data: ICartItem[] = await getAllCartItems(userId, storeId);
+      setCart(data);
       setIsLoading(null);
     };
-    console.log('hello');
 
-    dispatch(resetCheckout());
+    if (isLoading !== 'DATA') dispatch(resetCheckout()); // first render page, dont reset
     getData();
-  }, [store.id]);
+  }, [storeId]);
   return {
-    user,
     cart,
-    store,
-    checkout,
     isLoading,
+    itemOnStock,
+    itemOutStock,
     setIsLoading,
   };
 }

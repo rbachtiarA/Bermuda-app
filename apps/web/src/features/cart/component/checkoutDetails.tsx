@@ -1,4 +1,12 @@
+import { postCheckoutItems } from '@/lib/cart';
 import currencyRupiah from '@/lib/rupiahCurrency';
+import { useAppSelector } from '@/redux/hook';
+import {
+  isCheckoutUpdating,
+  selectCartItems,
+} from '@/redux/selector/cartSelector';
+import { checkoutArr } from '@/redux/selector/checkoutSelector';
+import { ICartItem } from '@/type/cart';
 import {
   Button,
   Card,
@@ -8,11 +16,8 @@ import {
   Divider,
   Spinner,
 } from '@nextui-org/react';
-import { Dispatch, SetStateAction, useMemo } from 'react';
-import { postCheckoutItems } from '@/lib/cart';
 import { useRouter } from 'next/navigation';
-import { ICartItem } from '@/type/cart';
-import SelectedItem from './SelectedItem';
+import { Dispatch, SetStateAction, useMemo } from 'react';
 
 type ComponentsProps = {
   subtotal: string;
@@ -22,24 +27,30 @@ type ComponentsProps = {
 };
 
 type MainProps = {
-  isLoading: 'CHECKOUT' | 'DATA' | null;
-  checkout: number[];
   cart: ICartItem[];
+  isLoading: 'CHECKOUT' | 'DATA' | null;
   setIsLoading: Dispatch<SetStateAction<'CHECKOUT' | 'DATA' | null>>;
 };
 
 export default function CartCheckoutDetails({
+  cart,
   isLoading,
   setIsLoading,
-  checkout,
-  cart,
 }: MainProps) {
   const router = useRouter();
+  const isUpdating = useAppSelector(isCheckoutUpdating);
+  const checkout = useAppSelector(checkoutArr);
+  const cartArr = useAppSelector(selectCartItems);
+
   const subtotal = useMemo(() => {
     return cart
-      .filter((item) => checkout.includes(item.id))
-      .reduce((total, item) => total + item.quantity * item.product?.price!, 0);
-  }, [checkout, cart]);
+      .filter((item) => checkout.includes(item.productId))
+      .reduce(
+        (total, item) =>
+          total + cartArr[item.productId].quantity * item.product!.price,
+        0,
+      );
+  }, [checkout, cartArr]);
 
   const onCheckout = async () => {
     setIsLoading('CHECKOUT');
@@ -51,7 +62,7 @@ export default function CartCheckoutDetails({
     }
   };
 
-  const isDisabled = !!isLoading || checkout.length === 0;
+  const isDisabled = !!isLoading || isUpdating || checkout.length === 0;
   return (
     <>
       <CardDesktopComponents
@@ -100,13 +111,13 @@ function CardDesktopComponents({
   subtotal,
 }: ComponentsProps) {
   return (
-    <div className="sticky top-28 hidden md:block">
+    <div className="sticky top-28 hidden md:block z-[5]">
       <Card className="w-full rounded-none md:rounded-md">
         <CardHeader>
           <h2 className="font-bold text-lg">Checkout Details</h2>
         </CardHeader>
         <CardBody>
-          <SelectedItem />
+          {/* <SelectedItem /> */}
           <Divider className="my-1" />
           <div className="flex font-semibold justify-between">
             <p>Total : </p>
@@ -132,7 +143,7 @@ function CardMobileComponets({
   subtotal,
 }: ComponentsProps) {
   return (
-    <div className="fixed w-full bottom-0 block md:hidden">
+    <div className="fixed w-full bottom-0 block md:hidden z-[5]">
       <Card className="w-full rounded-none md:rounded-md">
         <CardBody>
           <div className="grid grid-cols-2">

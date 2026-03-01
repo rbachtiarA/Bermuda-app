@@ -1,5 +1,5 @@
 import TitleBreadcrumbs from '@/components/breadcrumbs/breadcrumbs';
-import CartList from '@/features/cart/component/cartList';
+import ViewCart from '@/features/cart/View';
 import { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'User Cart | Bermuda Store',
@@ -12,8 +12,8 @@ export default function page() {
       <div className="md:col-start-2 p-2">
         <TitleBreadcrumbs title="CART" />
       </div>
-      <div className="md:grid md:row-start-2 md:col-start-2">
-        <CartList />
+      <div className="md:grid md:row-start-2 md:col-start-2 z-1">
+        <ViewCart />
       </div>
     </section>
   );

@@ -1,12 +1,8 @@
 'use client';
 
 import currencyRupiah from '@/lib/rupiahCurrency';
-import { useAppSelector } from '@/redux/hook';
-import { selectedCartItem } from '@/redux/selector/cartSelector';
-import { useMemo } from 'react';
 
 export default function SelectedItem() {
-  const selectedItem = useAppSelector(selectedCartItem);
   return (
     <div>
       {selectedItem.map((item) => (
