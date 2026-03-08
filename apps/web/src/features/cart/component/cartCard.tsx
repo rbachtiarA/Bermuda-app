@@ -19,10 +19,12 @@ function CartCard({
   cart,
   soldOut,
   onUpdate,
+  onRemoveItem,
 }: {
   cart: ICartItem;
   soldOut?: boolean;
   onUpdate?: (cartItemId: number, productId: number, qty: number) => void;
+  onRemoveItem: (productIds: number[]) => void;
 }) {
   const dispatch = useAppDispatch();
   const [quantity, setQuantity] = useState(cart.quantity);
@@ -54,20 +56,14 @@ function CartCard({
     }
   };
 
-  const onRemovedItem = async (cartItemId: number) => {
-    const { data } = await deleteCartItem([cartItemId]);
-    dispatch(removedFromCart(data));
-    dispatch(removeSelectedCheckout(data));
-  };
-
   return (
     <li className="flex flex-col size-full items-center">
       <div className="divider w-[99%] h-[1px] border-slate-200 border-t-1"></div>
 
-      <div className="flex size-full py-2">
-        <div className="relative size-full flex gap-2 items-start md:grid md:grid-cols-[50px_2fr_100px_80px_120px] md:items-center w-full">
+      <div className="flex size-full">
+        <div className="relative size-full py-2 flex gap-2 items-start md:grid md:grid-cols-[50px_2fr_100px_80px_120px_50px] md:items-center w-full">
           {soldOut && (
-            <div className="absolute size-full bg-slate-300/30 w-[calc(100%-50px)] left-[50px]"></div>
+            <div className="absolute size-full bg-slate-300/30 left-0 top-0"></div>
           )}
           <div className="flex items-center justify-center w-[50px] h-full">
             <Checkbox
@@ -85,9 +81,9 @@ function CartCard({
               imageSrc={cart.product?.imageUrl!}
               imageAlt={cart.product?.name!}
             />
-            <div className="flex flex-col flex-1 gap-2">
+            <div className="flex flex-col flex-1 gap-2 pr-2">
               <StockDetails soldOut={soldOut} name={product!.name} />
-              <div className="flex flex-col items-start md:hidden">
+              <div className="flex flex-col gap-1 items-start md:hidden">
                 <ProductPrice product={product!} />
                 <BuyoutQuantity
                   soldout={soldOut}
@@ -95,6 +91,12 @@ function CartCard({
                   qty={quantity}
                   onQuantityChange={handleOnQuantityChange}
                 />
+                <button
+                  className="rounded-lg px-2 mt-2 border-danger-400 border-1 text-sm text-danger-400 ml-auto z-[2]"
+                  onClick={onOpen}
+                >
+                  Hapus
+                </button>
               </div>
             </div>
           </div>
@@ -115,26 +117,28 @@ function CartCard({
           <div className="hidden md:block">
             <TotalPrice product={product!} quantity={quantity} />
           </div>
-        </div>
 
-        <button
-          className="size-full rounded-r-xl w-[25px] bg-danger-400 items-center justify-center hover:bg-danger-400/90 hidden md:flex"
-          onClick={onOpen}
-        >
-          <Image
-            src={'/icon-trashcan.svg'}
-            alt="delete"
-            className="z-1"
-            width={50}
-            height={50}
-          />
-        </button>
+          <div className="hidden md:flex items-center z-[2]">
+            <button
+              className="size-full rounded-lg p-1 w-[30px] bg-danger-400 items-center justify-center hover:bg-danger-400/90 hidden md:flex"
+              onClick={onOpen}
+            >
+              <Image
+                src={'/icon-trashcan.svg'}
+                alt="delete"
+                className="z-1"
+                width={50}
+                height={50}
+              />
+            </button>
+          </div>
+        </div>
       </div>
 
       <ConfirmationModal
         isOpen={isOpen}
         onOpenChange={onOpenChange}
-        onConfirm={() => onRemovedItem(cart.productId)}
+        onConfirm={() => onRemoveItem([cart.productId])}
         title="Remove item from cart"
         content={`Are you sure want to remove ${cart.product?.name} from your cart ?`}
       />
@@ -163,7 +167,7 @@ function ProductImage({
 function StockDetails({ name, soldOut }: { name: string; soldOut?: boolean }) {
   return (
     <div className="flex flex-col md:size-full justify-between py-1">
-      <span className="line-clamp-2">{name}</span>
+      <span className="line-clamp-2 font-semibold">{name}</span>
       <span className="text-xs hidden xl:inline">
         {!soldOut ? 'In stock' : 'Sold out'}
       </span>
@@ -187,7 +191,7 @@ function BuyoutQuantity({
   onQuantityChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }) {
   return (
-    <div className="flex flex-col max-w-[100px]">
+    <div className="flex flex-col max-w-[50px]">
       <input
         type="number"
         onChange={onQuantityChange}

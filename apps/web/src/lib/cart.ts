@@ -3,7 +3,7 @@
 import { ICartItem } from '@/type/cart';
 import { getToken } from './server';
 
-export const getAllCartItems = async (userId: number, storeId: number) => {
+export const getAllCartItems = async (storeId: number) => {
   const token = await getToken();
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_BASE_API_URL}cart/store/${storeId}`,
@@ -58,7 +58,7 @@ export const updateCartItem = async (productId: number, quantity: number) => {
 export const deleteCartItem = async (cartItemIds: number[]) => {
   const token = await getToken();
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_API_URL}cart/remove?cartIds=${cartItemIds}`,
+    `${process.env.NEXT_PUBLIC_BASE_API_URL}cart/remove?productIds=${cartItemIds}`,
     {
       method: 'DELETE',
       headers: {

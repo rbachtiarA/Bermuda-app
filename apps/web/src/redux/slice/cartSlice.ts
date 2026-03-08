@@ -1,4 +1,4 @@
-import { ICartItem, IUpdateQuantityCart } from '@/type/cart';
+import { ICartItem } from '@/type/cart';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 const initialState: {
@@ -26,6 +26,8 @@ export const cartSlice = createSlice({
         state.items[item.productId] = {
           quantity: item.quantity,
         };
+      } else {
+        state.items[item.productId].quantity = item.quantity;
       }
     },
     updateCartQuantity: (

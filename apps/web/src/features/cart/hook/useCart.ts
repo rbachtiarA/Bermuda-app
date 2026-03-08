@@ -1,6 +1,10 @@
-import { getAllCartItems } from '@/lib/cart';
+import { deleteCartItem, getAllCartItems } from '@/lib/cart';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
-import { resetCheckout } from '@/redux/slice/checkoutSlice';
+import { populatedUserCart, removedFromCart } from '@/redux/slice/cartSlice';
+import {
+  removeSelectedCheckout,
+  resetCheckout,
+} from '@/redux/slice/checkoutSlice';
 import { ICartItem } from '@/type/cart';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -29,11 +33,21 @@ export default function useCart() {
     return { itemOnStock, itemOutStock };
   }, [cart]);
 
+  const onRemoveItem = async (productIds: number[]) => {
+    const { data } = await deleteCartItem(productIds);
+    dispatch(removedFromCart(data));
+    dispatch(removeSelectedCheckout(data));
+    setCart((prev) => {
+      return prev.filter((item) => !productIds.includes(item.productId));
+    });
+  };
+
   useEffect(() => {
     const getData = async () => {
       setIsLoading('DATA');
-      const data: ICartItem[] = await getAllCartItems(userId, storeId);
+      const data: ICartItem[] = await getAllCartItems(storeId);
       setCart(data);
+      dispatch(populatedUserCart(data));
       setIsLoading(null);
     };
 
@@ -45,6 +59,7 @@ export default function useCart() {
     isLoading,
     itemOnStock,
     itemOutStock,
+    onRemoveItem,
     setIsLoading,
   };
 }

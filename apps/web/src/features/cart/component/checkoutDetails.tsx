@@ -50,7 +50,7 @@ export default function CartCheckoutDetails({
           total + cartArr[item.productId].quantity * item.product!.price,
         0,
       );
-  }, [checkout, cartArr]);
+  }, [checkout, cart, cartArr]);
 
   const onCheckout = async () => {
     setIsLoading('CHECKOUT');
@@ -112,24 +112,26 @@ function CardDesktopComponents({
 }: ComponentsProps) {
   return (
     <div className="sticky top-28 hidden md:block z-[5]">
-      <Card className="w-full rounded-none md:rounded-md">
+      <Card className="w-full rounded-lg border-slate-200 shadow border-1">
         <CardHeader>
           <h2 className="font-bold text-lg">Checkout Details</h2>
         </CardHeader>
         <CardBody>
           {/* <SelectedItem /> */}
           <Divider className="my-1" />
-          <div className="flex font-semibold justify-between">
-            <p>Total : </p>
-            <p>{subtotal}</p>
-          </div>
         </CardBody>
         <CardFooter className="flex w-full justify-end">
-          <CheckoutButton
-            isLoading={isLoading}
-            isDisabled={isDisabled}
-            onClick={onCheckout}
-          />
+          <div className="flex gap-4 items-center">
+            <div className="font-semibold">
+              <p className="text-lg">Total</p>
+              <p>{subtotal}</p>
+            </div>
+            <CheckoutButton
+              isLoading={isLoading}
+              isDisabled={isDisabled}
+              onClick={onCheckout}
+            />
+          </div>
         </CardFooter>
       </Card>
     </div>
