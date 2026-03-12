@@ -218,12 +218,12 @@ export class UserController {
 
   async getUserAddressess(req: Request, res: Response) {
     try {
-      const { userId } = req.params;
+      const user = req.user;
       const userAddressess = await prisma.user.findUnique({
         select: {
           address: true,
         },
-        where: { id: +userId },
+        where: { id: +user?.id! },
       });
 
       return res

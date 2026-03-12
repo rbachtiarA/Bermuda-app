@@ -1,4 +1,10 @@
 'use client';
+import MinusIcon from '@/components/icon/MinusIcon';
+import PlusIcon from '@/components/icon/PlusIcon';
+import { updateCartItem } from '@/lib/cart';
+import { useAppDispatch } from '@/redux/hook';
+import { updateCartQuantity } from '@/redux/slice/cartSlice';
+import { ICartItem } from '@/type/cart';
 import { Button, Input } from '@nextui-org/react';
 import {
   ChangeEvent,
@@ -7,13 +13,7 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { updateCartItem } from '@/lib/cart';
-import { ICartItem } from '@/type/cart';
-import { useAppDispatch, useAppSelector } from '@/redux/hook';
-import { updatedCartQuantity } from '@/redux/slice/cartSlice';
 import { useDebounce } from 'use-debounce';
-import MinusIcon from '@/components/icon/MinusIcon';
-import PlusIcon from '@/components/icon/PlusIcon';
 
 export default function CartQuantityInput({
   cart,
@@ -39,7 +39,7 @@ export default function CartQuantityInput({
     const productId = cart.product?.id;
     if (productId && !isFirstRender) {
       await updateCartItem(productId, qty);
-      dispatch(updatedCartQuantity({ productId, quantity: debouncedQuantity }));
+      dispatch(updateCartQuantity({ productId, quantity: debouncedQuantity }));
     }
     if (isFirstRender) {
       setIsFirstRender(false);

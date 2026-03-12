@@ -37,7 +37,9 @@ export class AddressController {
       const search = req.query.search as string;
 
       const cities = await prisma.city.findMany({
-        where: search ? { name: { contains: search } } : undefined,
+        where: search
+          ? { name: { contains: search, mode: 'insensitive' } }
+          : undefined,
         select: { id: true, name: true },
       });
 
@@ -125,7 +127,7 @@ export class AddressController {
           .status(401)
           .json({ message: 'Unauthorized: User ID is missing.' });
       }
-  
+
       const {
         label,
         recipient,
@@ -138,12 +140,12 @@ export class AddressController {
         longitude,
         isPrimary,
       } = req.body;
-  
+
       if (isPrimary) {
         const primaryExists = await prisma.address.findFirst({
           where: { userId, isPrimary: true },
         });
-  
+
         if (primaryExists) {
           await prisma.address.updateMany({
             where: {
@@ -156,7 +158,7 @@ export class AddressController {
           });
         }
       }
-  
+
       const updatedAddress = await prisma.address.update({
         where: { id: Number(id) },
         data: {
@@ -172,7 +174,7 @@ export class AddressController {
           isPrimary,
         },
       });
-  
+
       return res.status(200).json({
         status: 'ok',
         message: 'Alamat berhasil diperbarui',
@@ -186,7 +188,6 @@ export class AddressController {
       });
     }
   }
-  
 
   async getShippingCost(req: Request, res: Response) {
     try {

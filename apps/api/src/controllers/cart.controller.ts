@@ -129,9 +129,9 @@ export class CartController {
 
   async deleteCartItem(req: Request, res: Response) {
     try {
-      const { cartIds } = req.query;
+      const { productIds } = req.query;
       const userId = req.user?.id;
-      const deletedIds = `${cartIds}`.split(',').map((item) => Number(item));
+      const deletedIds = `${productIds}`.split(',').map(Number);
       const cart = await prisma.cart.findUnique({
         where: {
           userId: +userId!,

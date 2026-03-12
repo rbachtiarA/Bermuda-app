@@ -1,3 +1,5 @@
+import { IAddressList } from './address';
+
 export interface IUser {
   id: number;
   name: string;
@@ -24,20 +26,7 @@ export interface IUserState {
   role: string;
   avatarUrl: string;
   storeId?: string;
-  address:
-    | {
-        label: string;
-        recipient: string;
-        phoneNumber: string;
-        addressLine: string;
-        city: string;
-        state: string;
-        postalCode: string;
-        latitude: number;
-        longitude: number;
-        isPrimary: boolean;
-      }[]
-    | null;
+  address: IAddressList[];
   location?: { latitude: number; longitude: number } | null;
   isLoggedIn: boolean;
   selectedAddress?: {
