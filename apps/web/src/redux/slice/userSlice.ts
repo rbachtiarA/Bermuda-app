@@ -1,3 +1,4 @@
+import { IAddressList } from '@/type/address';
 import { IUserState } from '@/type/user';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
@@ -7,7 +8,7 @@ const initialState: IUserState = {
   email: '',
   role: '',
   avatarUrl: '',
-  address: null,
+  address: [],
   location: undefined,
   isLoggedIn: false,
   selectedAddress: undefined,
@@ -39,7 +40,7 @@ export const userSlice = createSlice({
       state.role = '';
       state.storeId = '';
       state.avatarUrl = '';
-      state.address = null;
+      state.address = [];
       state.isLoggedIn = false;
       state.selectedAddress = undefined;
     },
@@ -49,11 +50,20 @@ export const userSlice = createSlice({
     ) => {
       state.location = action.payload;
     },
+    populatedUserAddress: (state, action: PayloadAction<IAddressList[]>) => {
+      state.address = action.payload;
+    },
     selectAddress: (
       state,
       action: PayloadAction<IUserState['selectedAddress']>,
     ) => {
       state.selectedAddress = action.payload;
+    },
+    removeAddress: (state, action: PayloadAction<IAddressList>) => {
+      const removedAddressList = state.address.filter(
+        (address) => address.id !== action.payload.id,
+      );
+      state.address = removedAddressList;
     },
     updateAvatar: (state, action: PayloadAction<IUserState['avatarUrl']>) => {
       state.avatarUrl = action.payload;
@@ -64,6 +74,8 @@ export const userSlice = createSlice({
 export const {
   loginAction,
   logoutAction,
+  populatedUserAddress,
+  removeAddress,
   setLocation,
   selectAddress,
   updateAvatar,
