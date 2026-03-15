@@ -14,7 +14,7 @@ import FormModal from './FormModal';
 import RemoveAddressModal from './RemoveModal';
 
 interface Props {
-  data: IAddressList[];
+  data: Record<string, IAddressList>;
   isOpen: boolean;
   onOpen: (val: boolean) => void;
 }
@@ -38,8 +38,8 @@ export default function MainModal({ isOpen, onOpen, data }: Props) {
         isDismissable={false}
         isKeyboardDismissDisabled={true}
         size="lg"
-        scrollBehavior="outside"
-        className="overflow-auto"
+        placement="center"
+        scrollBehavior="inside"
       >
         <ModalContent>
           {(onClose) => (
@@ -47,18 +47,18 @@ export default function MainModal({ isOpen, onOpen, data }: Props) {
               <ModalHeader className="flex flex-col gap-1">
                 Mau di kirim kemana?
               </ModalHeader>
-              <ModalBody>
-                {data.length > 0 &&
-                  data.map((address) => (
+              <ModalBody className="h-full">
+                {Object.keys(data).length > 0 &&
+                  Object.keys(data).map((addressId) => (
                     <AddressCard
-                      key={address.id}
-                      address={address}
+                      key={addressId}
+                      address={data[addressId]}
                       onClose={onClose}
                       onEdit={onEdit}
                       onRemove={onRemove}
                     />
                   ))}
-                {data.length === 0 && (
+                {Object.keys(data).length === 0 && (
                   <p>Tidak ada alamat terdaftar, silahkan buat alamat baru</p>
                 )}
               </ModalBody>

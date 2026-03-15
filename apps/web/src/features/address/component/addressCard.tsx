@@ -1,9 +1,9 @@
-import DeleteAddress from '@/components/address/deleteAddress';
-import EditAddress from '@/components/address/editAddress';
 import { useAppDispatch } from '@/redux/hook';
 import { selectAddress } from '@/redux/slice/userSlice';
 import { IAddressList } from '@/type/address';
 import { Button, Card, CardBody } from '@nextui-org/react';
+import DeleteAddress from './modal/deleteAddress';
+import EditAddress from './modal/editAddress';
 
 type AddressCardProps = {
   address: IAddressList;
@@ -24,13 +24,15 @@ export default function AddressCard({
     dispatch(selectAddress(address));
     onClose();
   };
+
+  const formatAddress = `${address.addressLine}, ${address.city}, ${address.state}, ${address.postalCode}`;
   return (
-    <Card className="flex flex-row items-center justify-between border-primary border">
+    <Card className="flex flex-row items-center justify-between border-primary border shrink-0">
       <CardBody className="flex flex-col">
         <p className="text-sm text-gray-500">{address.label}</p>
         <p className="font-bold">{address.recipient}</p>
         <p>{address.phoneNumber}</p>
-        <p>{address.addressLine}</p>
+        <p>{formatAddress}</p>
       </CardBody>
 
       <div className="flex flex-col px-2 gap-3">
@@ -45,7 +47,7 @@ export default function AddressCard({
 
         <div className="flex justify-around">
           <EditAddress onEdit={() => onEdit(address)} />
-          <DeleteAddress onRemove={() => onRemove(address)} />
+          <DeleteAddress onOpen={() => onRemove(address)} />
         </div>
       </div>
     </Card>

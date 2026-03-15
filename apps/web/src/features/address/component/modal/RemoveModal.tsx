@@ -32,7 +32,14 @@ export default function RemoveAddressModal({
               <Button color="primary" onClick={onClose}>
                 Batal
               </Button>
-              <Button color="primary" variant="ghost" onClick={handleRemove}>
+              <Button
+                color="primary"
+                variant="ghost"
+                onClick={() => {
+                  handleRemove();
+                  onClose();
+                }}
+              >
                 Hapus
               </Button>
             </ModalFooter>

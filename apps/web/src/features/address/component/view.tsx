@@ -4,12 +4,11 @@ import { useDisclosure } from '@nextui-org/react';
 import { FaChevronDown } from 'react-icons/fa';
 import useAddressList from '../hooks/useAddressList';
 import MainModal from './modal/MainModal';
-import { IAddressList } from '@/type/address';
 
 export default function AddressListView() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const user = useAppSelector(selectUser);
-  const { addressList, getData } = useAddressList();
+  const { addressList } = useAddressList();
 
   const isLoggedIn = user.isLoggedIn;
   const hasAddress = user.selectedAddress;
