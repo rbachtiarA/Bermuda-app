@@ -37,29 +37,35 @@ export interface IAddressList {
   isPrimary: boolean;
 }
 export interface AddressCardProps {
- address: IAddressList
+  address: IAddressList;
   onSelect: () => void;
 }
 
 export interface IFetchCity {
   id: number;
   name: string;
+  Province: IProvince;
 }
 
+interface IProvince {
+  name: string;
+}
 export interface ICreateAddress {
   label: string;
   recipient: string;
   phoneNumber: string;
   cityId: number;
-  state: string;
   addressLine: string;
   postalCode: string;
   latitude: number;
   longitude: number;
   isPrimary: boolean;
+  state: string;
+  city: string;
 }
 
 export interface CitySearchInputProps {
+  value: string;
   handleSelect: (id: number, name: string) => void;
   resetTrigger?: boolean;
 }

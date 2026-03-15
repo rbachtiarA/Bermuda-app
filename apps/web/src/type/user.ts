@@ -19,6 +19,16 @@ export interface ILoginData {
   password: string;
 }
 
+export interface LoginResponse {
+  id: number;
+  role: string;
+  name: string;
+  email: string;
+  avatarUrl: string;
+  address: IAddressList[];
+  storeId?: string;
+}
+
 export interface IUserState {
   id: number;
   name: string;
@@ -26,7 +36,7 @@ export interface IUserState {
   role: string;
   avatarUrl: string;
   storeId?: string;
-  address: IAddressList[];
+  address: Record<string, IAddressList>;
   location?: { latitude: number; longitude: number } | null;
   isLoggedIn: boolean;
   selectedAddress?: {

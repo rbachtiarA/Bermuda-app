@@ -53,7 +53,9 @@ export const fetchCities = async (): Promise<IFetchCity[]> => {
   }
 };
 
-export const createAddressHandler = async (value: ICreateAddress) => {
+export const createAddressHandler = async (
+  value: ICreateAddress,
+): Promise<IAddressList> => {
   const token = await getToken();
   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}address/`, {
     method: 'POST',
@@ -64,9 +66,9 @@ export const createAddressHandler = async (value: ICreateAddress) => {
     },
   });
 
-  const { status, msg } = await res.json();
+  const { data } = await res.json();
 
-  return { status, msg };
+  return data;
 };
 
 export const getShippingCost = async (addressId: number, storeId: number) => {
@@ -81,7 +83,7 @@ export const getShippingCost = async (addressId: number, storeId: number) => {
 export const updateAddressHandler = async (
   addressId: number,
   values: ICreateAddress,
-): Promise<void> => {
+): Promise<IAddressList> => {
   try {
     const token = await getToken();
     if (!token) {
@@ -104,8 +106,8 @@ export const updateAddressHandler = async (
       console.error('Error response:', errorData);
       throw new Error(`Failed to update address: ${errorData.message}`);
     }
-    const data = await response.json();
-    console.log('Address updated successfully:', data);
+    const { data } = await response.json();
+    return data;
   } catch (error) {
     console.error('Error updating address:', error);
     throw new Error('Failed to update address');
