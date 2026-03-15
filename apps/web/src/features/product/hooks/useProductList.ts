@@ -22,7 +22,7 @@ export default function useProductList() {
     if (store.id !== 0) {
       getData();
     }
-  }, [store]);
+  }, [store.id]);
 
   return {
     store,
