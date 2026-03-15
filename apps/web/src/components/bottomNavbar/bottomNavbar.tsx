@@ -1,9 +1,9 @@
 'use client';
+import { useAppSelector } from '@/redux/hook';
+import { cartArr } from '@/redux/selector/cartSelector';
 import { Roboto } from 'next/font/google';
 import LinkButtonBottomNavbar from './LinkButton.BottomNavbar';
 import NotificationBottomNavbar from './notificationCart.BottomNavbar';
-import { useAppSelector } from '@/redux/hook';
-import { selectCartItems } from '@/redux/selector/cartSelector';
 
 const roboto = Roboto({
   weight: ['400'],
@@ -11,7 +11,7 @@ const roboto = Roboto({
 });
 
 export default function BottomNavbar() {
-  const cart = useAppSelector(selectCartItems);
+  const cart = useAppSelector(cartArr);
   return (
     <div className="sticky bottom-0 z-[100] block" style={roboto.style}>
       <ul className="grid grid-cols-4 divide-x divide-white text-center py-1 bg-slate-200 justify-center items-center">
