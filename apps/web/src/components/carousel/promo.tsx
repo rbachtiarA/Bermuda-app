@@ -12,23 +12,31 @@ export default function PromoCarousel() {
     <Swiper
       modules={[Navigation, Pagination, Autoplay]}
       spaceBetween={20}
-      slidesPerView={2}
+      slidesPerView={1}
       navigation
       pagination={{ clickable: true }}
       autoplay={{ delay: 3000 }}
       loop={true}
       className="flex justify-center w-full h-32 md:h-48 lg:h-72"
+      breakpoints={{
+        1080: {
+          slidesPerView: 2,
+        },
+      }}
     >
       {[...Array(10)].map((_, index) => (
-        <SwiperSlide key={index} className="flex w-full items-center justify-center rounded-xl">
-        <Image 
-          src={`/carousel/pm_banner_${index + 1}.webp`}
-          alt={`Slide ${index + 1}`}
-          height={260}
-          width={519}
-          className="rounded-lg object-cover"
-        />
-      </SwiperSlide>
+        <SwiperSlide
+          key={index}
+          className="flex w-full items-center justify-center rounded-xl"
+        >
+          <Image
+            src={`/carousel/pm_banner_${index + 1}.webp`}
+            alt={`Slide ${index + 1}`}
+            height={260}
+            width={519}
+            className="rounded-lg object-cover"
+          />
+        </SwiperSlide>
       ))}
     </Swiper>
   );

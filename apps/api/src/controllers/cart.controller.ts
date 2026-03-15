@@ -29,7 +29,6 @@ export class CartController {
           product: {
             include: {
               stock: {
-                //change storeId value when store is dyncamic
                 where: { storeId: +storeId },
               },
             },
@@ -47,75 +46,33 @@ export class CartController {
   async postCartsItem(req: Request, res: Response) {
     try {
       const { productId, quantity, userId } = req.body;
-      // const userId = req.user?.id
-      let cart = await prisma.cart.findUnique({
-        where: {
-          userId: +userId!,
-        },
-      });
-
-      let checkout = await prisma.checkout.findUnique({
-        where: {
-          userId: +userId!,
-        },
-      });
-
-      if (!cart) {
-        let cartNew = await prisma.cart.create({
-          data: {
-            userId: +userId!,
-          },
-        });
-      }
-      if (!checkout) {
-        let checkoutNew = await prisma.checkout.create({
-          data: {
-            userId: +userId!,
-          },
-        });
-      }
-
       //check is user exist, then give cart Id
-      const user = await prisma.user.findUnique({
-        select: { cart: true },
-        where: {
-          id: +userId!,
-        },
+      const userCart = await prisma.cart.findUnique({
+        where: { userId: +userId },
       });
-      if (!user?.cart) throw 'User / Cart not found';
 
-      //check is product Id, already exist
-      const productInCart = await prisma.cartItem.findFirst({
+      if (!userCart) {
+        throw 'User/Cart not found';
+      }
+
+      const cartItem = await prisma.cartItem.upsert({
         where: {
-          AND: {
-            cartId: user.cart.id,
+          cartId_productId: {
+            cartId: userCart?.id,
             productId: productId,
           },
         },
+        update: {
+          quantity: {
+            increment: quantity,
+          },
+        },
+        create: {
+          cartId: userCart.id,
+          productId: productId,
+          quantity,
+        },
       });
-
-      let cartItem;
-      if (!productInCart) {
-        //new product in Cart
-        cartItem = await prisma.cartItem.create({
-          data: {
-            cartId: user.cart?.id!,
-            productId,
-            quantity,
-          },
-        });
-      } else {
-        //updated product quantity in Cart
-        cartItem = await prisma.cartItem.update({
-          where: {
-            id: productInCart.id,
-          },
-          data: {
-            quantity: productInCart.quantity + quantity,
-          },
-        });
-      }
-
       return res.status(200).send({ status: 'ok', cartItem });
     } catch (error) {
       return res.status(400).send({ status: 'error', error });
@@ -172,9 +129,9 @@ export class CartController {
 
   async deleteCartItem(req: Request, res: Response) {
     try {
-      const { cartIds } = req.query;
+      const { productIds } = req.query;
       const userId = req.user?.id;
-      const deletedIds = `${cartIds}`.split(',').map((item) => Number(item));
+      const deletedIds = `${productIds}`.split(',').map(Number);
       const cart = await prisma.cart.findUnique({
         where: {
           userId: +userId!,
@@ -186,7 +143,7 @@ export class CartController {
         const deletedItem = await tx.cartItem.deleteMany({
           where: {
             cartId: cart?.id,
-            id: { in: deletedIds },
+            productId: { in: deletedIds },
           },
         });
 

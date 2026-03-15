@@ -1,6 +1,7 @@
 'use client';
 import { postCartItems } from '@/lib/cart';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
+import { selectCartItems } from '@/redux/selector/cartSelector';
 import { addedToCart } from '@/redux/slice/cartSlice';
 import { IStocks } from '@/type/product';
 import { useRouter } from 'next/navigation';
@@ -8,7 +9,7 @@ import { toast } from 'react-toastify';
 
 export default function useProductHandler({ stock }: { stock: IStocks }) {
   const dispatch = useAppDispatch();
-  const cart = useAppSelector((state) => state.cart);
+  const cart = useAppSelector(selectCartItems);
   const user = useAppSelector((state) => state.user);
   const product = stock.product;
   const router = useRouter();
@@ -18,7 +19,7 @@ export default function useProductHandler({ stock }: { stock: IStocks }) {
   };
 
   const onClickedAddToCart = async (quantity: number) => {
-    const existProduct = cart.find((item) => item.productId === product.id);
+    const existProduct = cart[product.id];
     if (existProduct) {
       if (existProduct.quantity >= stock.quantity) {
         toast.error(

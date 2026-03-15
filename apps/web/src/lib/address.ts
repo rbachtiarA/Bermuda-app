@@ -1,15 +1,22 @@
-'use server'
-import { ICreateAddress, IFetchCity } from '@/type/address';
+import { IAddressList, ICreateAddress, IFetchCity } from '@/type/address';
 import { getToken } from './server';
 
-export const getUserAddressess = async (userId: number) => {
+export const getUserAddressess = async () => {
+  const token = await getToken();
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_API_URL}users/userAddress/${userId}`,
-    { next: { revalidate: 1 } },
+    `${process.env.NEXT_PUBLIC_BASE_API_URL}users/address`,
+    {
+      cache: 'no-store',
+      method: 'GET',
+      headers: {
+        'Content-type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    },
   );
   const { status, data } = await res.json();
-  console.log('Server components?');
-  
+
+  console.log(data);
   return data;
 };
 
@@ -46,7 +53,9 @@ export const fetchCities = async (): Promise<IFetchCity[]> => {
   }
 };
 
-export const createAddressHandler = async (value: ICreateAddress) => {
+export const createAddressHandler = async (
+  value: ICreateAddress,
+): Promise<IAddressList> => {
   const token = await getToken();
   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}address/`, {
     method: 'POST',
@@ -57,9 +66,9 @@ export const createAddressHandler = async (value: ICreateAddress) => {
     },
   });
 
-  const { status, msg } = await res.json();
+  const { data } = await res.json();
 
-  return { status, msg };
+  return data;
 };
 
 export const getShippingCost = async (addressId: number, storeId: number) => {
@@ -74,12 +83,12 @@ export const getShippingCost = async (addressId: number, storeId: number) => {
 export const updateAddressHandler = async (
   addressId: number,
   values: ICreateAddress,
-): Promise<void> => {
+): Promise<IAddressList> => {
   try {
     const token = await getToken();
     if (!token) {
       throw new Error('Authorization token is missing');
-  }
+    }
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_API_URL}address/${addressId}`,
       {
@@ -91,16 +100,37 @@ export const updateAddressHandler = async (
         body: JSON.stringify(values),
       },
     );
-    
+
     if (!response.ok) {
       const errorData = await response.json();
       console.error('Error response:', errorData);
       throw new Error(`Failed to update address: ${errorData.message}`);
     }
-    const data = await response.json();
-    console.log('Address updated successfully:', data);
+    const { data } = await response.json();
+    return data;
   } catch (error) {
     console.error('Error updating address:', error);
     throw new Error('Failed to update address');
+  }
+};
+
+export const deleteAddress = async (address: IAddressList) => {
+  try {
+    const token = await getToken();
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_API_URL}address/${address.id}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+
+    const data = await response.json();
+    return { status: response.ok, data: data.message };
+  } catch (error) {
+    return { status: false, data: null };
   }
 };

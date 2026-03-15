@@ -1,7 +1,7 @@
 'use client';
 import { createToken } from '@/lib/server';
 import { useAppDispatch } from '@/redux/hook';
-import { updatedCartFromDatabase } from '@/redux/slice/cartSlice';
+import { populatedUserCart } from '@/redux/slice/cartSlice';
 import { loginAction } from '@/redux/slice/userSlice';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
@@ -18,18 +18,21 @@ export default function PasswordlessPage() {
       if (token) {
         await createToken(token);
 
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}auth/user`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        })
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BASE_API_URL}auth/user`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
 
-        const userData = await response.json()
-        dispatch(updatedCartFromDatabase(userData.user.cart.CartItem))
-        dispatch(loginAction(userData.user))
+        const userData = await response.json();
+        dispatch(populatedUserCart(userData.user.cart.CartItem));
+        dispatch(loginAction(userData.user));
 
-        if (response.ok) {          
-          window.location.href = '/'
+        if (response.ok) {
+          window.location.href = '/';
         }
       }
     };

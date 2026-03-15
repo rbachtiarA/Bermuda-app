@@ -56,20 +56,6 @@ export default function useProductData(slug: string) {
     return 0;
   };
 
-  const handleAdd = () => {
-    if (hasDiscountType('BUY_ONE_GET_ONE')) {
-      toast.error(`Maksimal Pembelian 1 Pcs`);
-    } else {
-      setQuantity((prev) => prev + 1);
-    }
-  };
-
-  const handleSubtract = () => {
-    if (quantity > 1) {
-      setQuantity((prev) => prev - 1);
-    }
-  };
-
   const handleDescription = () => {
     setIsShowDesc(!isShowDesc);
   };

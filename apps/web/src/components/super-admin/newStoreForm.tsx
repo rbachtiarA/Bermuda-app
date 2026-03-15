@@ -1,8 +1,9 @@
-import { useAppDispatch } from '@/redux/hook';
-import { ICreateAddress, IFetchCity } from '@/type/address';
+import { fetchCities } from '@/lib/address';
+import { createStore } from '@/lib/superAdmin.handler';
+import { IFetchCity } from '@/type/address';
+import { ICreateStore } from '@/type/store';
 import {
   Button,
-  Checkbox,
   Input,
   Modal,
   ModalBody,
@@ -10,14 +11,11 @@ import {
   ModalFooter,
   ModalHeader,
 } from '@nextui-org/react';
-import { useEffect, useState } from 'react';
-import { GoogleMapPicker } from '../address/googleMapsPicker';
 import { Form, Formik, FormikHelpers, FormikProps } from 'formik';
+import { useEffect, useState } from 'react';
 import * as Yup from 'yup';
-import { createAddressHandler, fetchCities } from '@/lib/address';
-import { CitySearchInput } from '../address/citySearchInput';
-import { ICreateStore } from '@/type/store';
-import { createStore } from '@/lib/superAdmin.handler';
+import { GoogleMapPicker } from '../address/googleMapsPicker';
+import { CitySearchInput } from '@/features/address/component/cityInputSearch';
 
 interface NewStoreModalProps {
   isOpen: boolean;
@@ -25,12 +23,12 @@ interface NewStoreModalProps {
 }
 
 const validationSchema = Yup.object().shape({
-    name: Yup.string().required('Masukkan nama toko'),
-    location: Yup.string().required('Masukkan lokasi toko'),
-    latitude: Yup.number().required('Pilih lokasi pada peta'),
-    longitude: Yup.number().required('Pilih lokasi pada peta'),
-    cityId: Yup.number().required('Pilih kota'),
-  });
+  name: Yup.string().required('Masukkan nama toko'),
+  location: Yup.string().required('Masukkan lokasi toko'),
+  latitude: Yup.number().required('Pilih lokasi pada peta'),
+  longitude: Yup.number().required('Pilih lokasi pada peta'),
+  cityId: Yup.number().required('Pilih kota'),
+});
 
 export const NewStoreForm: React.FC<NewStoreModalProps> = ({
   isOpen,
@@ -41,11 +39,11 @@ export const NewStoreForm: React.FC<NewStoreModalProps> = ({
   const [markerAddress, setMarkerAddress] = useState('');
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const initialValues: ICreateStore = {
-        name: '',
-        location: '',
-        latitude: 0,
-        longitude: 0,
-        cityId: 0
+    name: '',
+    location: '',
+    latitude: 0,
+    longitude: 0,
+    cityId: 0,
   };
 
   useEffect(() => {
@@ -84,8 +82,8 @@ export const NewStoreForm: React.FC<NewStoreModalProps> = ({
       isDismissable={false}
       isKeyboardDismissDisabled={true}
       size="lg"
-      scrollBehavior='outside'
-      className='overflow-auto'
+      scrollBehavior="outside"
+      className="overflow-auto"
     >
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1">Tambah Alamat</ModalHeader>
@@ -107,53 +105,61 @@ export const NewStoreForm: React.FC<NewStoreModalProps> = ({
               <Form>
                 <ModalBody>
                   <div>
-                  <div>
-                    <Input
-                      placeholder="Ketik nama toko"
-                      value={values.name}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      name="name"
-                      label="Nama Toko"
-                      description="Masukkan nama toko"
-                      color={errors.name && touched.name ? 'danger' : 'default'}
-                    />
-                  </div>
-                    
-                  <div>
-                    <CitySearchInput
-                      handleSelect={(id) => {
-                        setFieldValue('cityId', id);
-                      }}
-                      resetTrigger={isFormSubmitted}
-                    />
-                  </div>
-                  <div>
-                    {showMap ? (
-                      <GoogleMapPicker
-                        onConfirm={(location) => { setFieldValue('latitude', location.lat); setFieldValue('longitude', location.lng); setFieldValue('location', location.addressLine);
-                          setMarkerAddress(location.addressLine);
-                          setShowMap(false);
-                        }}
+                    <div>
+                      <Input
+                        placeholder="Ketik nama toko"
+                        value={values.name}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        name="name"
+                        label="Nama Toko"
+                        description="Masukkan nama toko"
+                        color={
+                          errors.name && touched.name ? 'danger' : 'default'
+                        }
                       />
-                    ) : (
-                      <div>
-                        <p>Tandai Lokasi</p>
-                        <Button
-                          fullWidth
-                          color="default"
-                          variant="light"
-                          onClick={() => setShowMap(true)}
-                          className="shadow-lg"
-                        >
-                          Tandai Lokasi
-                        </Button>
-                        {markerAddress && (
-                          <p className="text-sm mt-2">{markerAddress}</p>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                    </div>
+
+                    <div>
+                      {/* TODO: NEW COMPONENT NEED TESTING IN THIS COMPONENT */}
+                      <CitySearchInput
+                        value={''}
+                        handleSelect={(id) => {
+                          setFieldValue('cityId', id);
+                        }}
+                        resetTrigger={isFormSubmitted}
+                      />
+                    </div>
+                    <div>
+                      {/* TODO: CHANGE THIS INTO NEW MAPLIBRE */}
+                      {showMap ? (
+                        <GoogleMapPicker
+                          onConfirm={(location) => {
+                            setFieldValue('latitude', location.lat);
+                            setFieldValue('longitude', location.lng);
+                            setFieldValue('location', location.addressLine);
+                            setMarkerAddress(location.addressLine);
+                            setShowMap(false);
+                          }}
+                        />
+                      ) : (
+                        <div>
+                          <p>Tandai Lokasi</p>
+                          <Button
+                            fullWidth
+                            color="default"
+                            variant="light"
+                            onClick={() => setShowMap(true)}
+                            className="shadow-lg"
+                          >
+                            Tandai Lokasi
+                          </Button>
+                          {markerAddress && (
+                            <p className="text-sm mt-2">{markerAddress}</p>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </ModalBody>
                 <ModalFooter>

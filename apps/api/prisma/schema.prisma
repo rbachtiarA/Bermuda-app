@@ -197,6 +197,8 @@ model CartItem {
   updatedAt  DateTime  @updatedAt
   Checkout   Checkout? @relation(fields: [checkoutId], references: [id])
   checkoutId Int?
+
+  @@unique([cartId, productId])
 }
 
 model Checkout {

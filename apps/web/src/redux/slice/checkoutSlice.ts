@@ -1,31 +1,33 @@
-import { ICartItem, IUpdateQuantityCart } from "@/type/cart";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-const initialState: number[] = []
+const initialState: { items: Record<string, boolean> } = { items: {} };
 
 export const checkoutSlice = createSlice({
-    name: "checkout",
-    initialState,
-    reducers:{
-        addSelectedCheckout: (state, action:PayloadAction<number>) => {
-            const id = action.payload
-            if(!state.includes(id)) {
-                return [...state, id]
-            } 
-        },
-        selectedAllItems: (state, action:PayloadAction<number[]>) => {
-            return [...action.payload]
-        },
-        removeSelectedCheckout: (state, action:PayloadAction<number[]>) => {
-            const removedIds = action.payload
-            return [...state.filter((id) => !removedIds.includes(id))]
-        },
-        resetCheckout: (state) => {
-            return []
-        }
+  name: 'checkout',
+  initialState,
+  reducers: {
+    addSelectedCheckout: (state, action: PayloadAction<number>) => {
+      const id = action.payload;
+      if (!state.items[id]) {
+        state.items[id] = true;
+      }
     },
+    selectedAllItems: (state, action: PayloadAction<number[]>) => {
+      action.payload.forEach((item) => (state.items[item] = true));
+    },
+    removeSelectedCheckout: (state, action: PayloadAction<number[]>) => {
+      action.payload.forEach((removedId) => {
+        delete state.items[removedId];
+      });
+    },
+    resetCheckout: () => initialState,
+  },
+});
 
-})
-
-export const { addSelectedCheckout, removeSelectedCheckout, selectedAllItems, resetCheckout} = checkoutSlice.actions
-export default checkoutSlice.reducer
+export const {
+  addSelectedCheckout,
+  removeSelectedCheckout,
+  selectedAllItems,
+  resetCheckout,
+} = checkoutSlice.actions;
+export default checkoutSlice.reducer;

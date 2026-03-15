@@ -11,18 +11,19 @@ import { CitySearchInputProps, IFetchCity } from '@/type/address';
 import { useDebounce } from 'use-debounce';
 
 export const CitySearchInput: React.FC<CitySearchInputProps> = ({
+  value,
   handleSelect,
   resetTrigger,
 }) => {
-  const [search, setSearch] = useState<string>('');
-  const [debouncedSearch] = useDebounce(search, 1000); 
+  const [search, setSearch] = useState<string>(value);
+  const [debouncedSearch] = useDebounce(search, 1000);
   const [options, setOptions] = useState<IFetchCity[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const fetchCities = async (query: string) => {
-      if (!query) return;
-      setLoading(true);
+    if (!query || loading) return;
+    setLoading(true);
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BASE_API_URL}address/cities?search=${query}`,
@@ -35,8 +36,8 @@ export const CitySearchInput: React.FC<CitySearchInputProps> = ({
     } finally {
       setLoading(false);
     }
-  }
-  
+  };
+
   useEffect(() => {
     if (debouncedSearch) {
       fetchCities(debouncedSearch);
@@ -44,16 +45,21 @@ export const CitySearchInput: React.FC<CitySearchInputProps> = ({
       setOptions([]);
       setIsDropdownOpen(false);
     }
+    setLoading(false);
   }, [debouncedSearch]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
   };
 
-  const handleCitySelect = (cityId: number, cityName: string) => {
+  const handleCitySelect = (
+    cityId: number,
+    cityName: string,
+    provinceName: string,
+  ) => {
     setSearch(cityName);
     setIsDropdownOpen(false);
-    handleSelect(cityId, cityName);
+    handleSelect(cityId, provinceName);
   };
 
   const clearInput = () => {
@@ -69,8 +75,9 @@ export const CitySearchInput: React.FC<CitySearchInputProps> = ({
   }, [resetTrigger]);
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <Input
+        label="Kabupaten/Kota"
         placeholder="Search city..."
         value={search}
         onChange={handleChange}
@@ -99,7 +106,9 @@ export const CitySearchInput: React.FC<CitySearchInputProps> = ({
               options.map((city) => (
                 <DropdownItem
                   key={city.id}
-                  onClick={() => handleCitySelect(city.id, city.name)}
+                  onClick={() =>
+                    handleCitySelect(city.id, city.name, city.Province.name)
+                  }
                 >
                   {city.name}
                 </DropdownItem>
