@@ -153,7 +153,11 @@ export class UserController {
               CartItem: true,
             },
           },
-          address: true,
+          address: {
+            include: {
+              city: true,
+            },
+          },
         },
       });
       if (!existingUser) throw 'Akun tidak ditemukan';
@@ -221,14 +225,34 @@ export class UserController {
       const user = req.user;
       const userAddressess = await prisma.user.findUnique({
         select: {
-          address: true,
+          address: {
+            include: {
+              city: {
+                select: { name: true },
+              },
+            },
+          },
         },
         where: { id: +user?.id! },
       });
 
-      return res
-        .status(200)
-        .send({ status: 'ok', data: userAddressess?.address });
+      const formattedAddress = userAddressess?.address.map((address) => {
+        return {
+          id: address.id,
+          label: address.label,
+          recipient: address.recipient,
+          phoneNumber: address.phoneNumber,
+          addressLine: address.addressLine,
+          cityId: address.cityId,
+          postalCode: address.postalCode,
+          latitude: address.latitude,
+          longitude: address.longitude,
+          isPrimary: address.isPrimary,
+          city: address.city?.name,
+          state: address.state,
+        };
+      });
+      return res.status(200).send({ status: 'ok', data: formattedAddress });
     } catch (error) {
       return res.status(400).send({ status: 'error', msg: error });
     }

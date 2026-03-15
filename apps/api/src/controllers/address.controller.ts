@@ -40,7 +40,7 @@ export class AddressController {
         where: search
           ? { name: { contains: search, mode: 'insensitive' } }
           : undefined,
-        select: { id: true, name: true },
+        select: { id: true, name: true, Province: { select: { name: true } } },
       });
 
       res.status(200).json(cities);
@@ -102,12 +102,29 @@ export class AddressController {
           longitude,
           isPrimary,
         },
+        include: {
+          city: { select: { name: true } },
+        },
       });
 
+      const formattedAddress = {
+        id: newAddress.id,
+        label: newAddress.label,
+        recipient: newAddress.recipient,
+        phoneNumber: newAddress.phoneNumber,
+        addressLine: newAddress.addressLine,
+        cityId: newAddress.cityId,
+        postalCode: newAddress.postalCode,
+        latitude: newAddress.latitude,
+        longitude: newAddress.longitude,
+        isPrimary: newAddress.isPrimary,
+        city: newAddress.city?.name,
+        state: newAddress.state,
+      };
       return res.status(201).json({
         status: 'ok',
         message: 'Alamat berhasil disimpan',
-        data: newAddress,
+        data: formattedAddress,
       });
     } catch (error) {
       console.error('Error creating address', error);
@@ -173,12 +190,34 @@ export class AddressController {
           longitude,
           isPrimary,
         },
+        include: {
+          city: {
+            select: {
+              name: true,
+            },
+          },
+        },
       });
+
+      const formattedAddress = {
+        id: updatedAddress.id,
+        label: updatedAddress.label,
+        recipient: updatedAddress.recipient,
+        phoneNumber: updatedAddress.phoneNumber,
+        addressLine: updatedAddress.addressLine,
+        cityId: updatedAddress.cityId,
+        postalCode: updatedAddress.postalCode,
+        latitude: updatedAddress.latitude,
+        longitude: updatedAddress.longitude,
+        isPrimary: updatedAddress.isPrimary,
+        city: updatedAddress.city?.name,
+        state: updatedAddress.state,
+      };
 
       return res.status(200).json({
         status: 'ok',
         message: 'Alamat berhasil diperbarui',
-        data: updatedAddress,
+        data: formattedAddress,
       });
     } catch (error) {
       console.error('Error updating address', error);
