@@ -19,7 +19,7 @@ export default function MapPicker({
   useEffect(() => {
     if (mapRef.current) return;
 
-    const GEOAPIFY_KEY = 'x';
+    const GEOAPIFY_KEY = process.env.NEXT_PUBLIC_GEOAPIFY_API_KEY;
 
     const map = new maplibregl.Map({
       container: mapContainer.current!,
